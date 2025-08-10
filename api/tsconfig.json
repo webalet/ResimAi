@@ -5,7 +5,7 @@
     "moduleResolution": "node",
     "lib": ["ES2022"],
     "allowJs": true,
-    "outDir": "./dist",
+    "outDir": "../dist/api",
     "rootDir": "..",
     "strict": true,
     "esModuleInterop": true,
