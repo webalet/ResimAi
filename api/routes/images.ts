@@ -198,18 +198,26 @@ router.post('/upload-and-process', auth, upload.single('image'), async (req: Req
         operation_type: 'image_processing'
       });
 
+    // Generate dynamic prompt based on category and style
+    const dynamicPrompt = generatePrompt(categoryType, style);
+    
     // Send direct webhook request (bypass n8n)
     console.log('🎯 [UPLOAD DEBUG] Sending direct webhook request to external URL:', {
       jobId: imageJob.id,
       imageUrl: originalImageUrl?.substring(0, 50) + '...',
       categoryType,
       style,
-      userId
+      userId,
+      prompt: dynamicPrompt
     });
 
-    // Send GET request to external webhook with imageUrl parameter
-    const webhookUrl = new URL('https://1qe4j72v.rpcld.net/webhook-test/cd11e789-5e4e-4dda-a86e-e1204e036c82');
+    // Send GET request to external webhook with proper parameters
+    const webhookUrl = new URL('https://1qe4j72v.rpcld.net/webhook/cd11e789-5e4e-4dda-a86e-e1204e036c82');
     webhookUrl.searchParams.append('imageUrl', originalImageUrl || '');
+    webhookUrl.searchParams.append('category', categoryType);
+    webhookUrl.searchParams.append('style', style);
+    webhookUrl.searchParams.append('prompt', dynamicPrompt);
+    webhookUrl.searchParams.append('userId', userId);
     
     fetch(webhookUrl.toString(), {
       method: 'GET'
