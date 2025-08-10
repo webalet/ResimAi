@@ -1,9 +1,28 @@
 import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
 import { supabase } from '../config/supabase.js';
 import { adminAuth } from '../middleware/adminAuth.js';
 
 const router = Router();
+
+// Configure multer for image uploads
+const storage = multer.memoryStorage();
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(null, false);
+    }
+  }
+});
 
 // Admin Dashboard Stats
 router.get('/stats', adminAuth, async (req: Request, res: Response) => {
@@ -531,6 +550,53 @@ router.put('/settings/prompts', adminAuth, async (req: Request, res: Response): 
       message: 'AI prompt\'ları güncellenirken hata oluştu'
     });
     return;
+  }
+});
+
+// Image upload endpoint
+router.post('/upload-image', adminAuth, upload.single('image'), async (req: Request, res: Response): Promise<void> => {
+  try {
+    if (!req.file) {
+      res.status(400).json({
+        success: false,
+        message: 'Resim dosyası bulunamadı'
+      });
+      return;
+    }
+
+    const { type } = req.body; // 'category' or other types
+    const file = req.file;
+    
+    // Generate unique filename
+    const timestamp = Date.now();
+    const randomString = Math.random().toString(36).substring(2, 15);
+    const fileExtension = path.extname(file.originalname);
+    const fileName = `${type}_${timestamp}_${randomString}${fileExtension}`;
+    
+    // Ensure uploads directory exists
+    const uploadsDir = path.join(process.cwd(), 'public', 'images', 'uploads');
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+    
+    // Save file to disk
+    const filePath = path.join(uploadsDir, fileName);
+    fs.writeFileSync(filePath, file.buffer);
+    
+    // Return the URL path
+    const imageUrl = `/images/uploads/${fileName}`;
+    
+    res.json({
+      success: true,
+      url: imageUrl,
+      message: 'Resim başarıyla yüklendi'
+    });
+  } catch (error) {
+    console.error('Image upload error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Resim yüklenirken hata oluştu'
+    });
   }
 });
 

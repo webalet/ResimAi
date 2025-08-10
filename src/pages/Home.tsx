@@ -146,7 +146,7 @@ const Home: React.FC = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center">
                     <img 
-                      src="https://via.placeholder.com/300x300/6366f1/ffffff?text=Orijinal" 
+                      src="/images/ornek.jpg" 
                       alt="Orijinal Fotoğraf" 
                       className="w-full h-48 object-cover rounded-lg mb-2"
                     />
@@ -154,7 +154,7 @@ const Home: React.FC = () => {
                   </div>
                   <div className="text-center">
                     <img 
-                      src="https://via.placeholder.com/300x300/8b5cf6/ffffff?text=Kurumsal" 
+                      src="/images/ornek.jpg" 
                       alt="AI İşlenmiş Kurumsal" 
                       className="w-full h-48 object-cover rounded-lg mb-2"
                     />
@@ -171,7 +171,7 @@ const Home: React.FC = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center">
                     <img 
-                      src="https://via.placeholder.com/300x300/6366f1/ffffff?text=Orijinal" 
+                      src="/images/ornek.jpg" 
                       alt="Orijinal Fotoğraf" 
                       className="w-full h-48 object-cover rounded-lg mb-2"
                     />
@@ -179,7 +179,7 @@ const Home: React.FC = () => {
                   </div>
                   <div className="text-center">
                     <img 
-                      src="https://via.placeholder.com/300x300/10b981/ffffff?text=Yaratici" 
+                      src="/images/ornek.jpg" 
                       alt="AI İşlenmiş Yaratıcı" 
                       className="w-full h-48 object-cover rounded-lg mb-2"
                     />
@@ -196,7 +196,7 @@ const Home: React.FC = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center">
                     <img 
-                      src="https://via.placeholder.com/300x300/6366f1/ffffff?text=Orijinal" 
+                      src="/images/ornek.jpg" 
                       alt="Orijinal Fotoğraf" 
                       className="w-full h-48 object-cover rounded-lg mb-2"
                     />
@@ -204,7 +204,7 @@ const Home: React.FC = () => {
                   </div>
                   <div className="text-center">
                     <img 
-                      src="https://via.placeholder.com/300x300/6366f1/ffffff?text=Avatar" 
+                      src="/images/ornek.jpg" 
                       alt="AI İşlenmiş Avatar" 
                       className="w-full h-48 object-cover rounded-lg mb-2"
                     />
@@ -221,7 +221,7 @@ const Home: React.FC = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center">
                     <img 
-                      src="https://via.placeholder.com/300x300/6366f1/ffffff?text=Orijinal" 
+                      src="/images/ornek.jpg" 
                       alt="Orijinal Fotoğraf" 
                       className="w-full h-48 object-cover rounded-lg mb-2"
                     />
@@ -229,7 +229,7 @@ const Home: React.FC = () => {
                   </div>
                   <div className="text-center">
                     <img 
-                      src="https://via.placeholder.com/300x300/f97316/ffffff?text=Elbise" 
+                      src="/images/ornek.jpg" 
                       alt="AI İşlenmiş Elbise" 
                       className="w-full h-48 object-cover rounded-lg mb-2"
                     />
@@ -246,7 +246,7 @@ const Home: React.FC = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center">
                     <img 
-                      src="https://via.placeholder.com/300x300/6366f1/ffffff?text=Orijinal" 
+                      src="/images/ornek.jpg" 
                       alt="Orijinal Fotoğraf" 
                       className="w-full h-48 object-cover rounded-lg mb-2"
                     />
@@ -254,7 +254,7 @@ const Home: React.FC = () => {
                   </div>
                   <div className="text-center">
                     <img 
-                      src="https://via.placeholder.com/300x300/14b8a6/ffffff?text=Arkaplan" 
+                      src="/images/ornek.jpg" 
                       alt="AI İşlenmiş Arkaplan" 
                       className="w-full h-48 object-cover rounded-lg mb-2"
                     />
@@ -271,7 +271,7 @@ const Home: React.FC = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center">
                     <img 
-                      src="https://via.placeholder.com/300x300/6366f1/ffffff?text=Orijinal" 
+                      src="/images/ornek.jpg" 
                       alt="Orijinal Fotoğraf" 
                       className="w-full h-48 object-cover rounded-lg mb-2"
                     />
@@ -279,7 +279,7 @@ const Home: React.FC = () => {
                   </div>
                   <div className="text-center">
                     <img 
-                      src="https://via.placeholder.com/300x300/ec4899/ffffff?text=Cilt" 
+                      src="/images/ornek.jpg" 
                       alt="AI İşlenmiş Cilt" 
                       className="w-full h-48 object-cover rounded-lg mb-2"
                     />

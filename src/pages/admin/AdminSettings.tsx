@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { Settings, Key, Database, Webhook, Code, Edit2, Save, X, Plus, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Settings, Key, Database, Webhook, Code, Edit2, Save, X, Plus, Trash2, ChevronDown, ChevronUp, Upload, Image } from 'lucide-react';
 import AdminLayout from '../../components/admin/AdminLayout';
+import { toast } from 'sonner';
 
 type ValidationErrors = Record<string, string>;
 
@@ -50,29 +51,38 @@ const AdminSettings = () => {
   const [categories, setCategories] = useState([
     {
       name: 'Corporate',
-      styles: ['Professional', 'Business Casual', 'Executive', 'Formal Meeting']
+      styles: ['Professional', 'Business Casual', 'Executive', 'Formal Meeting'],
+      image_url: '/images/ornek.jpg'
     },
     {
       name: 'Creative', 
-      styles: ['Artistic', 'Bohemian', 'Vintage', 'Modern Art']
+      styles: ['Artistic', 'Bohemian', 'Vintage', 'Modern Art'],
+      image_url: '/images/ornek.jpg'
     },
     {
       name: 'Avatar',
-      styles: ['Cartoon', 'Realistic', 'Anime', 'Fantasy']
+      styles: ['Cartoon', 'Realistic', 'Anime', 'Fantasy'],
+      image_url: '/images/ornek.jpg'
     },
     {
       name: 'Outfit',
-      styles: ['Casual', 'Formal', 'Sporty', 'Trendy']
+      styles: ['Casual', 'Formal', 'Sporty', 'Trendy'],
+      image_url: '/images/ornek.jpg'
     },
     {
       name: 'Background',
-      styles: ['Office', 'Studio', 'Nature', 'Abstract']
+      styles: ['Office', 'Studio', 'Nature', 'Abstract'],
+      image_url: '/images/ornek.jpg'
     },
     {
       name: 'Skincare',
-      styles: ['Natural', 'Glowing', 'Professional', 'Fresh']
+      styles: ['Natural', 'Glowing', 'Professional', 'Fresh'],
+      image_url: '/images/ornek.jpg'
     }
   ]);
+
+  // File input refs for image uploads
+  const fileInputRefs = useRef({});
 
   // State for editable AI prompts
   const [aiPrompts, setAiPrompts] = useState({
@@ -354,9 +364,63 @@ const AdminSettings = () => {
   const addCategory = () => {
     const newCategory = {
       name: 'Yeni Kategori',
-      styles: ['Yeni Stil']
+      styles: ['Yeni Stil'],
+      image_url: '/images/ornek.jpg'
     };
     setCategories(prev => [...prev, newCategory]);
+  };
+
+  // Image upload functions
+  const handleImageUpload = async (categoryIndex, file) => {
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Lütfen geçerli bir resim dosyası seçin');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Dosya boyutu 5MB\'dan küçük olmalıdır');
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      formData.append('type', 'category');
+
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch('/api/admin/upload-image', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error('Resim yükleme başarısız');
+      }
+
+      const data = await response.json();
+      
+      // Update category image URL
+      setCategories(prev => prev.map((cat, i) => 
+        i === categoryIndex ? { ...cat, image_url: data.url } : cat
+      ));
+
+      toast.success('Resim başarıyla yüklendi');
+    } catch (error) {
+      console.error('Image upload error:', error);
+      toast.error('Resim yüklenirken hata oluştu');
+    }
+  };
+
+  const triggerImageUpload = (categoryIndex) => {
+    const input = fileInputRefs.current[categoryIndex];
+    if (input) {
+      input.click();
+    }
   };
 
   const removeCategory = (index) => {
@@ -757,6 +821,38 @@ const AdminSettings = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {categories.map((category, categoryIndex) => (
                 <div key={categoryIndex} className="bg-gray-50 border border-gray-200 rounded-lg p-5 hover:shadow-md transition-shadow">
+                  {/* Category Image */}
+                  <div className="mb-4">
+                    <div className="relative group">
+                      <img 
+                        src={category.image_url} 
+                        alt={category.name}
+                        className="w-full h-32 object-cover rounded-lg border border-gray-300"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = '/images/ornek.jpg';
+                        }}
+                      />
+                      {editModes.categories && (
+                        <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                          <button
+                            onClick={() => triggerImageUpload(categoryIndex)}
+                            className="bg-white text-gray-800 px-3 py-2 rounded-lg hover:bg-gray-100 flex items-center gap-2 text-sm font-medium"
+                          >
+                            <Upload className="h-4 w-4" />
+                            Resim Değiştir
+                          </button>
+                        </div>
+                      )}
+                      <input
+                        ref={(el) => fileInputRefs.current[categoryIndex] = el}
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleImageUpload(categoryIndex, e.target.files[0])}
+                        className="hidden"
+                      />
+                    </div>
+                  </div>
+                  
                   <div className="flex items-center justify-between mb-3">
                     {editModes.categories ? (
                       <div className="flex-1">
