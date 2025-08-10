@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
@@ -28,7 +28,7 @@ import { auth, optionalAuth } from './middleware/auth.js';
 import { adminLogin } from './middleware/adminAuth.js';
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = parseInt(process.env.PORT || '3001', 10);
 
 // Security middleware
 app.use(helmet({
@@ -49,10 +49,12 @@ app.use(helmet({
 }));
 
 // CORS configuration
+const allowedOrigins = process.env.NODE_ENV === 'production' 
+  ? [process.env.FRONTEND_URL, 'http://64.226.75.76:5173', 'http://64.226.75.76:3001'].filter((origin): origin is string => Boolean(origin))
+  : ['http://localhost:5173', 'http://localhost:3000'];
+
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? [process.env.FRONTEND_URL, 'http://64.226.75.76:5173', 'http://64.226.75.76:3001'].filter(Boolean) 
-    : ['http://localhost:5173', 'http://localhost:3000'],
+  origin: allowedOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
@@ -142,7 +144,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // Global error handler
-app.use((err, req, res, next) => {
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.error('Global error handler:', {
     error: err.message,
     stack: err.stack,

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import { supabase } from '../config/supabase';
+import { supabase } from '../config/supabase.js';
 
 export const adminAuth = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {

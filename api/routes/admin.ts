@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
-import { supabase } from '../config/supabase';
-import { adminAuth } from '../middleware/adminAuth';
+import { supabase } from '../config/supabase.js';
+import { adminAuth } from '../middleware/adminAuth.js';
 
 const router = Router();
 
