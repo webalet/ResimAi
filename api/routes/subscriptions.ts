@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import Stripe from 'stripe';
-import { supabase } from '../config/supabase.js';
-import { auth } from '../middleware/auth.js';
+import { supabase } from '../config/supabase';
+import { auth } from '../middleware/auth';
 
 const router = Router();
 
@@ -73,13 +73,13 @@ router.get('/current', auth, async (req: Request, res: Response) => {
       });
     }
 
-    return res.json({
+    res.json({
       success: true,
       data: subscription || null
     });
   } catch (error) {
     console.error('Get current subscription error:', error);
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       message: 'Sunucu hatası'
     });
@@ -180,7 +180,7 @@ router.post('/create', auth, async (req: Request, res: Response) => {
       }
     });
 
-    return res.json({
+    res.json({
       success: true,
       data: {
         checkout_url: session.url
@@ -188,7 +188,7 @@ router.post('/create', auth, async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Create subscription error:', error);
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       message: 'Abonelik oluşturulurken hata oluştu'
     });
@@ -230,13 +230,13 @@ router.post('/cancel', auth, async (req: Request, res: Response) => {
       .eq('user_id', userId)
       .eq('status', 'active');
 
-    return res.json({
+    res.json({
       success: true,
       message: 'Abonelik iptal edildi'
     });
   } catch (error) {
     console.error('Cancel subscription error:', error);
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       message: 'Abonelik iptal edilirken hata oluştu'
     });
@@ -399,10 +399,10 @@ router.post('/webhook', async (req: Request, res: Response) => {
         console.log(`Unhandled event type: ${event.type}`);
     }
 
-    return res.json({ received: true });
+    res.json({ received: true });
   } catch (error) {
     console.error('Webhook handler error:', error);
-    return res.status(500).json({ error: 'Webhook handler failed' });
+    res.status(500).json({ error: 'Webhook handler failed' });
   }
 });
 
@@ -424,7 +424,7 @@ router.get('/credits', auth, async (req: Request, res: Response) => {
       });
     }
 
-    return res.json({
+    res.json({
       success: true,
       data: {
         remaining_credits: user.credits
@@ -432,7 +432,7 @@ router.get('/credits', auth, async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Get credits error:', error);
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       message: 'Sunucu hatası'
     });
@@ -458,13 +458,13 @@ router.get('/history', auth, async (req: Request, res: Response) => {
       });
     }
 
-    return res.json({
+    res.json({
       success: true,
       data: subscriptions || []
     });
   } catch (error) {
     console.error('Get subscription history error:', error);
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       message: 'Sunucu hatası'
     });
@@ -490,13 +490,13 @@ router.get('/payments', auth, async (req: Request, res: Response) => {
       });
     }
 
-    return res.json({
+    res.json({
       success: true,
       data: payments || []
     });
   } catch (error) {
     console.error('Get payment history error:', error);
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       message: 'Sunucu hatası'
     });

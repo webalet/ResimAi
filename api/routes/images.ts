@@ -297,7 +297,7 @@ const generatePrompt = (category: string, style: string): string => {
   return prompts[category]?.[style] || 'Enhance and improve the person in the image with professional quality.';
 };
 
-// Process image endpoint (proxy to external webhook)
+// Process image endpoint (simplified - no webhook call)
 router.post('/process', auth, async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = (req as any).userId;
@@ -327,47 +327,19 @@ router.post('/process', auth, async (req: Request, res: Response): Promise<void>
       prompt: dynamicPrompt
     });
     
-    // Send GET request to external webhook with query parameters including dynamic prompt
-    const webhookUrl = new URL('https://1qe4j72v.rpcld.net/webhook/cd11e789-5e4e-4dda-a86e-e1204e036c82');
-    webhookUrl.searchParams.append('imageUrl', imageUrl);
-    webhookUrl.searchParams.append('category', category);
-    webhookUrl.searchParams.append('style', style);
-    webhookUrl.searchParams.append('prompt', dynamicPrompt);
-    webhookUrl.searchParams.append('userId', userId);
-    
-    const webhookResponse = await fetch(webhookUrl.toString(), {
-      method: 'GET'
+    // Return success response without webhook call
+    res.status(200).json({
+      success: true,
+      message: 'Fotoğraf işleme başlatıldı',
+      data: {
+        imageUrl,
+        category,
+        style,
+        prompt: dynamicPrompt,
+        userId,
+        status: 'processing'
+      }
     });
-    
-    const responseText = await webhookResponse.text();
-    let responseData;
-    
-    try {
-      responseData = JSON.parse(responseText);
-    } catch {
-      responseData = responseText;
-    }
-    
-    console.log('✅ [PROCESS] Webhook response:', {
-      status: webhookResponse.status,
-      statusText: webhookResponse.statusText,
-      data: responseData
-    });
-    
-    if (webhookResponse.ok) {
-      res.status(200).json({
-        success: true,
-        message: 'Fotoğraf işleme başlatıldı',
-        data: responseData,
-        prompt: dynamicPrompt
-      });
-    } else {
-      res.status(webhookResponse.status).json({
-        success: false,
-        message: 'Webhook isteği başarısız',
-        error: responseData
-      });
-    }
     
   } catch (error) {
     console.error('❌ [PROCESS] Error:', error);
