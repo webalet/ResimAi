@@ -5,8 +5,7 @@
     "moduleResolution": "node",
     "lib": ["ES2022"],
     "allowJs": true,
-    "outDir": "../dist",
-    "rootDir": "..",
+    "outDir": "./dist",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -42,7 +41,8 @@
   },
   "include": [
     "**/*.ts",
-    "**/*.js"
+    "**/*.js",
+    "../shared/**/*.ts"
   ],
   "exclude": [
     "node_modules",
