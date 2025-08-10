@@ -197,51 +197,69 @@ const Categories: React.FC = () => {
         return;
       }
 
-      let imageUrl = uploadState.imageUrl;
+      // Use the combined upload-and-process endpoint
+      const formData = new FormData();
       
-      // If file upload, first upload the file
       if (uploadState.uploadMethod === 'file' && uploadState.file) {
-        const formData = new FormData();
         formData.append('image', uploadState.file);
-        
-        const uploadResponse = await fetch('/api/images/upload', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          },
-          body: formData
-        });
-        
-        if (!uploadResponse.ok) {
-          const errorData = await uploadResponse.json();
-          throw new Error(errorData.error || 'Dosya yükleme başarısız');
-        }
-        
-        const uploadData = await uploadResponse.json();
-        imageUrl = uploadData.url;
+      } else if (uploadState.uploadMethod === 'url' && uploadState.imageUrl) {
+        formData.append('imageUrl', uploadState.imageUrl);
       }
-
-      // Process the image
-      const processResponse = await fetch('/api/images/process', {
+      
+      formData.append('category', uploadState.selectedCategory.name);
+      formData.append('style', uploadState.selectedStyle);
+      
+      console.log('🚀 [UPLOAD-AND-PROCESS] Sending request to:', '/api/images/upload-and-process');
+      console.log('🚀 [UPLOAD-AND-PROCESS] FormData contents:', {
+        fileName: uploadState.file?.name,
+        fileSize: uploadState.file?.size,
+        fileType: uploadState.file?.type,
+        imageUrl: uploadState.imageUrl,
+        category: uploadState.selectedCategory.name,
+        style: uploadState.selectedStyle
+      });
+      
+      const response = await fetch('/api/images/upload-and-process', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({
-          imageUrl,
-          category: uploadState.selectedCategory.name,
-          style: uploadState.selectedStyle,
-          userId: user?.id
-        })
+        body: formData
       });
-
-      if (!processResponse.ok) {
-        const errorData = await processResponse.json();
-        throw new Error(errorData.error || 'İşleme başarısız');
+      
+      console.log('📥 [UPLOAD-AND-PROCESS] Response received:', {
+        status: response.status,
+        statusText: response.statusText,
+        headers: Object.fromEntries(response.headers.entries()),
+        url: response.url
+      });
+      
+      if (!response.ok) {
+        let errorMessage = 'Upload ve işleme başarısız';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorData.message || errorMessage;
+        } catch (parseError) {
+          errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
       }
-
-      const result = await processResponse.json();
+      
+      let result;
+      try {
+        const responseText = await response.text();
+        console.log('📄 [UPLOAD-AND-PROCESS] Raw response text:', responseText.substring(0, 200) + (responseText.length > 200 ? '...' : ''));
+        
+        if (!responseText.trim()) {
+          throw new Error('Sunucu boş yanıt döndürdü');
+        }
+        
+        result = JSON.parse(responseText);
+        console.log('✅ [UPLOAD-AND-PROCESS] Parsed response data:', result);
+      } catch (parseError) {
+        console.error('❌ [UPLOAD-AND-PROCESS] JSON parse error:', parseError);
+        throw new Error('Sunucu geçersiz yanıt döndürdü (JSON parse hatası)');
+      }
       toast.success('Fotoğraf başarıyla işlendi!');
       
       // Reset form

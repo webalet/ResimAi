@@ -1,7 +1,7 @@
 {
-  "watch": ["api"],
-  "ext": "ts,js,json",
-  "ignore": ["api/**/*.test.ts", "api/**/*.spec.ts", "node_modules"],
+  "watch": ["api", ".env*"],
+  "ext": "ts,js,json,env",
+  "ignore": ["api/**/*.test.ts", "api/**/*.spec.ts", "node_modules", ".env.example"],
   "exec": "tsx api/server.ts",
   "env": {
     "NODE_ENV": "development"

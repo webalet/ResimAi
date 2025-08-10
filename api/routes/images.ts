@@ -79,25 +79,79 @@ router.post('/upload', auth, upload.single('image'), async (req: Request, res: R
   }
 });
 
+// End of processUploadRequest function
+
 // Upload and process image (original endpoint renamed)
-router.post('/upload-and-process', auth, upload.single('image'), async (req: Request, res: Response): Promise<void> => {
+router.post('/upload-and-process', auth, async (req: Request, res: Response): Promise<void> => {
+  // Handle both multipart/form-data and JSON requests
+  const isMultipart = req.headers['content-type']?.includes('multipart/form-data');
+  
+  if (isMultipart) {
+    // Use multer for multipart requests
+    upload.single('image')(req, res, async (err) => {
+      if (err) {
+        console.error('❌ [UPLOAD-AND-PROCESS] Multer error:', err);
+        res.status(400).json({
+          success: false,
+          message: err.message
+        });
+        return;
+      }
+      await processUploadRequest(req, res);
+    });
+  } else {
+    // Handle JSON requests directly
+    await processUploadRequest(req, res);
+  }
+});
+
+// Extracted processing logic
+async function processUploadRequest(req: Request, res: Response): Promise<void> {
+  console.log('🔥 [UPLOAD-AND-PROCESS] ENDPOINT HIT - Request received:', {
+    method: req.method,
+    url: req.url,
+    headers: {
+      'content-type': req.headers['content-type'],
+      'authorization': req.headers.authorization ? 'Bearer ***' : 'None',
+      'user-agent': req.headers['user-agent']
+    },
+    bodyKeys: Object.keys(req.body || {}),
+    hasFile: !!req.file,
+    timestamp: new Date().toISOString()
+  });
   try {
     const userId = (req as any).userId;
-    const { categoryType, style } = req.body;
+    const { category, categoryType, style, imageUrl } = req.body;
     const file = req.file;
 
-    if (!file) {
+    console.log('🚀 [UPLOAD-AND-PROCESS] Request received:', {
+      userId,
+      category,
+      categoryType,
+      style,
+      imageUrl,
+      fileName: file?.originalname,
+      fileSize: file?.size,
+      body: req.body
+    });
+
+    // Check if either file or imageUrl is provided
+    if (!file && !imageUrl) {
+      console.log('❌ [UPLOAD-AND-PROCESS] No file or imageUrl provided');
       res.status(400).json({
         success: false,
-        message: 'Görsel dosyası gereklidir'
+        message: 'Görsel dosyası veya URL gereklidir'
       });
       return;
     }
 
-    if (!categoryType || !style) {
+    // Use category parameter (frontend sends 'category', not 'categoryType')
+    const categoryParam = category || categoryType;
+    if (!categoryParam || !style) {
+      console.log('❌ [UPLOAD-AND-PROCESS] Missing parameters:', { category, categoryType, style });
       res.status(400).json({
         success: false,
-        message: 'Kategori tipi ve stil gereklidir'
+        message: 'Kategori ve stil gereklidir'
       });
       return;
     }
@@ -126,14 +180,16 @@ router.post('/upload-and-process', auth, upload.single('image'), async (req: Req
     }
 
     // Get category
-    const { data: category, error: categoryError } = await supabase
+    console.log('🔍 [UPLOAD-AND-PROCESS] Looking for category:', categoryParam);
+    const { data: categoryData, error: categoryError } = await supabase
       .from('categories')
       .select('id, name')
-      .eq('type', categoryType)
+      .eq('name', categoryParam)
       .eq('is_active', true)
       .single();
 
-    if (categoryError || !category) {
+    if (categoryError || !categoryData) {
+      console.log('❌ [UPLOAD-AND-PROCESS] Category not found:', { categoryParam, error: categoryError });
       res.status(404).json({
         success: false,
         message: 'Kategori bulunamadı'
@@ -141,9 +197,40 @@ router.post('/upload-and-process', auth, upload.single('image'), async (req: Req
       return;
     }
 
-    // Upload original image to Supabase Storage
-    const originalImagePath = `originals/${userId}/${Date.now()}-${file.originalname}`;
-    const originalImageUrl = await uploadToSupabase(file.buffer, originalImagePath, file.mimetype);
+    console.log('✅ [UPLOAD-AND-PROCESS] Category found:', categoryData);
+
+    let originalImageUrl: string | null = null;
+    let originalImagePath: string | null = null;
+
+    if (file) {
+      // Handle file upload
+      originalImagePath = `originals/${userId}/${Date.now()}-${file.originalname}`;
+      originalImageUrl = await uploadToSupabase(file.buffer, originalImagePath, file.mimetype);
+    } else if (imageUrl) {
+      // Handle URL upload - download and upload to Supabase
+      console.log('📥 [UPLOAD-AND-PROCESS] Downloading image from URL:', imageUrl);
+      try {
+        const response = await fetch(imageUrl);
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const buffer = Buffer.from(await response.arrayBuffer());
+        const contentType = response.headers.get('content-type') || 'image/jpeg';
+        const extension = contentType.split('/')[1] || 'jpg';
+        originalImagePath = `originals/${userId}/${Date.now()}-url-image.${extension}`;
+        
+        originalImageUrl = await uploadToSupabase(buffer, originalImagePath, contentType);
+        console.log('✅ [UPLOAD-AND-PROCESS] Image downloaded and uploaded:', originalImageUrl?.substring(0, 50) + '...');
+      } catch (error) {
+        console.error('❌ [UPLOAD-AND-PROCESS] Error downloading image from URL:', error);
+        res.status(400).json({
+          success: false,
+          message: 'URL\'den görsel indirilemedi. Lütfen geçerli bir görsel URL\'si girin.'
+        });
+        return;
+      }
+    }
 
     if (!originalImageUrl) {
       res.status(500).json({
@@ -154,12 +241,14 @@ router.post('/upload-and-process', auth, upload.single('image'), async (req: Req
     }
 
     // Create image job record
+    console.log('💾 [UPLOAD-AND-PROCESS] Creating image job record');
     const { data: imageJob, error: jobError } = await supabase
       .from('image_jobs')
       .insert({
         user_id: userId,
-        category_id: category.id,
-        category_type: categoryType,
+        category_id: categoryData.id,
+        category_type: categoryParam,
+        style_type: style,
         style: style,
         original_image_url: originalImageUrl,
         status: 'processing'
@@ -167,10 +256,14 @@ router.post('/upload-and-process', auth, upload.single('image'), async (req: Req
       .select()
       .single();
 
+    console.log('📝 [UPLOAD-AND-PROCESS] Image job created:', imageJob?.id);
+
     if (jobError) {
       console.error('Image job creation error:', jobError);
       // Clean up uploaded image
-      await deleteFromSupabase(originalImagePath);
+      if (originalImagePath) {
+        await deleteFromSupabase(originalImagePath);
+      }
       res.status(500).json({
         success: false,
         message: 'İş kaydı oluşturulurken hata oluştu'
@@ -211,15 +304,19 @@ router.post('/upload-and-process', auth, upload.single('image'), async (req: Req
       prompt: dynamicPrompt
     });
 
-    // Send GET request to external webhook with proper parameters
-    const webhookUrl = new URL('https://1qe4j72v.rpcld.net/webhook/cd11e789-5e4e-4dda-a86e-e1204e036c82');
-    webhookUrl.searchParams.append('imageUrl', originalImageUrl || '');
-    webhookUrl.searchParams.append('category', categoryType);
-    webhookUrl.searchParams.append('style', style);
-    webhookUrl.searchParams.append('prompt', dynamicPrompt);
-    webhookUrl.searchParams.append('userId', userId);
+    // Send GET request to external webhook with query parameters
+    const webhookBaseUrl = 'https://1qe4j72v.rpcld.net/webhook/cd11e789-5e4e-4dda-a86e-e1204e036c82';
+    const webhookParams = new URLSearchParams({
+      imageUrl: originalImageUrl || '',
+      category: categoryType,
+      style: style,
+      prompt: dynamicPrompt,
+      userId: userId,
+      jobId: imageJob.id.toString()
+    });
+    const webhookUrl = `${webhookBaseUrl}?${webhookParams.toString()}`;
     
-    fetch(webhookUrl.toString(), {
+    fetch(webhookUrl, {
       method: 'GET'
     }).then(response => {
       console.log('✅ [UPLOAD DEBUG] External webhook request completed:', {
@@ -250,14 +347,28 @@ router.post('/upload-and-process', auth, upload.single('image'), async (req: Req
       message: 'Görsel yüklendi ve işleme başlandı'
     });
   } catch (error) {
-    console.error('Upload and process error:', error);
+    console.error('❌ [UPLOAD-AND-PROCESS] CRITICAL ERROR:', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : 'No stack trace',
+      userId: (req as any).userId,
+      body: req.body,
+      file: req.file ? {
+        name: req.file.originalname,
+        size: req.file.size,
+        mimetype: req.file.mimetype
+      } : 'No file',
+      timestamp: new Date().toISOString()
+    });
+    
     res.status(500).json({
       success: false,
-      message: 'Sunucu hatası'
+      message: 'Sunucu hatası',
+      error: process.env.NODE_ENV === 'development' ? (error instanceof Error ? error.message : 'Unknown error') : undefined,
+      timestamp: new Date().toISOString()
     });
     return;
   }
-});
+}
 
 // Generate dynamic prompt based on category and style
 const generatePrompt = (category: string, style: string): string => {
@@ -358,15 +469,23 @@ router.get('/webhook-test', async (req: Request, res: Response): Promise<void> =
     const { imageUrl } = req.query;
     console.log('🧪 [WEBHOOK TEST] Test isteği alındı', { imageUrl });
     
-    const webhookUrl = new URL('https://1qe4j72v.rpcld.net/webhook-test/cd11e789-5e4e-4dda-a86e-e1204e036c82');
-    if (imageUrl && typeof imageUrl === 'string') {
-      webhookUrl.searchParams.append('imageUrl', imageUrl);
-    }
+    const webhookUrl = 'https://1qe4j72v.rpcld.net/webhook/cd11e789-5e4e-4dda-a86e-e1204e036c82';
+    const webhookData = {
+      imageUrl: imageUrl || '',
+      category: 'test',
+      style: 'test',
+      prompt: 'Test webhook request',
+      userId: 'test-user'
+    };
     
-    console.log('🚀 [WEBHOOK TEST] Harici webhook\'a GET isteği gönderiliyor:', webhookUrl.toString());
+    console.log('🚀 [WEBHOOK TEST] Harici webhook\'a POST isteği gönderiliyor:', webhookUrl);
     
-    const response = await fetch(webhookUrl.toString(), {
-      method: 'GET'
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(webhookData)
     });
     
     const responseText = await response.text();

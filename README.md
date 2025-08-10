@@ -16,21 +16,62 @@ Bu proje, AI tabanlı resim işleme platformudur. React + TypeScript + Vite fron
 npm install
 ```
 
+## 🚀 Hızlı Başlangıç
+
+### 1. Environment Ayarlama
+
+```bash
+# Local development için
+npm run env:local
+
+# Production için
+npm run env:production
+
+# Environment yardımı
+npm run env:help
+```
+
+### 2. Development Server Başlatma
+
+```bash
+# Local development (önerilen)
+npm run dev:local
+
+# Production mode development
+npm run dev:prod
+```
+
 ## Geliştirme
+
+### Environment Management
+
+Proje artık hem local hem production ortamında çalışacak şekilde yapılandırılmıştır:
+
+- **Local Development**: `http://localhost:3001` (API) ve `http://localhost:5173` (Frontend)
+- **Production**: Sunucu IP'si veya domain kullanır
 
 ### Frontend ve Backend'i Ayrı Ayrı Çalıştırma
 
 ```bash
-# Frontend (port 5173)
-npm run dev
+# Local development
+npm run client:dev:local  # Frontend (port 5173)
+npm run server:dev:local  # Backend (port 3001)
 
-# Backend (port 3000)
-npm run dev:api
+# Production mode
+npm run client:dev:prod   # Frontend (production mode)
+npm run server:dev:prod   # Backend (production mode)
 ```
 
 ### Her İkisini Birlikte Çalıştırma
 
 ```bash
+# Local development (önerilen)
+npm run dev:local
+
+# Production mode
+npm run dev:prod
+
+# Eski yöntem (hala çalışır)
 npm run dev:full
 ```
 
@@ -64,6 +105,52 @@ n8n HTTP Request node'unuzda:
 Webhook test sayfasını kullanarak callback endpoint'inizi test edebilirsiniz:
 `http://localhost:5173/webhook-test`
 
+## Environment Variables
+
+Proje aşağıdaki environment dosyalarını kullanır:
+
+- `.env.local` - Local development ayarları
+- `.env.production` - Production ayarları
+- `.env.example` - Örnek environment dosyası
+
+### Gerekli Environment Variables
+
+```bash
+# API Configuration
+NODE_ENV=development|production
+API_BASE_URL=http://localhost:3001
+FRONTEND_URL=http://localhost:5173
+
+# Supabase Configuration
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+
+# AI Services
+FAL_API_KEY=your_fal_api_key
+
+# n8n Integration
+N8N_WEBHOOK_URL=your_n8n_webhook_url
+```
+
+## 📦 Production Deployment
+
+Detaylı deployment rehberi için `DEPLOYMENT.md` dosyasına bakın.
+
+### Hızlı Production Build
+
+```bash
+# Environment ayarla
+npm run env:production
+
+# Build
+npm run build:prod
+npm run build:api
+
+# Production'da çalıştır
+npm run start:prod
+```
+
 ## API Endpoints
 
 - `POST /api/images/upload` - Resim yükleme
@@ -77,6 +164,7 @@ Webhook test sayfasını kullanarak callback endpoint'inizi test edebilirsiniz:
 - **AI**: Fal.media API
 - **Workflow**: n8n
 - **Tunneling**: Localtunnel
+- **Environment Management**: cross-env, dotenv
 
 Currently, two official plugins are available:
 

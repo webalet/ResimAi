@@ -1,5 +1,7 @@
 # TODO:
 
-- [x] update-tsconfig-json: api/tsconfig.json dosyasını kullanıcının önerdiği yapılandırmayla güncelle - include kısmında '../shared/**/*.ts' düzeltmesi ile (priority: High)
-- [x] test-typescript-compilation: Yeni tsconfig.json ile TypeScript derlemesini test et (priority: Medium)
-- [ ] commit-tsconfig-changes: Güncellenmiş tsconfig.json dosyasını GitHub'a yükle (**IN PROGRESS**) (priority: High)
+- [ ] check-running-processes: Çalışan Node.js process'lerini kontrol et ve port 3001'i kullanan process'i bul (**IN PROGRESS**) (priority: High)
+- [ ] stop-conflicting-process: Port 3001'i kullanan çakışan process'i sonlandır (priority: High)
+- [ ] restart-single-api: Sadece bir API sunucusu çalıştır (npm run start:api) (priority: High)
+- [ ] verify-frontend-api-connection: Frontend'in API'ye düzgün bağlandığını doğrula (priority: High)
+- [ ] test-upload-functionality: Upload işlemini test et ve HTTP 500 hatasının çözüldüğünü doğrula (priority: High)

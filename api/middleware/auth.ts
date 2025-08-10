@@ -10,6 +10,8 @@ interface JwtPayload {
 }
 
 export const auth = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  console.log('🔐 [AUTH] Middleware called for:', req.method, req.url);
+  console.log('🔐 [AUTH] Authorization header:', req.headers.authorization ? 'Bearer ***' : 'None');
   try {
     const authHeader = req.headers.authorization;
     

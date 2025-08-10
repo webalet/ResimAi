@@ -13,8 +13,19 @@ import { dirname } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Load environment variables
-dotenv.config();
+// Load environment variables based on NODE_ENV
+const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env.local';
+dotenv.config({ path: envFile });
+
+// Fallback to default .env if specific env file doesn't exist
+if (!process.env.SUPABASE_URL) {
+  dotenv.config();
+}
+
+console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+console.log(`📁 Config file: ${envFile}`);
+console.log(`🔗 API Base URL: ${process.env.API_BASE_URL}`);
+console.log(`🎯 Frontend URL: ${process.env.FRONTEND_URL}`);
 
 // Import routes
 import authRoutes from './routes/auth.js';
@@ -48,10 +59,27 @@ app.use(helmet({
   },
 }));
 
-// CORS configuration
-const allowedOrigins = process.env.NODE_ENV === 'production' 
-  ? [process.env.FRONTEND_URL, 'http://64.226.75.76:5173', 'http://64.226.75.76:3001'].filter((origin): origin is string => Boolean(origin))
-  : ['http://localhost:5173', 'http://localhost:3000'];
+// CORS configuration - Environment based
+const getAllowedOrigins = () => {
+  const baseOrigins = [];
+  
+  if (process.env.NODE_ENV === 'production') {
+    // Production origins
+    if (process.env.FRONTEND_URL) baseOrigins.push(process.env.FRONTEND_URL);
+    if (process.env.API_BASE_URL) baseOrigins.push(process.env.API_BASE_URL);
+    baseOrigins.push('http://64.226.75.76:5173', 'http://64.226.75.76:3001');
+  } else {
+    // Development origins
+    baseOrigins.push('http://localhost:5173', 'http://localhost:3000', 'http://localhost:5174');
+    if (process.env.FRONTEND_URL) baseOrigins.push(process.env.FRONTEND_URL);
+    if (process.env.API_BASE_URL) baseOrigins.push(process.env.API_BASE_URL);
+  }
+  
+  return [...new Set(baseOrigins)].filter((origin): origin is string => Boolean(origin));
+};
+
+const allowedOrigins = getAllowedOrigins();
+console.log('🔒 Allowed CORS origins:', allowedOrigins);
 
 app.use(cors({
   origin: allowedOrigins,

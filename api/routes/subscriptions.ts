@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import Stripe from 'stripe';
-import { supabase } from '../config/supabase';
-import { auth } from '../middleware/auth';
+import { supabase } from '../config/supabase.js';
+import { auth } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -33,7 +33,7 @@ const PLANS = {
 };
 
 // Get available plans
-router.get('/plans', async (req: Request, res: Response) => {
+router.get('/plans', async (req: Request, res: Response): Promise<void> => {
   try {
     const plans = Object.entries(PLANS).map(([id, plan]) => ({
       id,
@@ -54,7 +54,7 @@ router.get('/plans', async (req: Request, res: Response) => {
 });
 
 // Get current subscription
-router.get('/current', auth, async (req: Request, res: Response) => {
+router.get('/current', auth, async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = (req as any).userId;
 
@@ -67,19 +67,20 @@ router.get('/current', auth, async (req: Request, res: Response) => {
 
     if (error && error.code !== 'PGRST116') { // PGRST116 is "not found" error
       console.error('Subscription fetch error:', error);
-      return res.status(500).json({
+      res.status(500).json({
         success: false,
         message: 'Abonelik bilgileri yüklenirken hata oluştu'
       });
+      return;
     }
 
-    return res.json({
+    res.json({
       success: true,
       data: subscription || null
     });
   } catch (error) {
     console.error('Get current subscription error:', error);
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       message: 'Sunucu hatası'
     });
@@ -87,16 +88,17 @@ router.get('/current', auth, async (req: Request, res: Response) => {
 });
 
 // Create subscription
-router.post('/create', auth, async (req: Request, res: Response) => {
+router.post('/create', auth, async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = (req as any).userId;
     const { planId } = req.body;
 
     if (!planId || !PLANS[planId as keyof typeof PLANS]) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         message: 'Geçersiz plan ID'
       });
+      return;
     }
 
     // Get user info
@@ -107,10 +109,11 @@ router.post('/create', auth, async (req: Request, res: Response) => {
       .single();
 
     if (userError || !user) {
-      return res.status(404).json({
+      res.status(404).json({
         success: false,
         message: 'Kullanıcı bulunamadı'
       });
+      return;
     }
 
     // Check if user already has an active subscription
@@ -122,10 +125,11 @@ router.post('/create', auth, async (req: Request, res: Response) => {
       .single();
 
     if (existingSubscription) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         message: 'Zaten aktif bir aboneliğiniz var'
       });
+      return;
     }
 
     const plan = PLANS[planId as keyof typeof PLANS];
@@ -180,7 +184,7 @@ router.post('/create', auth, async (req: Request, res: Response) => {
       }
     });
 
-    return res.json({
+    res.json({
       success: true,
       data: {
         checkout_url: session.url
@@ -188,7 +192,7 @@ router.post('/create', auth, async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Create subscription error:', error);
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       message: 'Abonelik oluşturulurken hata oluştu'
     });
@@ -196,7 +200,7 @@ router.post('/create', auth, async (req: Request, res: Response) => {
 });
 
 // Cancel subscription
-router.post('/cancel', auth, async (req: Request, res: Response) => {
+router.post('/cancel', auth, async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = (req as any).userId;
 
@@ -209,10 +213,11 @@ router.post('/cancel', auth, async (req: Request, res: Response) => {
       .single();
 
     if (error || !subscription) {
-      return res.status(404).json({
+      res.status(404).json({
         success: false,
         message: 'Aktif abonelik bulunamadı'
       });
+      return;
     }
 
     // Cancel subscription in Stripe
@@ -230,13 +235,13 @@ router.post('/cancel', auth, async (req: Request, res: Response) => {
       .eq('user_id', userId)
       .eq('status', 'active');
 
-    return res.json({
+    res.json({
       success: true,
       message: 'Abonelik iptal edildi'
     });
   } catch (error) {
     console.error('Cancel subscription error:', error);
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       message: 'Abonelik iptal edilirken hata oluştu'
     });
@@ -244,13 +249,14 @@ router.post('/cancel', auth, async (req: Request, res: Response) => {
 });
 
 // Stripe webhook handler
-router.post('/webhook', async (req: Request, res: Response) => {
+router.post('/webhook', async (req: Request, res: Response): Promise<void> => {
   const sig = req.headers['stripe-signature'] as string;
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
   if (!webhookSecret) {
     console.error('Stripe webhook secret not configured');
-    return res.status(400).send('Webhook secret not configured');
+    res.status(400).send('Webhook secret not configured');
+    return;
   }
 
   let event: Stripe.Event;
@@ -259,7 +265,8 @@ router.post('/webhook', async (req: Request, res: Response) => {
     event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
   } catch (err: any) {
     console.error('Webhook signature verification failed:', err.message);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
+    res.status(400).send(`Webhook Error: ${err.message}`);
+    return;
   }
 
   try {
@@ -399,48 +406,15 @@ router.post('/webhook', async (req: Request, res: Response) => {
         console.log(`Unhandled event type: ${event.type}`);
     }
 
-    return res.json({ received: true });
+    res.json({ received: true });
   } catch (error) {
     console.error('Webhook handler error:', error);
-    return res.status(500).json({ error: 'Webhook handler failed' });
-  }
-});
-
-// Get user credits
-router.get('/credits', auth, async (req: Request, res: Response) => {
-  try {
-    const userId = (req as any).userId;
-
-    const { data: user, error } = await supabase
-      .from('users')
-      .select('credits')
-      .eq('id', userId)
-      .single();
-
-    if (error || !user) {
-      return res.status(404).json({
-        success: false,
-        message: 'Kullanıcı bulunamadı'
-      });
-    }
-
-    return res.json({
-      success: true,
-      data: {
-        remaining_credits: user.credits
-      }
-    });
-  } catch (error) {
-    console.error('Get credits error:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Sunucu hatası'
-    });
+    res.status(500).json({ error: 'Webhook handler failed' });
   }
 });
 
 // Get subscription history
-router.get('/history', auth, async (req: Request, res: Response) => {
+router.get('/history', auth, async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = (req as any).userId;
 
@@ -452,19 +426,20 @@ router.get('/history', auth, async (req: Request, res: Response) => {
 
     if (error) {
       console.error('Subscription history fetch error:', error);
-      return res.status(500).json({
+      res.status(500).json({
         success: false,
         message: 'Abonelik geçmişi yüklenirken hata oluştu'
       });
+      return;
     }
 
-    return res.json({
+    res.json({
       success: true,
       data: subscriptions || []
     });
   } catch (error) {
     console.error('Get subscription history error:', error);
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       message: 'Sunucu hatası'
     });
@@ -472,7 +447,7 @@ router.get('/history', auth, async (req: Request, res: Response) => {
 });
 
 // Get payment history
-router.get('/payments', auth, async (req: Request, res: Response) => {
+router.get('/payments', auth, async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = (req as any).userId;
 
@@ -484,19 +459,21 @@ router.get('/payments', auth, async (req: Request, res: Response) => {
 
     if (error) {
       console.error('Payment history fetch error:', error);
-      return res.status(500).json({
+      res.status(500).json({
         success: false,
         message: 'Ödeme geçmişi yüklenirken hata oluştu'
       });
+      return;
     }
 
-    return res.json({
+    res.json({
       success: true,
       data: payments || []
     });
+    return;
   } catch (error) {
     console.error('Get payment history error:', error);
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       message: 'Sunucu hatası'
     });

@@ -7,6 +7,24 @@ export default defineConfig(({ command, mode }) => {
   // Load env file based on `mode` in the current working directory.
   const env = loadEnv(mode, process.cwd(), '')
   
+  // Determine API URL based on environment
+  const getApiUrl = () => {
+    if (env.VITE_API_URL) {
+      return env.VITE_API_URL;
+    }
+    
+    // Default URLs based on mode
+    if (mode === 'development') {
+      return 'http://127.0.0.1:3001';
+    } else if (mode === 'production') {
+      return 'http://64.226.75.76:3001';
+    }
+    
+    return 'http://127.0.0.1:3001';
+  };
+  
+  const apiUrl = getApiUrl();
+  
   return {
   plugins: [
     react({
@@ -20,12 +38,13 @@ export default defineConfig(({ command, mode }) => {
     tsconfigPaths(),
   ],
   define: {
-    __VITE_API_URL__: JSON.stringify(env.VITE_API_URL || 'http://64.226.75.76:3001')
+    __VITE_API_URL__: JSON.stringify(apiUrl)
   },
   server: {
+    host: '127.0.0.1', // Force IPv4
     proxy: {
       '/api': {
-        target: env.VITE_API_URL || 'http://localhost:3001',
+        target: 'http://127.0.0.1:3001', // Force IPv4 target
         changeOrigin: true,
         secure: false,
         configure: (proxy, _options) => {
