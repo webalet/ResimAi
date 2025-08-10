@@ -1,4 +1,4 @@
-import { supabase } from '../config/supabase.ts';
+import { supabase } from '../config/supabase.js';
 
 /**
  * Upload file to Supabase Storage

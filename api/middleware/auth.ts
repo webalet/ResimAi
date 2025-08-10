@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { supabase } from '../config/supabase.ts';
+import { supabase } from '../config/supabase.js';
 
 interface JwtPayload {
   userId: string;

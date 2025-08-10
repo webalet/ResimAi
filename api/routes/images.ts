@@ -1,9 +1,9 @@
 import { Router, Request, Response } from 'express';
 import multer from 'multer';
 import fetch from 'node-fetch';
-import { supabase } from '../config/supabase.ts';
-import { auth } from '../middleware/auth.ts';
-import { uploadToSupabase, deleteFromSupabase } from '../utils/storage.ts';
+import { supabase } from '../config/supabase.js';
+import { auth } from '../middleware/auth.js';
+import { uploadToSupabase, deleteFromSupabase } from '../utils/storage.js';
 
 const router = Router();
 
