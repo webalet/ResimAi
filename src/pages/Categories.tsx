@@ -219,7 +219,8 @@ const Categories: React.FC = () => {
         style: uploadState.selectedStyle
       });
       
-      const response = await fetch('/api/images/upload-and-process', {
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
+      const response = await fetch(`${API_BASE_URL}/api/images/upload-and-process`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
