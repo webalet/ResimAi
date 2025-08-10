@@ -1251,6 +1251,15 @@ router.delete('/jobs/:jobId', auth, async (req: Request, res: Response): Promise
   }
 });
 
+// Handle OPTIONS preflight requests for proxy endpoint
+router.options('/proxy', (req: Request, res: Response): void => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  res.setHeader('Access-Control-Max-Age', '86400'); // 24 hours
+  res.status(200).end();
+});
+
 // Proxy endpoint to hide external image sources
 router.get('/proxy', async (req: Request, res: Response): Promise<void> => {
   try {
@@ -1292,10 +1301,13 @@ router.get('/proxy', async (req: Request, res: Response): Promise<void> => {
     // Get content type from response headers
     const contentType = response.headers.get('content-type') || 'image/jpeg';
     
-    // Set appropriate headers
+    // Set comprehensive CORS and caching headers
     res.setHeader('Content-Type', contentType);
     res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
     res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
     
     // Stream the image data
     response.body?.pipe(res);
