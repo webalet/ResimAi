@@ -9,7 +9,6 @@
     "rootDir": "..",
     "strict": true,
     "esModuleInterop": true,
-
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
@@ -43,8 +42,7 @@
   },
   "include": [
     "**/*.ts",
-    "**/*.js",
-    "../shared/**/*.ts"
+    "**/*.js"
   ],
   "exclude": [
     "node_modules",
