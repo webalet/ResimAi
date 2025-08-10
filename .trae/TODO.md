@@ -1,6 +1,7 @@
 # TODO:
 
-- [x] fix-typescript-errors: subscriptions.ts dosyasındaki 7 adet 'Not all code paths return a value' hatasını düzelt (priority: High)
-- [x] build-api-server: API'yi derle ve dist/api/server.js dosyasının oluşturulduğunu kontrol et (priority: High)
-- [x] commit-to-github: Düzeltmeleri GitHub'a yükle (priority: High)
-- [x] provide-server-commands: Kullanıcıya sunucu komutlarını ver (priority: Medium)
+- [x] verify-dist-structure: dist/api klasör yapısını kontrol et ve config dosyalarının doğru yerde olduğunu doğrula (priority: Medium)
+- [ ] check-supabase-import-paths: API'deki supabase config import yollarını kontrol et - subscriptions.js'de hata alıyor (**IN PROGRESS**) (priority: High)
+- [ ] fix-module-import-error: '/var/www/ResimAi/api/dist/config/supabase' module bulunamıyor hatasını düzelt (priority: High)
+- [ ] fix-tsconfig-paths: api/tsconfig.json'daki rootDir ve outDir ayarlarını düzelt - çift api klasörü oluşturuyor (priority: High)
+- [ ] test-api-after-fix: Import hatalarını düzelttikten sonra API'nin çalıştığını test et (priority: Medium)
