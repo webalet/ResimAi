@@ -1,20 +1,29 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { toast } from 'sonner';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
+
+// Debug log for API URL
+console.log('🔧 API Configuration:', {
+  VITE_API_URL: import.meta.env.VITE_API_URL,
+  API_BASE_URL,
+  mode: import.meta.env.MODE,
+  dev: import.meta.env.DEV
+});
 
 class ApiClient {
   private client: AxiosInstance;
 
   constructor() {
     this.client = axios.create({
-      baseURL: API_BASE_URL,
+      baseURL: `${API_BASE_URL}/api`,
       timeout: 30000,
       headers: {
         'Content-Type': 'application/json',
       },
     });
 
+    console.log('🚀 ApiClient initialized with baseURL:', `${API_BASE_URL}/api`);
     this.setupInterceptors();
   }
 
