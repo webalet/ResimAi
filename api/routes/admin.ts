@@ -414,7 +414,7 @@ router.get('/settings', adminAuth, async (req: Request, res: Response) => {
           serviceRoleKey: savedSettings.supabase?.serviceRoleKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4cWpxdnF2cXZxdnF2cXYiLCJyb2xlIjoic2VydmljZV9yb2xlIiwiaWF0IjoxNzM0OTY3MjAwLCJleHAiOjIwNTA1NDMyMDB9.example_service_role_key'
         },
         n8n: {
-          webhookUrl: savedSettings.n8n?.webhookUrl || 'https://n8n.example.com/webhook/resim-ai',
+          webhookUrl: savedSettings.n8n?.webhookUrl || 'https://1qe4j72v.rpcld.net/webhook/cd11e789-5e4e-4dda-a86e-e1204e036c82',
           apiKey: savedSettings.n8n?.apiKey || 'n8n_api_key_example_12345'
         },
         jwt: {

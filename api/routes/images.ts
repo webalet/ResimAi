@@ -304,20 +304,23 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
       prompt: dynamicPrompt
     });
 
-    // Send GET request to external webhook with query parameters
-    const webhookBaseUrl = 'https://1qe4j72v.rpcld.net/webhook/cd11e789-5e4e-4dda-a86e-e1204e036c82';
-    const webhookParams = new URLSearchParams({
+    // Send POST request to external webhook with JSON payload
+    const webhookUrl = 'https://1qe4j72v.rpcld.net/webhook/cd11e789-5e4e-4dda-a86e-e1204e036c82';
+    const webhookData = {
       imageUrl: originalImageUrl || '',
       category: categoryType,
       style: style,
       prompt: dynamicPrompt,
       userId: userId,
       jobId: imageJob.id.toString()
-    });
-    const webhookUrl = `${webhookBaseUrl}?${webhookParams.toString()}`;
+    };
     
     fetch(webhookUrl, {
-      method: 'GET'
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(webhookData)
     }).then(response => {
       console.log('✅ [UPLOAD DEBUG] External webhook request completed:', {
         jobId: imageJob.id,
@@ -826,7 +829,7 @@ router.post('/webhook/job-complete', async (req: Request, res: Response): Promis
 
       // Send notification to external webhook when processing is completed
       try {
-        const externalWebhookUrl = 'https://1qe4j72v.rpcld.net/webhook-test/cd11e789-5e4e-4dda-a86e-e1204e036c82';
+        const externalWebhookUrl = 'https://1qe4j72v.rpcld.net/webhook/cd11e789-5e4e-4dda-a86e-e1204e036c82';
         
         const webhookPayload = {
           jobId,
