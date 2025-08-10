@@ -10,7 +10,7 @@ import {
   SubscriptionCreateResponse
 } from '../../shared/types';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://trae43o03swd.vercel.app';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
 
 // Create axios instance
 const api = axios.create({

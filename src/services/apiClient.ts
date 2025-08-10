@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { toast } from 'sonner';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://trae43o03swd.vercel.app/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001/api';
 
 class ApiClient {
   private client: AxiosInstance;
