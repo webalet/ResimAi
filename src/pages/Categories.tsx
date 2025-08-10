@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ArrowRight, Sparkles, Upload as UploadIcon, Image as ImageIcon, X, Check, AlertCircle } from 'lucide-react';
 import { Category } from '../../shared/types';
 import LoadingSpinner from '../components/LoadingSpinner';
+import ProcessedImageResult from '../components/ProcessedImageResult';
 import { toast } from 'sonner';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -29,6 +30,8 @@ const Categories: React.FC = () => {
     isUploading: false,
     isDragOver: false
   });
+  const [showResult, setShowResult] = useState(false);
+  const [currentJobId, setCurrentJobId] = useState<string | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { user } = useAuth();
@@ -262,6 +265,10 @@ const Categories: React.FC = () => {
         throw new Error('Sunucu geçersiz yanıt döndürdü (JSON parse hatası)');
       }
       toast.success('Fotoğraf başarıyla işlendi!');
+      
+      // Set job ID and show result modal
+      setCurrentJobId(result.data?.id || null);
+      setShowResult(true);
       
       // Reset form
       setUploadState({
@@ -515,6 +522,18 @@ const Categories: React.FC = () => {
 
   // Default category selection view
   return (
+    <>
+      {/* ProcessedImageResult Modal */}
+      {showResult && currentJobId && (
+        <ProcessedImageResult
+          jobId={currentJobId}
+          onClose={() => {
+            setShowResult(false);
+            setCurrentJobId(null);
+          }}
+        />
+      )}
+      
     <div className="space-y-6">
       {/* Header */}
       <div className="text-center">
@@ -610,6 +629,7 @@ const Categories: React.FC = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

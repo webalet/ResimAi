@@ -1000,4 +1000,149 @@ router.post('/callback', async (req: Request, res: Response): Promise<void> => {
   }
 });
 
+// N8n result callback endpoint - handles the specific format from n8n workflow
+router.post('/n8n-result', async (req: Request, res: Response): Promise<void> => {
+  console.log('🎯 [N8N-RESULT] Received result from n8n workflow:', {
+    body: req.body,
+    headers: req.headers,
+    timestamp: new Date().toISOString()
+  });
+
+  try {
+    // Extract jobId from query parameters or headers
+    const jobId = req.query.jobId || req.headers['x-job-id'];
+    const resultData = req.body;
+
+    console.log('📋 [N8N-RESULT] Parsed n8n result data:', {
+      jobId,
+      resultData
+    });
+
+    if (!jobId) {
+      console.error('❌ [N8N-RESULT] Missing jobId in request');
+      res.status(400).json({
+        success: false,
+        message: 'Job ID gereklidir'
+      });
+      return;
+    }
+
+    // Parse n8n result format: [{ "images": [{ "url": "...", "width": 880, "height": 1184 }], "prompt": "..." }]
+    let processedImageUrl = null;
+    let imageWidth = null;
+    let imageHeight = null;
+    let prompt = null;
+
+    if (Array.isArray(resultData) && resultData.length > 0) {
+      const firstResult = resultData[0];
+      if (firstResult.images && Array.isArray(firstResult.images) && firstResult.images.length > 0) {
+        const firstImage = firstResult.images[0];
+        processedImageUrl = firstImage.url;
+        imageWidth = firstImage.width;
+        imageHeight = firstImage.height;
+        prompt = firstResult.prompt;
+      }
+    }
+
+    console.log('🖼️ [N8N-RESULT] Extracted image data:', {
+      processedImageUrl,
+      imageWidth,
+      imageHeight,
+      prompt
+    });
+
+    if (!processedImageUrl) {
+      console.error('❌ [N8N-RESULT] No processed image URL found in n8n result');
+      
+      // Update job status to failed
+      await supabase
+        .from('image_jobs')
+        .update({
+          status: 'failed',
+          error_message: 'N8n sonucunda işlenmiş görsel bulunamadı',
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', jobId);
+
+      res.status(400).json({
+        success: false,
+        message: 'İşlenmiş görsel bulunamadı'
+      });
+      return;
+    }
+
+    // Update job status to completed
+    console.log('💾 [N8N-RESULT] Updating job status to completed:', { jobId });
+    
+    const { error: updateError } = await supabase
+      .from('image_jobs')
+      .update({
+        status: 'completed',
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', jobId);
+
+    if (updateError) {
+      console.error('❌ [N8N-RESULT] Job update error:', updateError);
+      res.status(500).json({
+        success: false,
+        message: 'İş durumu güncellenirken hata oluştu'
+      });
+      return;
+    }
+
+    console.log('✅ [N8N-RESULT] Job status updated successfully');
+
+    // Save processed image
+    console.log('🖼️ [N8N-RESULT] Saving processed image:', {
+      jobId,
+      processedImageUrl,
+      imageWidth,
+      imageHeight
+    });
+
+    const { error: imageError } = await supabase
+      .from('processed_images')
+      .insert({
+        job_id: jobId,
+        image_url: processedImageUrl,
+        width: imageWidth,
+        height: imageHeight,
+        prompt: prompt
+      });
+
+    if (imageError) {
+      console.error('❌ [N8N-RESULT] Processed image save error:', imageError);
+      res.status(500).json({
+        success: false,
+        message: 'İşlenmiş görsel kaydedilirken hata oluştu'
+      });
+      return;
+    }
+
+    console.log('✅ [N8N-RESULT] Processed image saved successfully');
+
+    res.json({
+      success: true,
+      message: 'N8n sonucu başarıyla işlendi',
+      data: {
+        jobId,
+        status: 'completed',
+        processedImageUrl,
+        imageWidth,
+        imageHeight,
+        prompt
+      }
+    });
+    return;
+  } catch (error: unknown) {
+    console.error('❌ [N8N-RESULT] N8n result processing error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Sunucu hatası'
+    });
+    return;
+  }
+});
+
 export default router;
