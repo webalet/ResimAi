@@ -135,9 +135,11 @@ if (process.env.NODE_ENV === 'production') {
   
   // Handle React Router - send all non-API requests to index.html
   app.get('*', (req, res) => {
+    // Only serve index.html for non-API routes
     if (!req.path.startsWith('/api/')) {
       res.sendFile(path.join(staticPath, 'index.html'));
     } else {
+      // For API routes that don't exist, return 404 JSON
       res.status(404).json({ error: 'API endpoint not found' });
     }
   });
