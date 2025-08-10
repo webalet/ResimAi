@@ -304,23 +304,19 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
       prompt: dynamicPrompt
     });
 
-    // Send POST request to external webhook with JSON payload
+    // Send GET request to external webhook with query parameters
     const webhookUrl = 'https://1qe4j72v.rpcld.net/webhook/cd11e789-5e4e-4dda-a86e-e1204e036c82';
-    const webhookData = {
+    const webhookParams = new URLSearchParams({
       imageUrl: originalImageUrl || '',
       category: categoryType,
       style: style,
       prompt: dynamicPrompt,
       userId: userId,
       jobId: imageJob.id.toString()
-    };
+    });
     
-    fetch(webhookUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(webhookData)
+    fetch(`${webhookUrl}?${webhookParams.toString()}`, {
+      method: 'GET'
     }).then(response => {
       console.log('✅ [UPLOAD DEBUG] External webhook request completed:', {
         jobId: imageJob.id,
@@ -481,14 +477,18 @@ router.get('/webhook-test', async (req: Request, res: Response): Promise<void> =
       userId: 'test-user'
     };
     
-    console.log('🚀 [WEBHOOK TEST] Harici webhook\'a POST isteği gönderiliyor:', webhookUrl);
+    console.log('🚀 [WEBHOOK TEST] Harici webhook\'a GET isteği gönderiliyor:', webhookUrl);
     
-    const response = await fetch(webhookUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(webhookData)
+    const webhookParams = new URLSearchParams({
+      imageUrl: String(webhookData.imageUrl || ''),
+      category: String(webhookData.category),
+      style: String(webhookData.style),
+      prompt: String(webhookData.prompt),
+      userId: String(webhookData.userId)
+    });
+    
+    const response = await fetch(`${webhookUrl}?${webhookParams.toString()}`, {
+      method: 'GET'
     });
     
     const responseText = await response.text();
