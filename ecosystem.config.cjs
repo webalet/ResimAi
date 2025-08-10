@@ -4,7 +4,7 @@ module.exports = {
       name: 'resim-ai-api',
       script: 'api/server.ts',
       interpreter: 'node',
-      interpreter_args: '--loader tsx',
+      interpreter_args: '--import tsx/esm',
       instances: 1,
       autorestart: true,
       watch: false,
