@@ -1,0 +1,170 @@
+{
+  "name": "My workflow 3",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "38ab02a3-c5cf-4d40-b56f-5b3b7d6f1fd0",
+      "name": "Görsel Oluşturucu"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "f6731cd3-9890-4a51-a114-9a1e5a2e141f",
+      "name": "Durum"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        672,
+        0
+      ],
+      "id": "ab7d3e37-1b7d-449b-a2db-314eaa026086",
+      "name": "Wait",
+      "webhookId": "2670b458-f50e-4492-beb2-1ec709b111be"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1232,
+        -16
+      ],
+      "id": "23b335c9-16df-4fcd-a7d3-b09d8d465406",
+      "name": "Sonucu Al"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        912,
+        0
+      ],
+      "id": "798d1965-a4a7-4e33-814a-c6a8c032f05b",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -16,
+        0
+      ],
+      "id": "e25f9c9d-402c-4cdb-b1a9-c08b2073e02d",
+      "name": "Webhook",
+      "webhookId": "cd11e789-5e4e-4dda-a86e-e1204e036c82"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1472,
+        -16
+      ],
+      "id": "72f9f75e-e0be-4e9e-ac55-32578a68ee6c",
+      "name": "HTTP Request"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Görsel Oluşturucu": {
+      "main": [
+        [
+          {
+            "node": "Durum",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Durum": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sonucu Al": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Sonucu Al",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Durum",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Görsel Oluşturucu",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "29637b80-3161-47ba-8a76-6653759ee5b5",
+  "meta": {
+    "instanceId": "5ecd23462a5bfd3bdbe29bb08a7e1e22048f9c995c224703731a47c0abc0bdb6"
+  },
+  "id": "7tfUIn8vU4zJdaEz",
+  "tags": []
+}

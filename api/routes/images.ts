@@ -23,8 +23,64 @@ const upload = multer({
   }
 });
 
-// Upload and process image
+// Simple file upload endpoint (just upload file and return URL)
 router.post('/upload', auth, upload.single('image'), async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = (req as any).userId;
+    const file = req.file;
+
+    if (!file) {
+      res.status(400).json({
+        success: false,
+        error: 'Görsel dosyası gereklidir'
+      });
+      return;
+    }
+
+    console.log('📤 [UPLOAD] File upload request:', {
+      userId,
+      filename: file.originalname,
+      size: file.size,
+      mimetype: file.mimetype
+    });
+
+    // Just upload the file to storage without processing
+
+    // Upload image to Supabase Storage
+    const imagePath = `uploads/${userId}/${Date.now()}-${file.originalname}`;
+    const imageUrl = await uploadToSupabase(file.buffer, imagePath, file.mimetype);
+
+    if (!imageUrl) {
+      res.status(500).json({
+        success: false,
+        error: 'Görsel yüklenirken hata oluştu'
+      });
+      return;
+    }
+
+    console.log('✅ [UPLOAD] File uploaded successfully:', {
+      userId,
+      imageUrl: imageUrl.substring(0, 50) + '...'
+    });
+
+    // Return the uploaded image URL
+    res.status(200).json({
+      success: true,
+      url: imageUrl,
+      message: 'Görsel başarıyla yüklendi'
+    });
+  } catch (error) {
+    console.error('❌ [UPLOAD] Upload error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Sunucu hatası'
+    });
+    return;
+  }
+});
+
+// Upload and process image (original endpoint renamed)
+router.post('/upload-and-process', auth, upload.single('image'), async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = (req as any).userId;
     const { categoryType, style } = req.body;
@@ -186,7 +242,7 @@ router.post('/upload', auth, upload.single('image'), async (req: Request, res: R
       message: 'Görsel yüklendi ve işleme başlandı'
     });
   } catch (error) {
-    console.error('Upload error:', error);
+    console.error('Upload and process error:', error);
     res.status(500).json({
       success: false,
       message: 'Sunucu hatası'
@@ -264,7 +320,7 @@ router.post('/process', auth, async (req: Request, res: Response): Promise<void>
     });
     
     // Send GET request to external webhook with query parameters including dynamic prompt
-    const webhookUrl = new URL('https://1qe4j72v.rpcld.net/webhook-test/cd11e789-5e4e-4dda-a86e-e1204e036c82');
+    const webhookUrl = new URL('https://1qe4j72v.rpcld.net/webhook/cd11e789-5e4e-4dda-a86e-e1204e036c82');
     webhookUrl.searchParams.append('imageUrl', imageUrl);
     webhookUrl.searchParams.append('category', category);
     webhookUrl.searchParams.append('style', style);
