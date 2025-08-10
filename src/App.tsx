@@ -84,11 +84,31 @@ export default function App() {
           
           {/* Admin routes */}
           <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/users" element={<AdminUsers />} />
-          <Route path="/admin/jobs" element={<AdminJobs />} />
-          <Route path="/admin/analytics" element={<AdminAnalytics />} />
-          <Route path="/admin/settings" element={<AdminSettings />} />
+          <Route path="/admin" element={
+            <ProtectedRoute requireAdmin={true}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/users" element={
+            <ProtectedRoute requireAdmin={true}>
+              <AdminUsers />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/jobs" element={
+            <ProtectedRoute requireAdmin={true}>
+              <AdminJobs />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/analytics" element={
+            <ProtectedRoute requireAdmin={true}>
+              <AdminAnalytics />
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/settings" element={
+            <ProtectedRoute requireAdmin={true}>
+              <AdminSettings />
+            </ProtectedRoute>
+          } />
           
           {/* 404 */}
           <Route path="*" element={

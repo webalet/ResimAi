@@ -37,6 +37,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const checkAuthStatus = async () => {
     try {
       const token = localStorage.getItem('token');
+      const adminToken = localStorage.getItem('adminToken');
+      
+      if (adminToken) {
+        // Check admin token validity
+        try {
+          const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
+          const response = await fetch(`${API_BASE_URL}/api/admin/stats`, {
+            headers: {
+              'Authorization': `Bearer ${adminToken}`
+            }
+          });
+          
+          if (response.ok) {
+            // Create admin user object
+            setUser({
+              id: 'admin',
+              name: 'Admin',
+              email: 'admin@resim.ai',
+              credits: 0,
+              is_admin: true,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            });
+            return;
+          } else {
+            localStorage.removeItem('adminToken');
+          }
+        } catch (error) {
+          localStorage.removeItem('adminToken');
+        }
+      }
+      
       if (token) {
         const userData = await authService.getCurrentUser();
         setUser(userData);
@@ -128,6 +160,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = async () => {
     try {
       localStorage.removeItem('token');
+      localStorage.removeItem('adminToken');
       setUser(null);
       toast.success('Başarıyla çıkış yapıldı');
     } catch (error: any) {
