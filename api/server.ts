@@ -17,15 +17,15 @@ const __dirname = dirname(__filename);
 dotenv.config();
 
 // Import routes
-import authRoutes from './routes/auth.js';
-import categoriesRoutes from './routes/categories.js';
-import imagesRoutes from './routes/images.js';
-import subscriptionsRoutes from './routes/subscriptions.js';
-import adminRoutes from './routes/admin.js';
+import authRoutes from './routes/auth.ts';
+import categoriesRoutes from './routes/categories.ts';
+import imagesRoutes from './routes/images.ts';
+import subscriptionsRoutes from './routes/subscriptions.ts';
+import adminRoutes from './routes/admin.ts';
 
 // Import middleware
-import { auth, optionalAuth } from './middleware/auth.js';
-import { adminLogin } from './middleware/adminAuth.js';
+import { auth, optionalAuth } from './middleware/auth.ts';
+import { adminLogin } from './middleware/adminAuth.ts';
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '3001', 10);

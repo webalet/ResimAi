@@ -3,8 +3,8 @@ import bcrypt from 'bcryptjs';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
-import { supabase } from '../config/supabase.js';
-import { adminAuth } from '../middleware/adminAuth.js';
+import { supabase } from '../config/supabase.ts';
+import { adminAuth } from '../middleware/adminAuth.ts';
 
 const router = Router();
 
