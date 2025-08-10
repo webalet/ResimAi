@@ -150,18 +150,36 @@ export interface Database {
           id: string;
           job_id: string;
           image_url: string;
+          thumbnail_url: string | null;
+          format: string | null;
+          width: number | null;
+          height: number | null;
+          file_size: number | null;
+          prompt: string | null;
           created_at: string;
         };
         Insert: {
           id?: string;
           job_id: string;
           image_url: string;
+          thumbnail_url?: string | null;
+          format?: string | null;
+          width?: number | null;
+          height?: number | null;
+          file_size?: number | null;
+          prompt?: string | null;
           created_at?: string;
         };
         Update: {
           id?: string;
           job_id?: string;
           image_url?: string;
+          thumbnail_url?: string | null;
+          format?: string | null;
+          width?: number | null;
+          height?: number | null;
+          file_size?: number | null;
+          prompt?: string | null;
           created_at?: string;
         };
       };

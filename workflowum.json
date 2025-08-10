@@ -2,7 +2,57 @@
   "name": "My workflow 3",
   "nodes": [
     {
-      "parameters": {},
+      "parameters": {
+        "method": "POST",
+        "url": "=https://queue.fal.run/fal-ai/flux-pro/kontext",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Key eb020624-43ba-431b-adc7-9335842304e3:759be7ee30b01b5d33e3c82d1d940efd"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "prompt",
+              "value": "={{ $json.query.prompt }}"
+            },
+            {
+              "name": "image_url",
+              "value": "={{ $json.query.imageUrl }}"
+            },
+            {
+              "name": "guidance_scale",
+              "value": "3.5"
+            },
+            {
+              "name": "num_images",
+              "value": "1"
+            },
+            {
+              "name": "output_format",
+              "value": "jpeg"
+            },
+            {
+              "name": "safety_tolerance",
+              "value": "2"
+            },
+            {
+              "name": "seed",
+              "value": "12345"
+            },
+            {
+              "name": "sync_mode",
+              "value": "false"
+            }
+          ]
+        },
+        "options": {}
+      },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
@@ -13,7 +63,19 @@
       "name": "Görsel Oluşturucu"
     },
     {
-      "parameters": {},
+      "parameters": {
+        "url": "=https://queue.fal.run/fal-ai/flux-pro/requests/{{ $json.request_id }}/status",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Key eb020624-43ba-431b-adc7-9335842304e3:759be7ee30b01b5d33e3c82d1d940efd"
+            }
+          ]
+        },
+        "options": {}
+      },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
@@ -36,7 +98,19 @@
       "webhookId": "2670b458-f50e-4492-beb2-1ec709b111be"
     },
     {
-      "parameters": {},
+      "parameters": {
+        "url": "=https://queue.fal.run/fal-ai/flux-pro/requests/{{ $json.request_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Key eb020624-43ba-431b-adc7-9335842304e3:759be7ee30b01b5d33e3c82d1d940efd"
+            }
+          ]
+        },
+        "options": {}
+      },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
@@ -47,7 +121,30 @@
       "name": "Sonucu Al"
     },
     {
-      "parameters": {},
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "fb932bb5-c5f5-4ebd-bb3b-8e6d908929d2",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "COMPLETED",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
@@ -58,7 +155,10 @@
       "name": "If"
     },
     {
-      "parameters": {},
+      "parameters": {
+        "path": "cd11e789-5e4e-4dda-a86e-e1204e036c82",
+        "options": {}
+      },
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
@@ -70,7 +170,14 @@
       "webhookId": "cd11e789-5e4e-4dda-a86e-e1204e036c82"
     },
     {
-      "parameters": {},
+      "parameters": {
+        "method": "POST",
+        "url": "=http://64.226.75.76:3001/api/images/n8n-result",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"originalImageUrl\": \"{{$('Webhook').item.json.query.imageUrl}}\",\n  \"processedImageUrl\": \"{{$json.images[0].url}}\", \n  \"userId\": \"{{$('Durum').item.json.request_id}}\",\n  \"status\": \"{{$('Durum').item.json.status}}\"\n}\n\n",
+        "options": {}
+      },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
@@ -161,7 +268,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "29637b80-3161-47ba-8a76-6653759ee5b5",
+  "versionId": "dec11e81-0e21-4d6f-a4ae-f31e1a7f29d5",
   "meta": {
     "instanceId": "5ecd23462a5bfd3bdbe29bb08a7e1e22048f9c995c224703731a47c0abc0bdb6"
   },
