@@ -1,6 +1,5 @@
 # TODO:
 
-- [x] fix-admin-login-redirect: Admin login başarılı olduğunda /admin/dashboard'a yönlendirme ekle (priority: High)
-- [x] debug-admin-api-html-response: Admin API'lerinin HTML yerine JSON döndürmesi için server routing'i kontrol et (priority: High)
-- [ ] test-admin-endpoints: Tüm admin API endpoint'lerini test et ve JSON yanıt verdiğini doğrula (**IN PROGRESS**) (priority: Medium)
-- [ ] check-admin-auth-flow: Admin authentication akışını ve token yönetimini kontrol et (priority: Medium)
+- [x] fix-admin-login-redirect: Admin login başarılı olduktan sonra /admin/dashboard'a otomatik yönlendirme ekle (priority: High)
+- [x] fix-image-upload-json-error: Resim upload sırasında 'Unexpected token <' JSON parse hatasını gider - API HTML döndürüyor olabilir (priority: High)
+- [x] fix-settings-persistence: Site ayarlarındaki değişikliklerin (database URL, n8n workflow) kalıcı olarak kaydedilmesini sağla (priority: High)

@@ -137,6 +137,10 @@ app.use('/api/*', (req, res) => {
   });
 });
 
+// Serve public images directory
+const publicPath = path.join(__dirname, '../public');
+app.use('/images', express.static(path.join(publicPath, 'images')));
+
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
   const staticPath = path.join(__dirname, '../dist');

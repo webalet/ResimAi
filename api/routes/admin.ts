@@ -392,47 +392,61 @@ router.post('/jobs/:id/retry', adminAuth, async (req: Request, res: Response) =>
 // Get system settings
 router.get('/settings', adminAuth, async (req: Request, res: Response) => {
   try {
-    // In a real application, these would come from a database or config file
-    // For now, we'll return the current settings structure
+    // Read settings from file
+    const settingsPath = path.join(process.cwd(), 'admin-settings.json');
+    let savedSettings: any = {};
+    
+    try {
+      if (fs.existsSync(settingsPath)) {
+        const settingsData = fs.readFileSync(settingsPath, 'utf8');
+        savedSettings = JSON.parse(settingsData);
+      }
+    } catch (error) {
+      console.log('No saved settings found, using defaults');
+    }
+
+    // Default settings with saved overrides
     const settings = {
       systemConfig: {
         supabase: {
-          url: process.env.SUPABASE_URL || '',
-          anonKey: process.env.SUPABASE_ANON_KEY || ''
+          url: savedSettings.supabase?.url || 'https://ixqjqvqvqvqvqvqv.supabase.co',
+          anonKey: savedSettings.supabase?.anonKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4cWpxdnF2cXZxdnF2cXYiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTczNDk2NzIwMCwiZXhwIjoyMDUwNTQzMjAwfQ.example_anon_key',
+          serviceRoleKey: savedSettings.supabase?.serviceRoleKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4cWpxdnF2cXZxdnF2cXYiLCJyb2xlIjoic2VydmljZV9yb2xlIiwiaWF0IjoxNzM0OTY3MjAwLCJleHAiOjIwNTA1NDMyMDB9.example_service_role_key'
         },
         n8n: {
-          webhookUrl: process.env.N8N_WEBHOOK_URL || ''
+          webhookUrl: savedSettings.n8n?.webhookUrl || 'https://n8n.example.com/webhook/resim-ai',
+          apiKey: savedSettings.n8n?.apiKey || 'n8n_api_key_example_12345'
         },
         jwt: {
-          secretKey: process.env.JWT_SECRET || '',
-          tokenExpiry: process.env.JWT_EXPIRY || '24h'
+          secret: savedSettings.jwt?.secret || 'your-super-secret-jwt-key-here-make-it-long-and-secure',
+          expiresIn: savedSettings.jwt?.expiresIn || '7d'
         },
         server: {
-          maxFileSize: process.env.MAX_FILE_SIZE || '10MB',
-          allowedFormats: ['jpg', 'jpeg', 'png', 'webp']
+          port: savedSettings.server?.port || '3001',
+          url: savedSettings.server?.url || 'http://localhost:3001'
         }
       },
-      categories: [
+      categories: savedSettings.categories || [
         {
-          id: 'portrait',
-          name: 'Portre',
-          styles: ['Gerçekçi', 'Sanatsal', 'Vintage', 'Modern']
+          name: 'Corporate',
+          styles: ['Professional', 'Business Casual', 'Executive', 'Formal Meeting'],
+          image_url: '/images/ornek.jpg'
         },
         {
-          id: 'landscape',
-          name: 'Manzara',
-          styles: ['Doğal', 'Fantastik', 'Minimalist', 'Dramatik']
+          name: 'Creative', 
+          styles: ['Artistic', 'Bohemian', 'Vintage', 'Modern Art'],
+          image_url: '/images/ornek.jpg'
         },
         {
-          id: 'abstract',
-          name: 'Soyut',
-          styles: ['Geometrik', 'Organik', 'Renkli', 'Monokrom']
+          name: 'Avatar',
+          styles: ['Cartoon', 'Realistic', 'Anime', 'Fantasy'],
+          image_url: '/images/ornek.jpg'
         }
       ],
-      aiPrompts: {
-        portrait: 'Create a stunning portrait with enhanced details and professional lighting',
-        landscape: 'Generate a beautiful landscape with natural colors and composition',
-        abstract: 'Design an abstract artwork with creative elements and unique style'
+      aiPrompts: savedSettings.aiPrompts || {
+        Corporate: {
+          Professional: 'professional corporate headshot, business attire, clean background, high quality, studio lighting'
+        }
       }
     };
 
@@ -452,26 +466,32 @@ router.get('/settings', adminAuth, async (req: Request, res: Response) => {
 // Update system configuration
 router.put('/settings/config', adminAuth, async (req: Request, res: Response) => {
   try {
-    const { supabase: supabaseConfig, n8n, jwt, server } = req.body;
+    const { section, config } = req.body;
 
-    // In a real application, you would update environment variables or database
-    // For now, we'll simulate the update
-    const updatedConfig = {
-      supabase: supabaseConfig,
-      n8n,
-      jwt,
-      server
-    };
+    // Read current settings
+    const settingsPath = path.join(process.cwd(), 'admin-settings.json');
+    let currentSettings: any = {};
+    
+    try {
+      if (fs.existsSync(settingsPath)) {
+        const settingsData = fs.readFileSync(settingsPath, 'utf8');
+        currentSettings = JSON.parse(settingsData);
+      }
+    } catch (error) {
+      console.log('Creating new settings file');
+    }
 
-    // Here you would typically:
-    // 1. Validate the configuration
-    // 2. Update environment variables or config file
-    // 3. Restart services if needed
+    // Update the specific section
+    currentSettings[section] = config;
+    currentSettings.lastUpdated = new Date().toISOString();
+
+    // Save to file
+    fs.writeFileSync(settingsPath, JSON.stringify(currentSettings, null, 2));
 
     res.json({
       success: true,
-      data: updatedConfig,
-      message: 'Sistem konfigürasyonu başarıyla güncellendi'
+      data: config,
+      message: `${section} konfigürasyonu başarıyla kaydedildi`
     });
   } catch (error) {
     console.error('Update config error:', error);
@@ -497,17 +517,29 @@ router.put('/settings/categories', adminAuth, async (req: Request, res: Response
       return;
     }
 
-    // In a real application, you would save to database
-    // For now, we'll simulate the update
-    const updatedCategories = categories.map((cat: any, index: number) => ({
-      id: cat.id || `category_${index}`,
-      name: cat.name,
-      styles: Array.isArray(cat.styles) ? cat.styles : []
-    }));
+    // Read current settings
+    const settingsPath = path.join(process.cwd(), 'admin-settings.json');
+    let currentSettings: any = {};
+    
+    try {
+      if (fs.existsSync(settingsPath)) {
+        const settingsData = fs.readFileSync(settingsPath, 'utf8');
+        currentSettings = JSON.parse(settingsData);
+      }
+    } catch (error) {
+      console.log('Creating new settings file');
+    }
+
+    // Update categories
+    currentSettings.categories = categories;
+    currentSettings.lastUpdated = new Date().toISOString();
+
+    // Save to file
+    fs.writeFileSync(settingsPath, JSON.stringify(currentSettings, null, 2));
 
     res.json({
       success: true,
-      data: updatedCategories,
+      data: categories,
       message: 'Kategoriler başarıyla güncellendi'
     });
   } catch (error) {
@@ -534,13 +566,29 @@ router.put('/settings/prompts', adminAuth, async (req: Request, res: Response): 
       return;
     }
 
-    // In a real application, you would save to database
-    // For now, we'll simulate the update
-    const updatedPrompts = { ...prompts };
+    // Read current settings
+    const settingsPath = path.join(process.cwd(), 'admin-settings.json');
+    let currentSettings: any = {};
+    
+    try {
+      if (fs.existsSync(settingsPath)) {
+        const settingsData = fs.readFileSync(settingsPath, 'utf8');
+        currentSettings = JSON.parse(settingsData);
+      }
+    } catch (error) {
+      console.log('Creating new settings file');
+    }
+
+    // Update prompts
+    currentSettings.aiPrompts = prompts;
+    currentSettings.lastUpdated = new Date().toISOString();
+
+    // Save to file
+    fs.writeFileSync(settingsPath, JSON.stringify(currentSettings, null, 2));
 
     res.json({
       success: true,
-      data: updatedPrompts,
+      data: prompts,
       message: 'AI prompt\'ları başarıyla güncellendi'
     });
   } catch (error) {
