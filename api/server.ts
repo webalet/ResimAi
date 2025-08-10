@@ -128,6 +128,15 @@ app.use('/api/admin', adminRoutes);
 // Admin login endpoint
 app.post('/api/admin/login', adminLogin);
 
+// Handle 404 for API routes first
+app.use('/api/*', (req, res) => {
+  res.status(404).json({
+    error: 'API endpoint not found',
+    path: req.path,
+    method: req.method
+  });
+});
+
 // Serve static files in production
 if (process.env.NODE_ENV === 'production') {
   const staticPath = path.join(__dirname, '../dist');
@@ -135,13 +144,7 @@ if (process.env.NODE_ENV === 'production') {
   
   // Handle React Router - send all non-API requests to index.html
   app.get('*', (req, res) => {
-    // Only serve index.html for non-API routes
-    if (!req.path.startsWith('/api/')) {
-      res.sendFile(path.join(staticPath, 'index.html'));
-    } else {
-      // For API routes that don't exist, return 404 JSON
-      res.status(404).json({ error: 'API endpoint not found' });
-    }
+    res.sendFile(path.join(staticPath, 'index.html'));
   });
 }
 
@@ -165,14 +168,7 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   });
 });
 
-// Handle 404 for API routes
-app.use('/api/*', (req, res) => {
-  res.status(404).json({
-    error: 'API endpoint not found',
-    path: req.path,
-    method: req.method
-  });
-});
+
 
 // Graceful shutdown
 process.on('SIGTERM', () => {

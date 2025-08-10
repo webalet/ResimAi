@@ -242,7 +242,8 @@ const AdminSettings = () => {
         return;
       }
 
-      const response = await fetch('/api/admin/settings/config', {
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
+      const response = await fetch(`${API_BASE_URL}/api/admin/settings/config`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -281,8 +282,9 @@ const AdminSettings = () => {
       }
 
       // Save both categories and prompts
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
       const [categoriesResponse, promptsResponse] = await Promise.all([
-        fetch('/api/admin/settings/categories', {
+        fetch(`${API_BASE_URL}/api/admin/settings/categories`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -290,7 +292,7 @@ const AdminSettings = () => {
           },
           body: JSON.stringify({ categories })
         }),
-        fetch('/api/admin/settings/prompts', {
+        fetch(`${API_BASE_URL}/api/admin/settings/prompts`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -335,7 +337,8 @@ const AdminSettings = () => {
         return;
       }
 
-      const response = await fetch('/api/admin/settings/prompts', {
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
+      const response = await fetch(`${API_BASE_URL}/api/admin/settings/prompts`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -389,8 +392,9 @@ const AdminSettings = () => {
       formData.append('image', file);
       formData.append('type', 'category');
 
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
       const token = localStorage.getItem('adminToken');
-      const response = await fetch('/api/admin/upload-image', {
+      const response = await fetch(`${API_BASE_URL}/api/admin/upload-image`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`

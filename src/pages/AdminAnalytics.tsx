@@ -69,8 +69,9 @@ const AdminAnalytics: React.FC = () => {
       }
 
       // Hem analytics hem de stats verilerini al
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
       const [analyticsResponse, statsResponse] = await Promise.all([
-        fetch(`/api/admin/analytics?${new URLSearchParams({
+        fetch(`${API_BASE_URL}/api/admin/analytics?${new URLSearchParams({
           startDate: dateRange.startDate,
           endDate: dateRange.endDate
         })}`, {
@@ -79,7 +80,7 @@ const AdminAnalytics: React.FC = () => {
             'Content-Type': 'application/json'
           }
         }),
-        fetch('/api/admin/stats', {
+        fetch(`${API_BASE_URL}/api/admin/stats`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -150,7 +151,8 @@ const AdminAnalytics: React.FC = () => {
         format: 'csv'
       });
 
-      const response = await fetch(`/api/admin/analytics/export?${params}`, {
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
+      const response = await fetch(`${API_BASE_URL}/api/admin/analytics/export?${params}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }

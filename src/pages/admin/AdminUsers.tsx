@@ -54,7 +54,8 @@ const AdminUsers: React.FC = () => {
         ...(searchTerm && { search: searchTerm })
       });
 
-      const response = await fetch(`/api/admin/users?${params}`, {
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
+      const response = await fetch(`${API_BASE_URL}/api/admin/users?${params}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

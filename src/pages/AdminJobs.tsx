@@ -66,7 +66,8 @@ const AdminJobs: React.FC = () => {
         ...(categoryFilter !== 'all' && { category: categoryFilter })
       });
 
-      const response = await fetch(`/api/admin/jobs?${params}`, {
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
+      const response = await fetch(`${API_BASE_URL}/api/admin/jobs?${params}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -126,7 +127,8 @@ const AdminJobs: React.FC = () => {
         return;
       }
 
-      const response = await fetch(`/api/admin/jobs/${jobId}/retry`, {
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
+      const response = await fetch(`${API_BASE_URL}/api/admin/jobs/${jobId}/retry`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

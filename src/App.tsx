@@ -89,6 +89,11 @@ export default function App() {
               <AdminDashboard />
             </ProtectedRoute>
           } />
+          <Route path="/admin/dashboard" element={
+            <ProtectedRoute requireAdmin={true}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          } />
           <Route path="/admin/users" element={
             <ProtectedRoute requireAdmin={true}>
               <AdminUsers />

@@ -42,7 +42,7 @@ const AdminLogin: React.FC = () => {
       if (data.success) {
         localStorage.setItem('adminToken', data.data.token);
         toast.success('Admin girişi başarılı');
-        navigate('/admin');
+        navigate('/admin/dashboard');
       } else {
         toast.error(data.message || 'Giriş başarısız');
       }
