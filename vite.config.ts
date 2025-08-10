@@ -17,7 +17,8 @@ export default defineConfig(({ command, mode }) => {
     if (mode === 'development') {
       return 'http://127.0.0.1:3001';
     } else if (mode === 'production') {
-      return ''; // Use same domain, let Nginx handle routing
+      // In production, use the environment variable or fallback to server IP
+      return env.VITE_API_URL || 'http://64.226.75.76:3001';
     }
     
     return 'http://127.0.0.1:3001';
