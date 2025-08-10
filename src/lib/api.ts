@@ -12,14 +12,6 @@ import {
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
 
-// Debug log for API URL
-console.log('📡 lib/api.ts Configuration:', {
-  VITE_API_URL: import.meta.env.VITE_API_URL,
-  API_BASE_URL,
-  finalURL: `${API_BASE_URL}/api`,
-  mode: import.meta.env.MODE
-});
-
 // Create axios instance
 const api = axios.create({
   baseURL: `${API_BASE_URL}/api`,

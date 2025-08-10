@@ -146,7 +146,7 @@ const Home: React.FC = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center">
                     <img 
-                      src="https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=casual%20person%20selfie%20photo%20natural%20lighting%20smartphone%20quality%20everyday%20clothes&image_size=square" 
+                      src="https://via.placeholder.com/300x300/6366f1/ffffff?text=Orijinal" 
                       alt="Orijinal Fotoğraf" 
                       className="w-full h-48 object-cover rounded-lg mb-2"
                     />
@@ -154,7 +154,7 @@ const Home: React.FC = () => {
                   </div>
                   <div className="text-center">
                     <img 
-                      src="https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20corporate%20headshot%20business%20suit%20studio%20lighting%20confident%20executive%20portrait&image_size=square" 
+                      src="https://via.placeholder.com/300x300/8b5cf6/ffffff?text=Kurumsal" 
                       alt="AI İşlenmiş Kurumsal" 
                       className="w-full h-48 object-cover rounded-lg mb-2"
                     />
@@ -171,7 +171,7 @@ const Home: React.FC = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center">
                     <img 
-                      src="https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=simple%20portrait%20photo%20plain%20background%20natural%20expression%20basic%20lighting&image_size=square" 
+                      src="https://via.placeholder.com/300x300/6366f1/ffffff?text=Orijinal" 
                       alt="Orijinal Fotoğraf" 
                       className="w-full h-48 object-cover rounded-lg mb-2"
                     />
@@ -179,7 +179,7 @@ const Home: React.FC = () => {
                   </div>
                   <div className="text-center">
                     <img 
-                      src="https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=artistic%20creative%20portrait%20dramatic%20lighting%20colorful%20background%20artistic%20style%20vibrant&image_size=square" 
+                      src="https://via.placeholder.com/300x300/10b981/ffffff?text=Yaratici" 
                       alt="AI İşlenmiş Yaratıcı" 
                       className="w-full h-48 object-cover rounded-lg mb-2"
                     />
@@ -196,7 +196,7 @@ const Home: React.FC = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center">
                     <img 
-                      src="https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=regular%20person%20photo%20normal%20clothes%20simple%20background%20realistic%20portrait&image_size=square" 
+                      src="https://via.placeholder.com/300x300/6366f1/ffffff?text=Orijinal" 
                       alt="Orijinal Fotoğraf" 
                       className="w-full h-48 object-cover rounded-lg mb-2"
                     />
@@ -204,7 +204,7 @@ const Home: React.FC = () => {
                   </div>
                   <div className="text-center">
                     <img 
-                      src="https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=digital%20avatar%20stylized%20portrait%20modern%20digital%20art%20clean%20vector%20style%20professional&image_size=square" 
+                      src="https://via.placeholder.com/300x300/6366f1/ffffff?text=Avatar" 
                       alt="AI İşlenmiş Avatar" 
                       className="w-full h-48 object-cover rounded-lg mb-2"
                     />
@@ -221,7 +221,7 @@ const Home: React.FC = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center">
                     <img 
-                      src="https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=person%20wearing%20casual%20t-shirt%20jeans%20simple%20pose%20neutral%20background&image_size=square" 
+                      src="https://via.placeholder.com/300x300/6366f1/ffffff?text=Orijinal" 
                       alt="Orijinal Fotoğraf" 
                       className="w-full h-48 object-cover rounded-lg mb-2"
                     />
@@ -229,7 +229,7 @@ const Home: React.FC = () => {
                   </div>
                   <div className="text-center">
                     <img 
-                      src="https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=same%20person%20wearing%20elegant%20formal%20dress%20professional%20attire%20sophisticated%20style&image_size=square" 
+                      src="https://via.placeholder.com/300x300/f97316/ffffff?text=Elbise" 
                       alt="AI İşlenmiş Elbise" 
                       className="w-full h-48 object-cover rounded-lg mb-2"
                     />
@@ -246,7 +246,7 @@ const Home: React.FC = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center">
                     <img 
-                      src="https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=person%20portrait%20messy%20room%20background%20cluttered%20space%20casual%20setting&image_size=square" 
+                      src="https://via.placeholder.com/300x300/6366f1/ffffff?text=Orijinal" 
                       alt="Orijinal Fotoğraf" 
                       className="w-full h-48 object-cover rounded-lg mb-2"
                     />
@@ -254,7 +254,7 @@ const Home: React.FC = () => {
                   </div>
                   <div className="text-center">
                     <img 
-                      src="https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=same%20person%20portrait%20beautiful%20office%20background%20professional%20clean%20modern%20workspace&image_size=square" 
+                      src="https://via.placeholder.com/300x300/14b8a6/ffffff?text=Arkaplan" 
                       alt="AI İşlenmiş Arkaplan" 
                       className="w-full h-48 object-cover rounded-lg mb-2"
                     />
@@ -271,7 +271,7 @@ const Home: React.FC = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center">
                     <img 
-                      src="https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=close%20up%20portrait%20natural%20skin%20texture%20realistic%20face%20unretouched%20photo&image_size=square" 
+                      src="https://via.placeholder.com/300x300/6366f1/ffffff?text=Orijinal" 
                       alt="Orijinal Fotoğraf" 
                       className="w-full h-48 object-cover rounded-lg mb-2"
                     />
@@ -279,7 +279,7 @@ const Home: React.FC = () => {
                   </div>
                   <div className="text-center">
                     <img 
-                      src="https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=same%20portrait%20smooth%20flawless%20skin%20professional%20retouching%20natural%20beauty%20enhancement&image_size=square" 
+                      src="https://via.placeholder.com/300x300/ec4899/ffffff?text=Cilt" 
                       alt="AI İşlenmiş Cilt" 
                       className="w-full h-48 object-cover rounded-lg mb-2"
                     />

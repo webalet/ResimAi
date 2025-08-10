@@ -1,6 +1,6 @@
 # TODO:
 
-- [x] check-frontend-api-config: Frontend'de API URL konfigürasyonunu kontrol et ve debug log'ları ekle (priority: High)
-- [x] fix-vite-env-variables: Vite environment variable'larının doğru yüklendiğinden emin ol (priority: High)
-- [ ] rebuild-frontend: Frontend'i yeniden build et ve PM2'de restart et (**IN PROGRESS**) (priority: High)
-- [ ] test-login-functionality: Login işlevselliğini test et (priority: Medium)
+- [x] remove-debug-logs: Console'da çıkan debug log'larını kaldır (API Configuration, ApiClient initialized, lib/api.ts Configuration) (priority: High)
+- [x] remove-trae-badge: vite.config.ts'deki traeBadgePlugin'i kaldır (priority: High)
+- [x] clean-trae-references: Sitedeki Trae ile alakalı tüm reklam banner'ları ve referansları kaldır (priority: High)
+- [ ] push-changes: Değişiklikleri GitHub'a push et (**IN PROGRESS**) (priority: Medium)
