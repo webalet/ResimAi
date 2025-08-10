@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Settings, Key, Database, Webhook, Code, Edit2, Save, X, Plus, Trash2, ChevronDown, ChevronUp, Upload, Image } from 'lucide-react';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { toast } from 'sonner';
@@ -6,15 +6,17 @@ import { toast } from 'sonner';
 type ValidationErrors = Record<string, string>;
 
 const AdminSettings = () => {
+  // Loading state
+  const [loading, setLoading] = useState(true);
   // State for editable configuration
   const [systemConfig, setSystemConfig] = useState({
     supabase: {
-      url: 'https://ixqjqvqvqvqvqvqv.supabase.co',
-      anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4cWpxdnF2cXZxdnF2cXYiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTczNDk2NzIwMCwiZXhwIjoyMDUwNTQzMjAwfQ.example_anon_key',
-      serviceRoleKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4cWpxdnF2cXZxdnF2cXYiLCJyb2xlIjoic2VydmljZV9yb2xlIiwiaWF0IjoxNzM0OTY3MjAwLCJleHAiOjIwNTA1NDMyMDB9.example_service_role_key'
+      url: 'https://pfpaeiyshitndugrzmmb.supabase.co',
+      anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmcGFlaXlzaGl0bmR1Z3J6bW1iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ2NzM0MTAsImV4cCI6MjA3MDI0OTQxMH0.CZzstaQmMmEdA1PVntBskuzdqHKe6_ovVSLfYFkD23E',
+      serviceRoleKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmcGFlaXlzaGl0bmR1Z3J6bW1iIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NDY3MzQxMCwiZXhwIjoyMDcwMjQ5NDEwfQ.ZZdQIiHsHJm43fPoRNGYjPAzXztkckmV2e27LmnnRiY'
     },
     n8n: {
-      webhookUrl: 'https://n8n.example.com/webhook/resim-ai',
+      webhookUrl: 'https://1qe4j72v.rpcld.net/webhook/cd11e789-5e4e-4dda-a86e-e1204e036c82',
       apiKey: 'n8n_api_key_example_12345'
     },
     jwt: {
@@ -83,6 +85,49 @@ const AdminSettings = () => {
 
   // File input refs for image uploads
   const fileInputRefs = useRef({});
+
+  // Load settings on component mount
+  useEffect(() => {
+    loadSettings();
+  }, []);
+
+  const loadSettings = async () => {
+    try {
+      setLoading(true);
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
+      const response = await fetch(`${API_BASE_URL}/api/admin/settings`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+        }
+      });
+
+      const data = await response.json();
+      
+      if (data.success && data.data) {
+        // Update system config
+        if (data.data.systemConfig) {
+          setSystemConfig(data.data.systemConfig);
+        }
+        
+        // Update categories
+        if (data.data.categories) {
+          setCategories(data.data.categories);
+        }
+        
+        // Update AI prompts
+        if (data.data.aiPrompts) {
+          setAiPrompts(data.data.aiPrompts);
+        }
+      }
+    } catch (error) {
+      console.error('Load settings error:', error);
+      toast.error('Ayarlar yüklenirken hata oluştu');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // State for editable AI prompts
   const [aiPrompts, setAiPrompts] = useState({
@@ -467,6 +512,19 @@ const AdminSettings = () => {
       }
     }));
   };
+
+  if (loading) {
+    return (
+      <AdminLayout>
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-600">Ayarlar yükleniyor...</p>
+          </div>
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>
