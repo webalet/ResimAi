@@ -570,7 +570,9 @@ router.get('/jobs', auth, async (req: Request, res: Response): Promise<void> => 
 
     res.json({
       success: true,
-      data: jobs || []
+      data: {
+        jobs: jobs || []
+      }
     });
   } catch (error) {
     console.error('Get jobs error:', error);
@@ -1027,19 +1029,33 @@ router.post('/n8n-result', async (req: Request, res: Response): Promise<void> =>
       return;
     }
 
-    // Parse n8n result format: [{ "images": [{ "url": "...", "width": 880, "height": 1184 }], "prompt": "..." }]
+    // Parse n8n result format - handle both old and new formats
     let processedImageUrl = null;
     let imageWidth = null;
     let imageHeight = null;
     let prompt = null;
 
-    if (Array.isArray(resultData) && resultData.length > 0) {
+    // Handle direct object format: { "images": "url", "width": 880, "height": 1184, "prompt": "..." }
+    if (resultData && typeof resultData === 'object' && !Array.isArray(resultData)) {
+      processedImageUrl = resultData.images || resultData.image_url || resultData.processedImageUrl;
+      imageWidth = resultData.width || resultData.imageWidth;
+      imageHeight = resultData.height || resultData.imageHeight;
+      prompt = resultData.prompt;
+    }
+    // Handle array format: [{ "images": [{ "url": "...", "width": 880, "height": 1184 }], "prompt": "..." }]
+    else if (Array.isArray(resultData) && resultData.length > 0) {
       const firstResult = resultData[0];
       if (firstResult.images && Array.isArray(firstResult.images) && firstResult.images.length > 0) {
         const firstImage = firstResult.images[0];
         processedImageUrl = firstImage.url;
         imageWidth = firstImage.width;
         imageHeight = firstImage.height;
+        prompt = firstResult.prompt;
+      } else if (firstResult.images && typeof firstResult.images === 'string') {
+        // Handle case where images is a direct URL string
+        processedImageUrl = firstResult.images;
+        imageWidth = firstResult.width;
+        imageHeight = firstResult.height;
         prompt = firstResult.prompt;
       }
     }

@@ -280,7 +280,7 @@ const Gallery: React.FC = () => {
                       })}
                     </p>
                     
-                    {job.status === 'completed' && job.processed_images.length > 0 && (
+                    {job.processed_images.length > 0 && (
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-600">
                           {job.processed_images.length} sonuç
@@ -347,7 +347,7 @@ const Gallery: React.FC = () => {
                       })}
                     </p>
                     
-                    {job.status === 'completed' && job.processed_images.length > 0 && (
+                    {job.processed_images.length > 0 && (
                       <p className="text-sm text-gray-600">
                         {job.processed_images.length} sonuç
                       </p>
@@ -360,7 +360,7 @@ const Gallery: React.FC = () => {
                     )}
                   </div>
                   
-                  {job.status === 'completed' && job.processed_images.length > 0 && (
+                  {job.processed_images.length > 0 && (
                     <div className="flex space-x-2 flex-shrink-0">
                       <button
                         onClick={() => setSelectedJob(job)}

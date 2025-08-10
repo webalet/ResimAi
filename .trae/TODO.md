@@ -1,7 +1,6 @@
 # TODO:
 
-- [x] 48: Examine workflowum.json to identify HTTP Request node configuration (priority: High)
-- [x] 49: Fix JSON formatting issue in HTTP Request node (priority: High)
-- [ ] 52: Update processed_images TypeScript type definition in supabase.ts to include missing columns (**IN PROGRESS**) (priority: High)
-- [ ] 51: Update workflowum.json with correct HTTP Request parameters (priority: High)
-- [ ] 50: Test the fixed n8n workflow (priority: Medium)
+- [x] 65: Investigate how the gallery page fetches processed images (priority: High)
+- [x] 66: Check if the processed image record was properly saved to the database (priority: High)
+- [x] 67: Fix the issue preventing processed images from appearing in the gallery (priority: High)
+- [ ] 68: Test the gallery to ensure processed images are displayed correctly (priority: Medium)
