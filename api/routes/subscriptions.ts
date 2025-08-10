@@ -77,12 +77,14 @@ router.get('/current', auth, async (req: Request, res: Response) => {
       success: true,
       data: subscription || null
     });
+    return;
   } catch (error) {
     console.error('Get current subscription error:', error);
     res.status(500).json({
       success: false,
       message: 'Sunucu hatası'
     });
+    return;
   }
 });
 
@@ -186,12 +188,14 @@ router.post('/create', auth, async (req: Request, res: Response) => {
         checkout_url: session.url
       }
     });
+    return;
   } catch (error) {
     console.error('Create subscription error:', error);
     res.status(500).json({
       success: false,
       message: 'Abonelik oluşturulurken hata oluştu'
     });
+    return;
   }
 });
 
@@ -234,12 +238,14 @@ router.post('/cancel', auth, async (req: Request, res: Response) => {
       success: true,
       message: 'Abonelik iptal edildi'
     });
+    return;
   } catch (error) {
     console.error('Cancel subscription error:', error);
     res.status(500).json({
       success: false,
       message: 'Abonelik iptal edilirken hata oluştu'
     });
+    return;
   }
 });
 
@@ -400,9 +406,11 @@ router.post('/webhook', async (req: Request, res: Response) => {
     }
 
     res.json({ received: true });
+    return;
   } catch (error) {
     console.error('Webhook handler error:', error);
     res.status(500).json({ error: 'Webhook handler failed' });
+    return;
   }
 });
 
@@ -430,12 +438,14 @@ router.get('/credits', auth, async (req: Request, res: Response) => {
         remaining_credits: user.credits
       }
     });
+    return;
   } catch (error) {
     console.error('Get credits error:', error);
     res.status(500).json({
       success: false,
       message: 'Sunucu hatası'
     });
+    return;
   }
 });
 
@@ -462,12 +472,14 @@ router.get('/history', auth, async (req: Request, res: Response) => {
       success: true,
       data: subscriptions || []
     });
+    return;
   } catch (error) {
     console.error('Get subscription history error:', error);
     res.status(500).json({
       success: false,
       message: 'Sunucu hatası'
     });
+    return;
   }
 });
 
@@ -494,12 +506,14 @@ router.get('/payments', auth, async (req: Request, res: Response) => {
       success: true,
       data: payments || []
     });
+    return;
   } catch (error) {
     console.error('Get payment history error:', error);
     res.status(500).json({
       success: false,
       message: 'Sunucu hatası'
     });
+    return;
   }
 });
 
