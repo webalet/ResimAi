@@ -1,8 +1,10 @@
 # TODO:
 
-- [x] api-build-completed: API build'i tamamlandı ve PM2 ile yeniden başlatıldı (priority: High)
-- [x] nginx-setup-completed: Nginx kuruldu ve konfigürasyon dosyası oluşturuldu (priority: High)
-- [x] update-vite-config: Vite konfigürasyonunda production API URL'sini düzelt (priority: Medium)
-- [ ] test-nginx-config: Nginx konfigürasyonunu test et ve servisi yeniden başlat (**IN PROGRESS**) (priority: High)
-- [ ] test-api-endpoints: API endpoint'lerinin çalışıp çalışmadığını test et (priority: High)
-- [ ] stop-frontend-pm2: Frontend PM2 sürecini durdur (artık Nginx kullanılacak) (priority: Medium)
+- [x] check-pm2-status: PM2 durumunu kontrol et ve API sunucusunun çalışıp çalışmadığını kontrol et (priority: High)
+- [x] restart-api-server: API sunucusunu yeniden başlat (priority: High)
+- [x] check-nginx-config-file: Nginx konfigürasyon dosyasını kontrol et - API istekleri 3001 portuna yönlendirilmiyor olabilir (priority: High)
+- [x] analyze-module-error: API module çözümleme hatasını analiz et - 'Cannot find module /var/www/ResimAi/api/dist/config/supabase' (priority: High)
+- [x] check-api-dist-structure: API dist klasör yapısını kontrol et ve eksik dosyaları tespit et (priority: High)
+- [x] rebuild-api: API'yi yeniden build et - path mapping sorunu olabilir (priority: High)
+- [x] test-local-api: Yerel API sunucusunu test et (priority: Medium)
+- [ ] provide-server-instructions: Sunucu için gerekli talimatları sağla (**IN PROGRESS**) (priority: Medium)
