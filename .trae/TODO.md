@@ -1,6 +1,6 @@
 # TODO:
 
-- [x] check-vercel-config: vercel.json dosyasını kontrol et ve API routing'ini düzelt (priority: High)
-- [x] fix-api-deployment: API'nin Vercel'de doğru deploy edilmesini sağla (priority: High)
-- [x] redeploy-to-vercel: Düzeltmelerden sonra Vercel'e tekrar deploy et (priority: Medium)
-- [ ] test-api-endpoints: API endpoint'lerinin çalıştığını test et (**IN PROGRESS**) (priority: Medium)
+- [x] fix-cors-middleware: API'de CORS middleware'ini düzelt ve production domain'ini (64.226.75.76:5173) whitelist'e ekle (priority: High)
+- [x] update-frontend-api-url: Frontend'deki API base URL'ini production sunucusuna göre ayarla (priority: High)
+- [ ] check-vercel-deployment: Vercel deployment'ını kontrol et ve API'nin düzgün çalıştığından emin ol (**IN PROGRESS**) (priority: Medium)
+- [ ] test-cors-fix: CORS düzeltmesi sonrası API endpoint'lerini test et (priority: Medium)
