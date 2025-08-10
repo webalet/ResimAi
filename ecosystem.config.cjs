@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: 'resim-ai-api',
-      script: 'api/dist/server.js',
+      script: 'api/dist/api/server.js',
       interpreter: 'node',
       instances: 1,
       autorestart: true,
