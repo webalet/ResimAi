@@ -1,9 +1,6 @@
 # TODO:
 
-- [x] fix-upload-json-response: Upload endpoint'inin JSON response döndürmesini sağla - şu anda HTML döndürüyor (priority: High)
-- [x] fix-webhook-data-format: Webhook'a gönderilen veri formatını düzelt - browser headers yerine imageUrl, category, style, prompt, userId gönder (priority: High)
-- [x] note-production-server: ÖNEMLİ NOT: Bu bir PRODUCTION SERVER - yerel development değil, sürekli bunu hatırla (priority: High)
-- [x] commit-fixes-to-github: Yapılan düzeltmeleri GitHub'a commit et (priority: High)
-- [x] provide-server-commands: Kullanıcıya sunucuda çalıştırması gereken komutları ver (priority: High)
-- [x] fix-process-endpoint: Process endpoint'inin webhook çağrısını kaldır ve sadece JSON response döndür (priority: High)
-- [ ] test-upload-flow-after-fix: Düzeltmelerden sonra upload akışını test et (priority: Medium)
+- [x] fix-typescript-errors: subscriptions.ts dosyasındaki 7 adet 'Not all code paths return a value' hatasını düzelt (priority: High)
+- [x] build-api-server: API'yi derle ve dist/api/server.js dosyasının oluşturulduğunu kontrol et (priority: High)
+- [ ] commit-to-github: Düzeltmeleri GitHub'a yükle (**IN PROGRESS**) (priority: High)
+- [ ] provide-server-commands: Kullanıcıya sunucu komutlarını ver (priority: Medium)
