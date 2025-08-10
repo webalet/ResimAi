@@ -2,9 +2,8 @@ module.exports = {
   apps: [
     {
       name: 'resim-ai-api',
-      script: 'api/server.ts',
+      script: 'api/server.js',
       interpreter: 'node',
-      interpreter_args: '--import tsx/esm',
       instances: 1,
       autorestart: true,
       watch: false,
