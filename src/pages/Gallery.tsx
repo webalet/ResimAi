@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { Download, Eye, Clock, CheckCircle, XCircle, RefreshCw, Filter, Grid, List } from 'lucide-react';
+import { Download, Eye, Clock, CheckCircle, XCircle, RefreshCw, Filter, Grid, List, Trash2 } from 'lucide-react';
 import { JobWithImages, Category } from '../../shared/types';
 import { useAuth } from '../contexts/AuthContext';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -93,6 +93,19 @@ const Gallery: React.FC = () => {
     return job.status === filterStatus;
   });
 
+  // Helper function to get proxied image URL
+  const getProxiedImageUrl = (originalUrl: string) => {
+    if (!originalUrl) return originalUrl;
+    
+    // If it's already our domain, return as is
+    if (originalUrl.includes(window.location.hostname) || originalUrl.startsWith('/')) {
+      return originalUrl;
+    }
+    
+    // Proxy external URLs through our server
+    return `/api/images/proxy?url=${encodeURIComponent(originalUrl)}`;
+  };
+
   const handleDownload = async (imageUrl: string, filename: string) => {
     try {
       const response = await fetch(imageUrl);
@@ -109,6 +122,31 @@ const Gallery: React.FC = () => {
     } catch (error) {
       console.error('Download failed:', error);
       toast.error('İndirme sırasında hata oluştu');
+    }
+  };
+
+  const handleDeleteJob = async (jobId: string) => {
+    if (!confirm('Bu işi ve tüm işlenmiş görselleri silmek istediğinizden emin misiniz?')) {
+      return;
+    }
+
+    try {
+      const response = await apiClient.delete(`/images/jobs/${jobId}`);
+      
+      if (response.data.success) {
+        toast.success('İş başarıyla silindi');
+        // Remove the job from local state
+        setJobs(prevJobs => prevJobs.filter(job => job.id !== jobId));
+        // Close modal if the deleted job was selected
+        if (selectedJob?.id === jobId) {
+          setSelectedJob(null);
+        }
+      } else {
+        toast.error(response.data.error || 'Silme işlemi başarısız');
+      }
+    } catch (error) {
+      console.error('Delete failed:', error);
+      toast.error('Silme sırasında hata oluştu');
     }
   };
 
@@ -248,7 +286,7 @@ const Gallery: React.FC = () => {
                 <>
                   <div className="aspect-square relative overflow-hidden rounded-t-xl">
                     <img
-                      src={job.processed_images.length > 0 ? job.processed_images[0].thumbnail_url || job.processed_images[0].image_url : job.original_image_url}
+                      src={getProxiedImageUrl(job.processed_images.length > 0 ? job.processed_images[0].thumbnail_url || job.processed_images[0].image_url : job.original_image_url)}
                       alt={`${job.category?.display_name_tr} - ${job.style}`}
                       className="w-full h-full object-cover"
                     />
@@ -303,6 +341,13 @@ const Gallery: React.FC = () => {
                           >
                             <Download className="h-4 w-4" />
                           </button>
+                          <button
+                            onClick={() => handleDeleteJob(job.id)}
+                            className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            title="Sil"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
                         </div>
                       </div>
                     )}
@@ -318,7 +363,7 @@ const Gallery: React.FC = () => {
                 <>
                   <div className="w-16 h-16 flex-shrink-0">
                     <img
-                      src={job.processed_images.length > 0 ? job.processed_images[0].thumbnail_url || job.processed_images[0].image_url : job.original_image_url}
+                      src={getProxiedImageUrl(job.processed_images.length > 0 ? job.processed_images[0].thumbnail_url || job.processed_images[0].image_url : job.original_image_url)}
                       alt={`${job.category?.display_name_tr} - ${job.style}`}
                       className="w-full h-full object-cover rounded-lg"
                     />
@@ -360,27 +405,36 @@ const Gallery: React.FC = () => {
                     )}
                   </div>
                   
-                  {job.processed_images.length > 0 && (
-                    <div className="flex space-x-2 flex-shrink-0">
-                      <button
-                        onClick={() => setSelectedJob(job)}
-                        className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
-                        title="Görüntüle"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDownload(
-                          job.processed_images[0].image_url,
-                          `${job.category?.name}_${job.style}_${job.id}.jpg`
-                        )}
-                        className="p-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                        title="İndir"
-                      >
-                        <Download className="h-4 w-4" />
-                      </button>
-                    </div>
-                  )}
+                  <div className="flex space-x-2 flex-shrink-0">
+                    {job.processed_images.length > 0 && (
+                      <>
+                        <button
+                          onClick={() => setSelectedJob(job)}
+                          className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                          title="Görüntüle"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDownload(
+                            job.processed_images[0].image_url,
+                            `${job.category?.name}_${job.style}_${job.id}.jpg`
+                          )}
+                          className="p-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                          title="İndir"
+                        >
+                          <Download className="h-4 w-4" />
+                        </button>
+                      </>
+                    )}
+                    <button
+                      onClick={() => handleDeleteJob(job.id)}
+                      className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      title="Sil"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
                 </>
               )}
             </div>
@@ -390,36 +444,40 @@ const Gallery: React.FC = () => {
 
       {/* Image Modal */}
       {selectedJob && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-bold text-gray-900">
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-2 sm:p-4 z-50" onClick={() => setSelectedJob(null)}>
+          <div className="bg-white rounded-xl max-w-7xl w-full max-h-[95vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="p-4 sm:p-6">
+              <div className="flex items-center justify-between mb-4 sm:mb-6">
+                <h3 className="text-lg sm:text-xl font-bold text-gray-900">
                   {selectedJob.category?.display_name_tr} - {selectedJob.style}
                 </h3>
                 <button
                   onClick={() => setSelectedJob(null)}
-                  className="p-2 text-gray-400 hover:text-gray-600 rounded-lg"
+                  className="p-2 text-gray-400 hover:text-gray-600 rounded-lg transition-colors"
                 >
                   <XCircle className="h-6 w-6" />
                 </button>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
                 {selectedJob.processed_images.map((image, index) => (
                   <div key={image.id} className="relative group">
                     <img
-                      src={image.image_url}
+                      src={getProxiedImageUrl(image.image_url)}
                       alt={`Sonuç ${index + 1}`}
-                      className="w-full aspect-square object-cover rounded-lg"
+                      className="w-full aspect-square object-cover rounded-lg cursor-pointer hover:scale-105 transition-transform"
+                      onClick={() => window.open(getProxiedImageUrl(image.image_url), '_blank')}
                     />
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors rounded-lg flex items-center justify-center">
                       <button
-                        onClick={() => handleDownload(
-                          image.image_url,
-                          `${selectedJob.category?.name}_${selectedJob.style}_${selectedJob.id}_${index + 1}.jpg`
-                        )}
-                        className="opacity-0 group-hover:opacity-100 p-2 bg-white text-gray-900 rounded-lg hover:bg-gray-100 transition-all"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDownload(
+                            image.image_url,
+                            `${selectedJob.category?.name}_${selectedJob.style}_${selectedJob.id}_${index + 1}.jpg`
+                          );
+                        }}
+                        className="opacity-0 group-hover:opacity-100 p-2 bg-white text-gray-900 rounded-lg hover:bg-gray-100 transition-all shadow-lg"
                         title="İndir"
                       >
                         <Download className="h-4 w-4" />

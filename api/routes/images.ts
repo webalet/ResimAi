@@ -1161,4 +1161,137 @@ router.post('/n8n-result', async (req: Request, res: Response): Promise<void> =>
   }
 });
 
+// Delete job endpoint
+router.delete('/jobs/:jobId', auth, async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = (req as any).userId;
+    const { jobId } = req.params;
+
+    console.log('🗑️ [DELETE] Delete job request:', { userId, jobId });
+
+    // Check if job exists and belongs to user
+    const { data: job, error: jobError } = await supabase
+      .from('image_jobs')
+      .select('id, user_id')
+      .eq('id', jobId)
+      .eq('user_id', userId)
+      .single();
+
+    if (jobError || !job) {
+      console.log('❌ [DELETE] Job not found or access denied:', { jobId, userId });
+      res.status(404).json({
+        success: false,
+        error: 'İş bulunamadı veya erişim reddedildi'
+      });
+      return;
+    }
+
+    // Delete processed images first
+    const { error: imagesError } = await supabase
+      .from('processed_images')
+      .delete()
+      .eq('job_id', jobId);
+
+    if (imagesError) {
+      console.error('❌ [DELETE] Error deleting processed images:', imagesError);
+      res.status(500).json({
+        success: false,
+        error: 'İşlenmiş görseller silinirken hata oluştu'
+      });
+      return;
+    }
+
+    // Delete the job
+    const { error: deleteError } = await supabase
+      .from('image_jobs')
+      .delete()
+      .eq('id', jobId)
+      .eq('user_id', userId);
+
+    if (deleteError) {
+      console.error('❌ [DELETE] Error deleting job:', deleteError);
+      res.status(500).json({
+        success: false,
+        error: 'İş silinirken hata oluştu'
+      });
+      return;
+    }
+
+    console.log('✅ [DELETE] Job deleted successfully:', { jobId });
+
+    res.json({
+      success: true,
+      message: 'İş başarıyla silindi'
+    });
+    return;
+  } catch (error) {
+    console.error('❌ [DELETE] Delete job error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Sunucu hatası'
+    });
+    return;
+  }
+});
+
+// Proxy endpoint to hide external image sources
+router.get('/proxy', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { url } = req.query;
+
+    if (!url || typeof url !== 'string') {
+      res.status(400).json({
+        success: false,
+        error: 'URL parametresi gereklidir'
+      });
+      return;
+    }
+
+    // Validate URL format
+    try {
+      new URL(url);
+    } catch {
+      res.status(400).json({
+        success: false,
+        error: 'Geçersiz URL formatı'
+      });
+      return;
+    }
+
+    console.log('🔗 [PROXY] Proxying image URL:', url.substring(0, 100) + '...');
+
+    // Fetch the image from the external URL
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      console.error('❌ [PROXY] Failed to fetch image:', response.status, response.statusText);
+      res.status(response.status).json({
+        success: false,
+        error: 'Görsel yüklenemedi'
+      });
+      return;
+    }
+
+    // Get content type from response headers
+    const contentType = response.headers.get('content-type') || 'image/jpeg';
+    
+    // Set appropriate headers
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    
+    // Stream the image data
+    response.body?.pipe(res);
+    
+    console.log('✅ [PROXY] Image proxied successfully');
+  } catch (error) {
+    console.error('❌ [PROXY] Proxy error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Sunucu hatası'
+    });
+    return;
+  }
+});
+
 export default router;
