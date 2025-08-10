@@ -1,0 +1,162 @@
+import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
+import { User } from '../types/auth';
+import { authService } from '../services/authService';
+import { toast } from 'sonner';
+
+interface AuthContextType {
+  user: User | null;
+  loading: boolean;
+  login: (email: string, password: string) => Promise<void>;
+  register: (name: string, email: string, password: string) => Promise<void>;
+  logout: () => void;
+  refreshUser: () => Promise<void>;
+  updateUser: (user: User) => void;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
+
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const lastLoginAttemptRef = useRef<number>(0);
+  const lastRegisterAttemptRef = useRef<number>(0);
+  const RATE_LIMIT_MS = 2000; // 2 seconds between auth requests
+
+  useEffect(() => {
+    checkAuthStatus();
+  }, []);
+
+  const checkAuthStatus = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (token) {
+        const userData = await authService.getCurrentUser();
+        setUser(userData);
+      }
+    } catch (error) {
+      localStorage.removeItem('token');
+      console.error('Auth check failed:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const login = async (email: string, password: string) => {
+    // Rate limiting check
+    const now = Date.now();
+    const timeSinceLastLogin = now - lastLoginAttemptRef.current;
+    
+    if (timeSinceLastLogin < RATE_LIMIT_MS) {
+      const remainingTime = Math.ceil((RATE_LIMIT_MS - timeSinceLastLogin) / 1000);
+      const errorMessage = `Çok hızlı giriş denemesi. ${remainingTime} saniye bekleyin.`;
+      throw new Error(errorMessage);
+    }
+
+    lastLoginAttemptRef.current = now;
+
+    try {
+      const response = await authService.login(email, password);
+      localStorage.setItem('token', response.token);
+      setUser(response.user);
+      toast.success('Başarıyla giriş yapıldı!');
+    } catch (error: any) {
+      // Don't show toast messages here - let the calling component handle it
+      // Just throw the error with enhanced information
+      if (error.response?.status === 429) {
+        const retryAfter = error.response.headers['retry-after'];
+        error.retryAfter = retryAfter;
+        error.userMessage = `Çok fazla giriş denemesi yapıldı. ${retryAfter ? `${retryAfter} saniye` : 'bir süre'} bekleyip tekrar deneyin.`;
+      } else if (error.response?.status === 401) {
+        error.userMessage = 'E-posta veya şifre hatalı.';
+      } else if (error.response?.status === 422) {
+        error.userMessage = 'Geçersiz giriş bilgileri.';
+      } else if (error.response?.status >= 500) {
+        error.userMessage = 'Sunucu hatası. Lütfen daha sonra tekrar deneyin.';
+      } else {
+        error.userMessage = error.message || 'Giriş yapılırken hata oluştu';
+      }
+      throw error;
+    }
+  };
+
+  const register = async (name: string, email: string, password: string) => {
+    // Rate limiting check
+    const now = Date.now();
+    const timeSinceLastRegister = now - lastRegisterAttemptRef.current;
+    
+    if (timeSinceLastRegister < RATE_LIMIT_MS) {
+      const remainingTime = Math.ceil((RATE_LIMIT_MS - timeSinceLastRegister) / 1000);
+      const errorMessage = `Çok hızlı kayıt denemesi. ${remainingTime} saniye bekleyin.`;
+      throw new Error(errorMessage);
+    }
+
+    lastRegisterAttemptRef.current = now;
+
+    try {
+      const response = await authService.register(name, email, password);
+      localStorage.setItem('token', response.token);
+      setUser(response.user);
+      toast.success('Hesap başarıyla oluşturuldu!');
+    } catch (error: any) {
+      // Don't show toast messages here - let the calling component handle it
+      // Just throw the error with enhanced information
+      if (error.response?.status === 429) {
+        const retryAfter = error.response.headers['retry-after'];
+        error.retryAfter = retryAfter;
+        error.userMessage = `Çok fazla kayıt denemesi yapıldı. ${retryAfter ? `${retryAfter} saniye` : 'bir süre'} bekleyip tekrar deneyin.`;
+      } else if (error.response?.status === 409) {
+        error.userMessage = 'Bu e-posta adresi zaten kullanılıyor.';
+      } else if (error.response?.status === 422) {
+        error.userMessage = 'Geçersiz kayıt bilgileri.';
+      } else if (error.response?.status >= 500) {
+        error.userMessage = 'Sunucu hatası. Lütfen daha sonra tekrar deneyin.';
+      } else {
+        error.userMessage = error.message || 'Kayıt olurken hata oluştu';
+      }
+      throw error;
+    }
+  };
+
+  const logout = async () => {
+    try {
+      localStorage.removeItem('token');
+      setUser(null);
+      toast.success('Başarıyla çıkış yapıldı');
+    } catch (error: any) {
+      toast.error('Çıkış yapılırken hata oluştu');
+    }
+  };
+
+  const refreshUser = async () => {
+    try {
+      const userData = await authService.getCurrentUser();
+      setUser(userData);
+    } catch (error) {
+      console.error('User refresh failed:', error);
+    }
+  };
+
+  const updateUser = (updatedUser: User) => {
+    setUser(updatedUser);
+  };
+
+  const value = {
+    user,
+    loading,
+    login,
+    register,
+    logout,
+    refreshUser,
+    updateUser,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};
