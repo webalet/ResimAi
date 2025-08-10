@@ -33,7 +33,14 @@ const Gallery: React.FC = () => {
       const response = await jobsApi.request(() => 
         apiClient.get('/images/jobs?limit=50')
       );
-      setJobs(response.data.jobs || []);
+      
+      // Map API response to frontend format
+      const mappedJobs = (response.data.jobs || []).map((job: any) => ({
+        ...job,
+        category: job.categories // Map categories to category
+      }));
+      
+      setJobs(mappedJobs);
     } catch (error) {
       console.error('Jobs loading failed:', error);
       toast.error('İşler yüklenirken hata oluştu');
@@ -102,8 +109,8 @@ const Gallery: React.FC = () => {
       return originalUrl;
     }
     
-    // Proxy external URLs through our server
-    return `/api/images/proxy?url=${encodeURIComponent(originalUrl)}`;
+    // Proxy external URLs through our server using full backend URL
+    return `http://64.226.75.76:3001/api/images/proxy?url=${encodeURIComponent(originalUrl)}`;
   };
 
   const handleDownload = async (imageUrl: string, filename: string) => {

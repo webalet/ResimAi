@@ -538,14 +538,22 @@ router.get('/jobs', auth, async (req: Request, res: Response): Promise<void> => 
       .from('image_jobs')
       .select(`
         id,
+        category_id,
         category_type,
         style,
         status,
         original_image_url,
         created_at,
+        categories (
+          id,
+          name,
+          display_name_tr,
+          type
+        ),
         processed_images (
           id,
           image_url,
+          thumbnail_url,
           created_at
         )
       `)
@@ -594,14 +602,22 @@ router.get('/jobs/:jobId', auth, async (req: Request, res: Response): Promise<vo
       .from('image_jobs')
       .select(`
         id,
+        category_id,
         category_type,
         style,
         status,
         original_image_url,
         created_at,
+        categories (
+          id,
+          name,
+          display_name_tr,
+          type
+        ),
         processed_images (
           id,
           image_url,
+          thumbnail_url,
           created_at
         )
       `)
@@ -645,6 +661,7 @@ router.get('/jobs/:jobId/status', auth, async (req: Request, res: Response): Pro
         processed_images (
           id,
           image_url,
+          thumbnail_url,
           created_at
         )
       `)
