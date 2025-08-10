@@ -10,7 +10,7 @@ const getApiBaseUrl = () => {
   
   // Development mode kontrolü
   if (import.meta.env.DEV) {
-    return 'http://localhost:3001';
+    return 'http://64.226.75.76:3001';
   }
   
   // Production default

@@ -25,7 +25,7 @@ const AdminSettings = () => {
     },
     server: {
       port: '3001',
-      url: 'http://localhost:3001'
+      url: 'http://64.226.75.76:3001'
     }
   });
 

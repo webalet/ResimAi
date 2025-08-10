@@ -423,7 +423,7 @@ router.get('/settings', adminAuth, async (req: Request, res: Response) => {
         },
         server: {
           port: savedSettings.server?.port || '3001',
-          url: savedSettings.server?.url || 'http://localhost:3001'
+          url: savedSettings.server?.url || 'http://64.226.75.76:3001'
         }
       },
       categories: savedSettings.categories || [

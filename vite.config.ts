@@ -15,13 +15,13 @@ export default defineConfig(({ command, mode }) => {
     
     // Default URLs based on mode
     if (mode === 'development') {
-      return 'http://127.0.0.1:3001';
+      return 'http://64.226.75.76:';
     } else if (mode === 'production') {
       // In production, use the environment variable or fallback to server IP
       return env.VITE_API_URL || 'http://64.226.75.76:3001';
     }
     
-    return 'http://127.0.0.1:3001';
+    return 'http://64.226.75.76:';
   };
   
   const apiUrl = getApiUrl();
@@ -42,10 +42,10 @@ export default defineConfig(({ command, mode }) => {
     __VITE_API_URL__: JSON.stringify(apiUrl)
   },
   server: {
-    host: '127.0.0.1', // Force IPv4
+    host: '0.0.0.0', // Allow external connections
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:3001', // Force IPv4 target
+        target: 'http://64.226.75.76:3001', // Server IP target
         changeOrigin: true,
         secure: false,
         configure: (proxy, _options) => {

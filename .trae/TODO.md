@@ -1,10 +1,9 @@
 # TODO:
 
-- [x] check-pm2-status: PM2 durumunu kontrol et ve API sunucusunun çalışıp çalışmadığını kontrol et (priority: High)
-- [x] restart-api-server: API sunucusunu yeniden başlat (priority: High)
-- [x] check-nginx-config-file: Nginx konfigürasyon dosyasını kontrol et - API istekleri 3001 portuna yönlendirilmiyor olabilir (priority: High)
-- [x] analyze-module-error: API module çözümleme hatasını analiz et - 'Cannot find module /var/www/ResimAi/api/dist/config/supabase' (priority: High)
-- [x] check-api-dist-structure: API dist klasör yapısını kontrol et ve eksik dosyaları tespit et (priority: High)
-- [x] rebuild-api: API'yi yeniden build et - path mapping sorunu olabilir (priority: High)
-- [x] test-local-api: Yerel API sunucusunu test et (priority: Medium)
-- [ ] provide-server-instructions: Sunucu için gerekli talimatları sağla (**IN PROGRESS**) (priority: Medium)
+- [x] 1: Update .env file - change localhost URLs to server IP (64.226.75.76) (priority: High)
+- [x] 2: Update vite.config.ts - change 127.0.0.1 references to server IP (priority: High)
+- [x] 3: Update src/services/apiClient.ts - change localhost to server IP (priority: High)
+- [x] 4: Update api/server.ts - change localhost references in console logs and CORS (priority: High)
+- [x] 5: Update src/pages/admin/AdminSettings.tsx - change default server URL (priority: High)
+- [x] 6: Update api/routes/admin.ts - change default server URL (priority: High)
+- [x] 7: Test the application to ensure all changes work correctly (priority: Medium)
