@@ -17,7 +17,7 @@ export default defineConfig(({ command, mode }) => {
     if (mode === 'development') {
       return 'http://127.0.0.1:3001';
     } else if (mode === 'production') {
-      return 'http://64.226.75.76:3001';
+      return ''; // Use same domain, let Nginx handle routing
     }
     
     return 'http://127.0.0.1:3001';
