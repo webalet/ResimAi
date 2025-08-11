@@ -163,6 +163,10 @@ Admin Settings sayfasında prompt yönetimi, API konfigürasyonu ve canlı deği
 - Backup ve recovery mekanizması olmalı
 - Performance optimizasyonu göz önünde bulundurulmalı
 - Kullanıcı dostu error mesajları sağlanmalı
+- **UZAK SUNUCU SORUNU**: `/api/admin/admin-settings` endpoint'i uzak sunucuda (64.226.75.76:3001) 404 hatası veriyor
+  - Curl testi endpoint'in production sunucuda mevcut olmadığını doğruluyor
+  - Backend'in uzak sunucuda güncellenmesi ve yeniden deploy edilmesi gerekiyor
+  - Test sırasında dikkate alınmalı - sorun server tarafında, local development'ta değil
 
 ## 🔧 Teknik Detaylar
 - React state management için Context API veya Zustand

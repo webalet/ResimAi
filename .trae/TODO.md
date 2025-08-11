@@ -1,8 +1,11 @@
 # TODO:
 
-- [x] 102: Categories.tsx'deki API çağrılarını kontrol et ve JSON parse hatasını tespit et (priority: High)
-- [x] 103: Backend API route'larında categories ve prompts endpoint'lerini incele (priority: High)
-- [x] 104: API response'larının doğru JSON formatında döndüğünü doğrula (priority: High)
-- [x] 105: AdminSettings.tsx'deki loadCategoriesAndPrompts fonksiyonunda API_BASE_URL eksikliğini düzelt (priority: High)
-- [x] 107: useEffect hook'u ekleyerek loadCategoriesAndPrompts fonksiyonunun çağrılmasını sağla (priority: High)
-- [x] 106: Hata ayıklama için console log'ları ekle ve API response'ları kontrol et (priority: Medium)
+- [ ] 123: Local değişiklikleri git commit ve push yap (**IN PROGRESS**) (priority: High)
+- [ ] 124: Remote sunucuda (64.226.75.76) git pull yap (priority: High)
+- [ ] 125: npm run build ile build al (priority: High)
+- [ ] 126: pm2 restart all ile servisleri yeniden başlat (priority: High)
+- [ ] 127: AdminSettings sayfasını test et - Authentication çalışıyor mu (priority: Medium)
+- [ ] 128: API çağrıları başarılı mı test et (priority: Medium)
+- [ ] 129: Form validasyonları çalışıyor mu test et (priority: Medium)
+- [ ] 130: Kaydetme işlemleri çalışıyor mu test et (priority: Medium)
+- [ ] 131: UI/UX düzgün görünüyor mu test et (priority: Low)

@@ -96,76 +96,115 @@ const AdminSettings = () => {
   const loadCategoriesAndPrompts = async () => {
     try {
       const token = localStorage.getItem('adminToken');
+      if (!token) {
+        toast.error('Admin token bulunamadı. Lütfen tekrar giriş yapın.');
+        return;
+      }
+      
       const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
       console.log('Loading categories and prompts from:', `${API_BASE_URL}/api/admin/admin-settings`);
+      
       const response = await fetch(`${API_BASE_URL}/api/admin/admin-settings`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
+      
       console.log('Response status:', response.status, response.statusText);
-      if (response.ok) {
-        const result = await response.json();
-        console.log('Loaded admin settings:', result);
-        const data = result.data;
-        if (data.categories) {
-          setCategories(data.categories);
+      
+      if (!response.ok) {
+        if (response.status === 401) {
+          toast.error('Yetkilendirme hatası. Lütfen tekrar giriş yapın.');
+          localStorage.removeItem('adminToken');
+          return;
         }
-        if (data.aiPrompts) {
-          setAiPrompts(data.aiPrompts);
-        }
-        if (data.supabase) {
-           setSystemConfig(prev => ({
-             ...prev,
-             supabase: {
-               url: data.supabase.url || '',
-               anonKey: data.supabase.anonKey || '',
-               serviceRoleKey: data.supabase.serviceRoleKey || ''
-             }
-           }));
-        }
-        if (data.n8n) {
-          setSystemConfig(prev => ({
-            ...prev,
-            n8n: {
-              webhookUrl: data.n8n.webhookUrl || '',
-              apiKey: data.n8n.apiKey || ''
-            }
-          }));
-        }
-        if (data.jwt) {
-          setSystemConfig(prev => ({
-            ...prev,
-            jwt: {
-              secret: data.jwt.secretKey || '',
-              expiresIn: data.jwt.tokenExpiry || '24h'
-            }
-          }));
-        }
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const result = await response.json();
+      console.log('Loaded admin settings:', result);
+      
+      if (!result.success) {
+        throw new Error(result.message || 'Veri yükleme başarısız');
+      }
+      
+      const data = result.data;
+      if (data.categories) {
+        setCategories(data.categories);
+      }
+      if (data.aiPrompts) {
+        setAiPrompts(data.aiPrompts);
+      }
+      if (data.supabase) {
+         setSystemConfig(prev => ({
+           ...prev,
+           supabase: {
+             url: data.supabase.url || '',
+             anonKey: data.supabase.anonKey || '',
+             serviceRoleKey: data.supabase.serviceRoleKey || ''
+           }
+         }));
+      }
+      if (data.n8n) {
+        setSystemConfig(prev => ({
+          ...prev,
+          n8n: {
+            webhookUrl: data.n8n.webhookUrl || '',
+            apiKey: data.n8n.apiKey || ''
+          }
+        }));
+      }
+      if (data.jwt) {
+        setSystemConfig(prev => ({
+          ...prev,
+          jwt: {
+            secret: data.jwt.secretKey || '',
+            expiresIn: data.jwt.tokenExpiry || '24h'
+          }
+        }));
       }
     } catch (error) {
       console.error('Error loading categories and prompts:', error);
-      console.error('Error details:', error.message);
-      toast.error('Kategoriler ve prompt\'lar yüklenirken hata oluştu: ' + error.message);
+      const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen hata';
+      toast.error(`Kategoriler ve prompt'lar yüklenirken hata oluştu: ${errorMessage}`);
     }
   };
 
   const loadSettings = async () => {
     try {
       setLoading(true);
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        toast.error('Admin token bulunamadı. Lütfen tekrar giriş yapın.');
+        return;
+      }
+      
       const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
       const response = await fetch(`${API_BASE_URL}/api/admin/settings`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+          'Authorization': `Bearer ${token}`
         }
       });
 
+      if (!response.ok) {
+        if (response.status === 401) {
+          toast.error('Yetkilendirme hatası. Lütfen tekrar giriş yapın.');
+          localStorage.removeItem('adminToken');
+          return;
+        }
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
       const data = await response.json();
       
-      if (data.success && data.data) {
+      if (!data.success) {
+        throw new Error(data.message || 'Ayarlar yükleme başarısız');
+      }
+      
+      if (data.data) {
         // Update system config
         if (data.data.systemConfig) {
           setSystemConfig(data.data.systemConfig);
@@ -183,7 +222,8 @@ const AdminSettings = () => {
       }
     } catch (error) {
       console.error('Load settings error:', error);
-      toast.error('Ayarlar yüklenirken hata oluştu');
+      const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen hata';
+      toast.error(`Ayarlar yüklenirken hata oluştu: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
@@ -264,12 +304,24 @@ const AdminSettings = () => {
         errors.url = 'Supabase URL gereklidir';
       } else if (!config.url.startsWith('https://')) {
         errors.url = 'Geçerli bir HTTPS URL giriniz';
+      } else if (!config.url.includes('.supabase.co')) {
+        errors.url = 'Geçerli bir Supabase URL formatı: https://xxx.supabase.co';
       }
       
       if (!config.anonKey || !config.anonKey.trim()) {
         errors.anonKey = 'Anonymous Key gereklidir';
       } else if (config.anonKey.length < 50) {
-        errors.anonKey = 'Geçerli bir Anonymous Key giriniz';
+        errors.anonKey = 'Geçerli bir Anonymous Key giriniz (en az 50 karakter)';
+      } else if (!config.anonKey.startsWith('eyJ')) {
+        errors.anonKey = 'Geçerli bir JWT token formatında olmalıdır';
+      }
+      
+      if (!config.serviceRoleKey || !config.serviceRoleKey.trim()) {
+        errors.serviceRoleKey = 'Service Role Key gereklidir';
+      } else if (config.serviceRoleKey.length < 50) {
+        errors.serviceRoleKey = 'Geçerli bir Service Role Key giriniz (en az 50 karakter)';
+      } else if (!config.serviceRoleKey.startsWith('eyJ')) {
+        errors.serviceRoleKey = 'Geçerli bir JWT token formatında olmalıdır';
       }
     }
     
@@ -277,7 +329,17 @@ const AdminSettings = () => {
       if (!config.webhookUrl || !config.webhookUrl.trim()) {
         errors.webhookUrl = 'Webhook URL gereklidir';
       } else if (!config.webhookUrl.startsWith('http')) {
-        errors.webhookUrl = 'Geçerli bir URL giriniz';
+        errors.webhookUrl = 'Geçerli bir URL giriniz (http:// veya https://)';
+      } else {
+        try {
+          new URL(config.webhookUrl);
+        } catch {
+          errors.webhookUrl = 'Geçerli bir URL formatı giriniz';
+        }
+      }
+      
+      if (config.apiKey && config.apiKey.trim() && config.apiKey.length < 10) {
+        errors.apiKey = 'API Key en az 10 karakter olmalıdır';
       }
     }
     
@@ -285,11 +347,15 @@ const AdminSettings = () => {
       if (!config.secret || !config.secret.trim()) {
         errors.secret = 'Secret Key gereklidir';
       } else if (config.secret.length < 32) {
-        errors.secret = 'Secret Key en az 32 karakter olmalıdır';
+        errors.secret = 'Secret Key güvenlik için en az 32 karakter olmalıdır';
+      } else if (!/^[A-Za-z0-9+/=]+$/.test(config.secret)) {
+        errors.secret = 'Secret Key sadece alfanumerik karakterler ve +/= içerebilir';
       }
       
       if (!config.expiresIn || !config.expiresIn.trim()) {
         errors.expiresIn = 'Token süresi gereklidir';
+      } else if (!/^\d+[smhd]$/.test(config.expiresIn)) {
+        errors.expiresIn = 'Geçerli format: 24h, 7d, 60m, 3600s';
       }
     }
     
@@ -299,19 +365,47 @@ const AdminSettings = () => {
   const validateCategories = (categories: any[]): ValidationErrors => {
     const errors = {} as ValidationErrors;
     
+    if (!categories || categories.length === 0) {
+      errors.general = 'En az bir kategori gereklidir';
+      return errors;
+    }
+    
+    const categoryNames = new Set();
+    
     categories.forEach((category, index) => {
       if (!category.name || !category.name.trim()) {
         errors[`category_${index}_name`] = 'Kategori adı gereklidir';
+      } else if (category.name.trim().length < 2) {
+        errors[`category_${index}_name`] = 'Kategori adı en az 2 karakter olmalıdır';
+      } else if (category.name.trim().length > 50) {
+        errors[`category_${index}_name`] = 'Kategori adı en fazla 50 karakter olabilir';
+      } else if (categoryNames.has(category.name.trim().toLowerCase())) {
+        errors[`category_${index}_name`] = 'Bu kategori adı zaten kullanılıyor';
+      } else {
+        categoryNames.add(category.name.trim().toLowerCase());
       }
       
       if (!category.styles || category.styles.length === 0) {
         errors[`category_${index}_styles`] = 'En az bir stil gereklidir';
       } else {
+        const styleNames = new Set();
         category.styles.forEach((style, styleIndex) => {
           if (!style || !style.trim()) {
             errors[`category_${index}_style_${styleIndex}`] = 'Stil adı gereklidir';
+          } else if (style.trim().length < 2) {
+            errors[`category_${index}_style_${styleIndex}`] = 'Stil adı en az 2 karakter olmalıdır';
+          } else if (style.trim().length > 30) {
+            errors[`category_${index}_style_${styleIndex}`] = 'Stil adı en fazla 30 karakter olabilir';
+          } else if (styleNames.has(style.trim().toLowerCase())) {
+            errors[`category_${index}_style_${styleIndex}`] = 'Bu stil adı bu kategoride zaten kullanılıyor';
+          } else {
+            styleNames.add(style.trim().toLowerCase());
           }
         });
+      }
+      
+      if (category.image_url && !category.image_url.startsWith('http') && !category.image_url.startsWith('/')) {
+        errors[`category_${index}_image`] = 'Geçerli bir resim URL\'si giriniz';
       }
     });
     
@@ -321,12 +415,33 @@ const AdminSettings = () => {
   const validatePrompts = (prompts: any): ValidationErrors => {
     const errors = {} as ValidationErrors;
     
+    if (!prompts || Object.keys(prompts).length === 0) {
+      errors.general = 'En az bir prompt kategorisi gereklidir';
+      return errors;
+    }
+    
     Object.entries(prompts).forEach(([category, styles]) => {
+      if (!styles || Object.keys(styles).length === 0) {
+        errors[`${category}_general`] = `${category} kategorisi için en az bir stil prompt'u gereklidir`;
+        return;
+      }
+      
       Object.entries(styles).forEach(([style, prompt]) => {
         if (!prompt || !prompt.trim()) {
           errors[`${category}_${style}`] = 'Prompt metni gereklidir';
-        } else if (prompt.length < 10) {
+        } else if (prompt.trim().length < 10) {
           errors[`${category}_${style}`] = 'Prompt en az 10 karakter olmalıdır';
+        } else if (prompt.trim().length > 2000) {
+          errors[`${category}_${style}`] = 'Prompt en fazla 2000 karakter olabilir';
+        } else if (!prompt.includes('person') && !prompt.includes('subject') && !prompt.includes('image')) {
+          errors[`${category}_${style}`] = 'Prompt, işlenecek kişi/nesne hakkında açıklama içermelidir';
+        }
+        
+        // Check for potentially harmful content
+        const harmfulWords = ['nude', 'naked', 'explicit', 'sexual', 'violence', 'blood', 'gore'];
+        const lowerPrompt = prompt.toLowerCase();
+        if (harmfulWords.some(word => lowerPrompt.includes(word))) {
+          errors[`${category}_${style}`] = 'Prompt uygunsuz içerik barındırmamalıdır';
         }
       });
     });
@@ -348,9 +463,14 @@ const AdminSettings = () => {
       }
 
       const token = localStorage.getItem('adminToken');
+      if (!token) {
+        toast.error('Admin token bulunamadı. Lütfen tekrar giriş yapın.');
+        return;
+      }
       
       // Get current settings first
-      const currentResponse = await fetch('/api/admin/admin-settings', {
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
+      const currentResponse = await fetch(`${API_BASE_URL}/api/admin/admin-settings`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -360,7 +480,18 @@ const AdminSettings = () => {
       let currentSettings = {};
       if (currentResponse.ok) {
         const result = await currentResponse.json();
-        currentSettings = result.data;
+        if (result.success) {
+          currentSettings = result.data;
+        } else {
+          throw new Error(result.message || 'Mevcut ayarlar alınamadı');
+        }
+      } else {
+        if (currentResponse.status === 401) {
+          toast.error('Yetkilendirme hatası. Lütfen tekrar giriş yapın.');
+          localStorage.removeItem('adminToken');
+          return;
+        }
+        throw new Error(`Mevcut ayarlar alınamadı: HTTP ${currentResponse.status}`);
       }
       
       // Update with new system config
@@ -375,7 +506,7 @@ const AdminSettings = () => {
         } : systemConfig[section]
       };
       
-      const response = await fetch('/api/admin/admin-settings', {
+      const response = await fetch(`${API_BASE_URL}/api/admin/admin-settings`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -384,16 +515,26 @@ const AdminSettings = () => {
         body: JSON.stringify(updatedSettings)
       });
 
-      if (response.ok) {
-        toggleEditMode(section);
-        showMessage('success', `${section} konfigürasyonu başarıyla kaydedildi!`);
-      } else {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Kaydetme işlemi başarısız');
+      if (!response.ok) {
+        if (response.status === 401) {
+          toast.error('Yetkilendirme hatası. Lütfen tekrar giriş yapın.');
+          localStorage.removeItem('adminToken');
+          return;
+        }
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
+      
+      const result = await response.json();
+      if (!result.success) {
+        throw new Error(result.message || 'Kaydetme işlemi başarısız');
+      }
+
+      toggleEditMode(section);
+      showMessage('success', `${section} konfigürasyonu başarıyla kaydedildi!`);
     } catch (error) {
       console.error('Save config error:', error);
-      showMessage('error', 'Kaydetme sırasında bir hata oluştu!');
+      const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen hata';
+      showMessage('error', `Kaydetme sırasında bir hata oluştu: ${errorMessage}`);
     } finally {
       setSaving(false);
     }
@@ -413,9 +554,14 @@ const AdminSettings = () => {
       }
 
       const token = localStorage.getItem('adminToken');
+      if (!token) {
+        showMessage('error', 'Admin token bulunamadı. Lütfen tekrar giriş yapın.');
+        return;
+      }
       
       // Get current settings first
-      const currentResponse = await fetch('/api/admin/admin-settings', {
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
+      const currentResponse = await fetch(`${API_BASE_URL}/api/admin/admin-settings`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -423,10 +569,20 @@ const AdminSettings = () => {
       });
       
       let currentSettings = {};
-      if (currentResponse.ok) {
-        const result = await currentResponse.json();
-        currentSettings = result.data;
+      if (!currentResponse.ok) {
+        if (currentResponse.status === 401) {
+          showMessage('error', 'Yetkilendirme hatası. Lütfen tekrar giriş yapın.');
+          localStorage.removeItem('adminToken');
+          return;
+        }
+        throw new Error(`Mevcut ayarlar alınamadı: HTTP ${currentResponse.status}`);
       }
+      
+      const result = await currentResponse.json();
+      if (!result.success) {
+        throw new Error(result.message || 'Mevcut ayarlar alınamadı');
+      }
+      currentSettings = result.data;
       
       // Update with new categories and prompts
       const updatedSettings = {
@@ -435,7 +591,7 @@ const AdminSettings = () => {
         aiPrompts
       };
       
-      const response = await fetch('/api/admin/admin-settings', {
+      const response = await fetch(`${API_BASE_URL}/api/admin/admin-settings`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -444,16 +600,26 @@ const AdminSettings = () => {
         body: JSON.stringify(updatedSettings)
       });
 
-      if (response.ok) {
-        toggleEditMode('categories');
-        showMessage('success', 'Kategoriler ve prompt\'lar başarıyla kaydedildi!');
-      } else {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Kategoriler kaydedilirken hata oluştu');
+      if (!response.ok) {
+        if (response.status === 401) {
+          showMessage('error', 'Yetkilendirme hatası. Lütfen tekrar giriş yapın.');
+          localStorage.removeItem('adminToken');
+          return;
+        }
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
+      
+      const responseData = await response.json();
+      if (!responseData.success) {
+        throw new Error(responseData.message || 'Kaydetme işlemi başarısız');
+      }
+      
+      toggleEditMode('categories');
+      showMessage('success', 'Kategoriler ve prompt\'lar başarıyla kaydedildi!');
     } catch (error) {
       console.error('Save categories error:', error);
-      showMessage('error', 'Kaydetme sırasında bir hata oluştu!');
+      const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen hata';
+      showMessage('error', `Kaydetme sırasında bir hata oluştu: ${errorMessage}`);
     } finally {
       setSaving(false);
     }
@@ -472,28 +638,44 @@ const AdminSettings = () => {
         return;
       }
 
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        showMessage('error', 'Admin token bulunamadı. Lütfen tekrar giriş yapın.');
+        return;
+      }
+      
       const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
       const response = await fetch(`${API_BASE_URL}/api/admin/settings/prompts`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ prompts: aiPrompts })
       });
 
+      if (!response.ok) {
+        if (response.status === 401) {
+          showMessage('error', 'Yetkilendirme hatası. Lütfen tekrar giriş yapın.');
+          localStorage.removeItem('adminToken');
+          return;
+        }
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
       const data = await response.json();
       
-      if (data.success) {
-        setAiPrompts(data.data);
-        toggleEditMode('prompts', categoryName);
-        showMessage('success', `${categoryName} prompt'ları başarıyla kaydedildi!`);
-      } else {
+      if (!data.success) {
         throw new Error(data.message || 'Kaydetme işlemi başarısız');
       }
+      
+      setAiPrompts(data.data);
+      toggleEditMode('prompts', categoryName);
+      showMessage('success', `${categoryName} prompt'ları başarıyla kaydedildi!`);
     } catch (error) {
       console.error('Save prompts error:', error);
-      showMessage('error', 'Kaydetme sırasında bir hata oluştu!');
+      const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen hata';
+      showMessage('error', `Kaydetme sırasında bir hata oluştu: ${errorMessage}`);
     } finally {
       setSaving(false);
     }
@@ -523,12 +705,17 @@ const AdminSettings = () => {
     }
 
     try {
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        toast.error('Admin token bulunamadı. Lütfen tekrar giriş yapın.');
+        return;
+      }
+      
       const formData = new FormData();
       formData.append('image', file);
       formData.append('type', 'category');
 
       const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
-      const token = localStorage.getItem('adminToken');
       const response = await fetch(`${API_BASE_URL}/api/admin/upload-image`, {
         method: 'POST',
         headers: {
@@ -538,10 +725,19 @@ const AdminSettings = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Resim yükleme başarısız');
+        if (response.status === 401) {
+          toast.error('Yetkilendirme hatası. Lütfen tekrar giriş yapın.');
+          localStorage.removeItem('adminToken');
+          return;
+        }
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
       const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.message || 'Resim yükleme başarısız');
+      }
       
       // Update category image URL
       setCategories(prev => prev.map((cat, i) => 
@@ -551,7 +747,8 @@ const AdminSettings = () => {
       toast.success('Resim başarıyla yüklendi');
     } catch (error) {
       console.error('Image upload error:', error);
-      toast.error('Resim yüklenirken hata oluştu');
+      const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen hata';
+      toast.error(`Resim yüklenirken hata oluştu: ${errorMessage}`);
     }
   };
 
@@ -619,41 +816,78 @@ const AdminSettings = () => {
   return (
     <AdminLayout>
       <div className="space-y-8">
-        <div className="bg-white rounded-lg shadow-sm border p-6">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Settings className="h-6 w-6 text-blue-600" />
+        <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 sm:p-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl">
+              <Settings className="h-8 w-8 text-blue-600" />
             </div>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Sistem Ayarları</h1>
-              <p className="text-gray-600 mt-1">Sistem konfigürasyonu ve ayarları</p>
+            <div className="flex-1">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Sistem Ayarları</h1>
+              <p className="text-gray-600 mt-1 text-sm sm:text-base">Sistem konfigürasyonu ve ayarları</p>
             </div>
           </div>
         </div>
 
         {/* Success/Error Messages */}
         {message.text && (
-          <div className={`p-4 rounded-lg border ${
+          <div className={`p-4 rounded-lg border transition-all duration-300 ${
             message.type === 'success' 
               ? 'bg-green-50 border-green-200 text-green-800' 
               : 'bg-red-50 border-red-200 text-red-800'
           }`}>
-            {message.text}
+            <div className="flex items-center gap-2">
+              {message.type === 'success' ? (
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                </div>
+              ) : (
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                </div>
+              )}
+              <div className="flex-1">
+                {message.text}
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* Validation Errors Summary */}
+        {Object.keys(validationErrors).length > 0 && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+              <h3 className="text-sm font-medium text-red-800">Doğrulama Hataları</h3>
+            </div>
+            <div className="text-sm text-red-700">
+              <p className="mb-2">Lütfen aşağıdaki hataları düzeltin:</p>
+              <ul className="list-disc list-inside space-y-1">
+                {Object.entries(validationErrors).map(([field, error]) => (
+                  <li key={field}>{error}</li>
+                ))}
+              </ul>
+            </div>
           </div>
         )}
 
         {/* API Configuration */}
-        <div className="bg-white rounded-lg shadow-sm border">
-          <div className="border-b border-gray-200 p-6">
+        <div className="bg-white rounded-xl shadow-lg border border-gray-200">
+          <div className="border-b border-gray-200 p-4 sm:p-6">
             <div className="flex items-center justify-between">
               <button
                 onClick={() => toggleCategoryCollapse('API Konfigürasyonu')}
-                className="flex items-center gap-3 hover:bg-gray-50 p-2 rounded-lg transition-colors flex-1 text-left"
+                className="flex items-center gap-3 hover:bg-gray-50 p-2 rounded-lg transition-all duration-200 flex-1 text-left"
               >
-                <div className="p-2 bg-green-100 rounded-lg">
+                <div className="p-2 bg-gradient-to-br from-green-100 to-green-200 rounded-lg">
                   <Key className="h-5 w-5 text-green-600" />
                 </div>
-                <h2 className="text-2xl font-semibold text-gray-900">API Konfigürasyonu</h2>
+                <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">API Konfigürasyonu</h2>
                 {collapsedCategories['API Konfigürasyonu'] ? (
                   <ChevronDown className="h-5 w-5 text-gray-500 ml-auto" />
                 ) : (
@@ -665,22 +899,31 @@ const AdminSettings = () => {
           {!collapsedCategories['API Konfigürasyonu'] && (
             <div className="p-6">
               <div className="space-y-8">
-              <div className="bg-gray-50 rounded-lg p-6">
-                <div className="flex items-center justify-between mb-4">
+              <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
                   <h3 className="font-semibold flex items-center gap-2 text-lg">
                     <Database className="h-5 w-5 text-blue-600" />
                     Supabase Konfigürasyonu
                   </h3>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
                     {editModes.supabase ? (
                       <>
                         <button
                           onClick={() => saveSystemConfig('supabase')}
                           disabled={saving}
-                          className="flex items-center gap-1 px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 text-sm"
+                          className="flex items-center gap-1 px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm transition-all duration-200"
                         >
-                          <Save className="h-4 w-4" />
-                          {saving ? 'Kaydediliyor...' : 'Kaydet'}
+                          {saving ? (
+                            <>
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                              Kaydediliyor...
+                            </>
+                          ) : (
+                            <>
+                              <Save className="h-4 w-4" />
+                              Kaydet
+                            </>
+                          )}
                         </button>
                         <button
                           onClick={() => toggleEditMode('supabase')}
@@ -701,7 +944,7 @@ const AdminSettings = () => {
                     )}
                   </div>
                 </div>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6">
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700">Database URL:</label>
                     {editModes.supabase ? (
@@ -713,9 +956,10 @@ const AdminSettings = () => {
                             ...prev,
                             supabase: { ...prev.supabase, url: e.target.value }
                           }))}
-                          className={`w-full p-3 border rounded-md font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                            validationErrors.url ? 'border-red-500' : ''
+                          className={`w-full p-3 border rounded-lg font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 ${
+                            validationErrors.url ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-gray-400'
                           }`}
+                          placeholder="https://your-project.supabase.co"
                         />
                         {validationErrors.url && (
                           <p className="text-red-500 text-xs mt-1">{validationErrors.url}</p>
@@ -737,10 +981,11 @@ const AdminSettings = () => {
                             ...prev,
                             supabase: { ...prev.supabase, anonKey: e.target.value }
                           }))}
-                          className={`w-full p-3 border rounded-md font-mono text-xs focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                            validationErrors.anonKey ? 'border-red-500' : ''
+                          className={`w-full p-3 border rounded-lg font-mono text-xs focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none ${
+                            validationErrors.anonKey ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-gray-400'
                           }`}
                           rows={3}
+                          placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
                         />
                         {validationErrors.anonKey && (
                           <p className="text-red-500 text-xs mt-1">{validationErrors.anonKey}</p>
@@ -767,10 +1012,19 @@ const AdminSettings = () => {
                         <button
                           onClick={() => saveSystemConfig('n8n')}
                           disabled={saving}
-                          className="flex items-center gap-1 px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 text-sm"
+                          className="flex items-center gap-1 px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm transition-all duration-200"
                         >
-                          <Save className="h-4 w-4" />
-                          {saving ? 'Kaydediliyor...' : 'Kaydet'}
+                          {saving ? (
+                            <>
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                              Kaydediliyor...
+                            </>
+                          ) : (
+                            <>
+                              <Save className="h-4 w-4" />
+                              Kaydet
+                            </>
+                          )}
                         </button>
                         <button
                           onClick={() => toggleEditMode('n8n')}
@@ -830,10 +1084,19 @@ const AdminSettings = () => {
                         <button
                           onClick={() => saveSystemConfig('jwt')}
                           disabled={saving}
-                          className="flex items-center gap-1 px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 text-sm"
+                          className="flex items-center gap-1 px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm transition-all duration-200"
                         >
-                          <Save className="h-4 w-4" />
-                          {saving ? 'Kaydediliyor...' : 'Kaydet'}
+                          {saving ? (
+                            <>
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                              Kaydediliyor...
+                            </>
+                          ) : (
+                            <>
+                              <Save className="h-4 w-4" />
+                              Kaydet
+                            </>
+                          )}
                         </button>
                         <button
                           onClick={() => toggleEditMode('jwt')}
@@ -943,10 +1206,19 @@ const AdminSettings = () => {
                     <button
                       onClick={saveCategories}
                       disabled={saving}
-                      className="flex items-center gap-1 px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 text-sm"
+                      className="flex items-center gap-1 px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm transition-all duration-200"
                     >
-                      <Save className="h-4 w-4" />
-                      {saving ? 'Kaydediliyor...' : 'Kategoriler & Prompt\'ları Kaydet'}
+                      {saving ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          Kaydediliyor...
+                        </>
+                      ) : (
+                        <>
+                          <Save className="h-4 w-4" />
+                          Kategoriler & Prompt'ları Kaydet
+                        </>
+                      )}
                     </button>
                     <button
                       onClick={() => toggleEditMode('categories')}
