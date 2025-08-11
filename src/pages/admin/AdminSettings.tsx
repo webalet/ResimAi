@@ -211,7 +211,8 @@ const AdminSettings = () => {
         const systemConfig = {
           supabase: data.supabase || {},
           n8n: data.n8n || {},
-          jwt: data.jwt || {}
+          jwt: data.jwt || {},
+          server: data.server || { port: '3001', url: 'http://64.226.75.76:3001' }
         };
         setSystemConfig(systemConfig);
         
