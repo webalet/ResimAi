@@ -339,24 +339,7 @@ const Gallery: React.FC = () => {
                   </div>
                   
                   <div className="p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-semibold text-gray-900 text-sm truncate">
-                        {job.category?.display_name_tr}
-                      </h3>
-                    </div>
-                    
-                    <p className="text-xs text-gray-600 mb-2">
-                      {job.style}
-                    </p>
-                    
-                    <p className="text-xs text-gray-500 mb-3">
-                      {new Date(job.created_at).toLocaleDateString('tr-TR', {
-                        day: 'numeric',
-                        month: 'short',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
-                    </p>
+
                     
                     <div className="text-xs text-gray-600 mb-3 space-y-1">
                       <p><span className="font-medium">Kategori:</span> {job.category?.display_name_tr}</p>
@@ -438,18 +421,14 @@ const Gallery: React.FC = () => {
                       </span>
                     </div>
                     
-                    <p className="text-sm text-gray-600 mb-2">
-                      {new Date(job.created_at).toLocaleDateString('tr-TR', {
-                        day: 'numeric',
-                        month: 'long',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
-                    </p>
-                    
                     <div className="text-sm text-gray-600 space-y-1">
                       <p><span className="font-medium">Kategori:</span> {job.category?.display_name_tr}</p>
                       <p><span className="font-medium">Stil:</span> {job.style}</p>
+                      <p><span className="font-medium">Tarih:</span> {new Date(job.created_at).toLocaleDateString('tr-TR', {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric'
+                      })}</p>
                     </div>
                     
                     {job.status === 'failed' && job.error_message && (
