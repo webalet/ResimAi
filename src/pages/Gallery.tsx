@@ -496,93 +496,79 @@ const Gallery: React.FC = () => {
         </div>
       )}
 
-      {/* Image Modal */}
+      {/* Image Modal - Full Screen */}
       {selectedJob && (
-        <div className="fixed inset-0 bg-gradient-to-br from-black/80 via-purple-900/20 to-black/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-50" onClick={() => {
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50" onClick={() => {
           setSelectedJob(null);
           setSelectedImageIndex(0);
         }}>
-          <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 max-w-7xl w-full max-h-[95vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            <div className="p-6 sm:p-8">
-              <div className="flex items-center justify-between mb-6 sm:mb-8">
-                <div>
-                  <h3 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                    {selectedJob.category?.display_name_tr}
-                  </h3>
-                  <p className="text-sm text-gray-600 mt-1">{selectedJob.style}</p>
+          <div className="relative w-full h-full flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+            {/* Close Button */}
+            <button
+              onClick={() => {
+                setSelectedJob(null);
+                setSelectedImageIndex(0);
+              }}
+              className="absolute top-4 right-4 z-10 p-3 bg-black/50 hover:bg-red-500/80 text-white rounded-full transition-all duration-200 hover:scale-110 backdrop-blur-sm"
+            >
+              <XCircle className="h-6 w-6" />
+            </button>
+            
+            {/* Main Image Display */}
+            <div className="relative max-w-[95vw] max-h-[95vh] flex items-center justify-center">
+              <img
+                src={selectedJob.processed_images[selectedImageIndex]?.image_url}
+                alt={`Processed image ${selectedImageIndex + 1}`}
+                className="max-w-full max-h-full object-contain"
+                onContextMenu={(e) => e.preventDefault()}
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = '/images/ornek.jpg'; // Fallback image
+                }}
+              />
+              
+              {/* Download Button Overlay */}
+              <button
+                onClick={() => handleDownload(
+                  selectedJob.processed_images[selectedImageIndex]?.image_url,
+                  `${selectedJob.category?.name}_${selectedJob.style}_${selectedJob.id}_${selectedImageIndex + 1}.jpg`
+                )}
+                className="absolute bottom-4 left-1/2 transform -translate-x-1/2 inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25 font-medium backdrop-blur-sm"
+              >
+                <Download className="h-5 w-5 mr-2" />
+                İndir
+              </button>
+              
+              {/* Image Counter */}
+              {selectedJob.processed_images.length > 1 && (
+                <div className="absolute top-4 left-4 bg-black/50 backdrop-blur-sm rounded-full px-3 py-1">
+                  <span className="text-white text-sm font-medium">
+                    {selectedImageIndex + 1} / {selectedJob.processed_images.length}
+                  </span>
                 </div>
-                <button
-                  onClick={() => {
-                    setSelectedJob(null);
-                    setSelectedImageIndex(0);
-                  }}
-                  className="p-3 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all duration-200 hover:scale-110"
-                >
-                  <XCircle className="h-6 w-6" />
-                </button>
-              </div>
+              )}
               
-              {/* Main Image Display */}
-              <div className="mb-8">
-                <div className="relative aspect-video bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl overflow-hidden shadow-inner border border-gray-200/50">
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent"></div>
-                  <div className="flex-1 flex items-center justify-center h-full">
-                    <img
-                      src={selectedJob.processed_images[selectedImageIndex]?.image_url}
-                      alt={`Processed image ${selectedImageIndex + 1}`}
-                      className="w-full h-full object-contain transition-all duration-300 hover:scale-[1.02]"
-                      onContextMenu={(e) => e.preventDefault()}
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = '/images/ornek.jpg'; // Fallback image
-                      }}
-                    />
-                  </div>
-                  <div className="absolute top-4 right-4 bg-black/20 backdrop-blur-sm rounded-full px-3 py-1">
-                    <span className="text-white text-sm font-medium">
-                      {selectedImageIndex + 1} / {selectedJob.processed_images.length}
-                    </span>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Thumbnails */}
-              <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-3">
-                {selectedJob.processed_images.map((image, index) => (
-                  <div key={image.id} className={cn(
-                    "aspect-square border-2 rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg",
-                    selectedImageIndex === index 
-                      ? "border-purple-500 shadow-lg shadow-purple-500/25 ring-2 ring-purple-200" 
-                      : "border-gray-200 hover:border-purple-300"
-                  )}>
-                    <img
-                      src={image.thumbnail_url || image.image_url}
-                      alt={`Thumbnail ${index + 1}`}
-                      className="w-full h-full object-cover cursor-pointer transition-all duration-300 hover:brightness-110"
-                      onClick={() => setSelectedImageIndex(index)}
-                      onContextMenu={(e) => e.preventDefault()}
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = '/images/ornek.jpg'; // Fallback image
-                      }}
-                    />
-                  </div>
-                ))}
-              </div>
-              
-              {/* Download Button */}
-              <div className="mt-8 flex justify-center">
-                <button
-                  onClick={() => handleDownload(
-                    selectedJob.processed_images[selectedImageIndex]?.image_url,
-                    `${selectedJob.category?.name}_${selectedJob.style}_${selectedJob.id}_${selectedImageIndex + 1}.jpg`
-                  )}
-                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25 font-medium"
-                >
-                  <Download className="h-5 w-5 mr-2" />
-                  Bu Resmi İndir
-                </button>
-              </div>
+              {/* Navigation Arrows for Multiple Images */}
+              {selectedJob.processed_images.length > 1 && (
+                <>
+                  <button
+                    onClick={() => setSelectedImageIndex(selectedImageIndex > 0 ? selectedImageIndex - 1 : selectedJob.processed_images.length - 1)}
+                    className="absolute left-4 top-1/2 transform -translate-y-1/2 p-3 bg-black/50 hover:bg-purple-500/80 text-white rounded-full transition-all duration-200 hover:scale-110 backdrop-blur-sm"
+                  >
+                    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => setSelectedImageIndex(selectedImageIndex < selectedJob.processed_images.length - 1 ? selectedImageIndex + 1 : 0)}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 p-3 bg-black/50 hover:bg-purple-500/80 text-white rounded-full transition-all duration-200 hover:scale-110 backdrop-blur-sm"
+                  >
+                    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>

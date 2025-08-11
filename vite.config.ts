@@ -15,13 +15,13 @@ export default defineConfig(({ command, mode }) => {
     
     // Default URLs based on mode
     if (mode === 'development') {
-      return 'http://64.226.75.76:';
+      return 'http://64.226.75.76';
     } else if (mode === 'production') {
       // In production, use the environment variable or fallback to server IP
       return env.VITE_API_URL || 'http://64.226.75.76:3001';
     }
     
-    return 'http://64.226.75.76:';
+    return 'http://64.226.75.76';
   };
   
   const apiUrl = getApiUrl();
