@@ -76,13 +76,13 @@ const Dashboard: React.FC = () => {
     try {
       // Fetch jobs and credits with retry logic
       const [jobsData, creditsData] = await Promise.all([
-        jobsApi.request(() => apiClient.get('/images/jobs?page=1&limit=10')),
+        jobsApi.request(() => apiClient.get('/images/jobs?limit=1000')), // Get all jobs for accurate stats
         creditsApi.request(() => apiClient.get('/subscriptions/credits'))
       ]);
 
       if (jobsData?.success && jobsData.data) {
-        const jobs = jobsData.data.data || [];
-        setRecentJobs(jobs.slice(0, 5)); // Show only 5 recent jobs
+        const jobs = jobsData.data.jobs || [];
+        setRecentJobs(jobs.slice(0, 3)); // Show only 3 recent jobs
 
         // Calculate stats from real data
         const totalJobs = jobs.length;

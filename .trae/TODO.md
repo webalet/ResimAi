@@ -1,7 +1,6 @@
 # TODO:
 
-- [x] 85: Modal'ı tam sayfa yap - üstteki boşluğu kaldır (priority: High)
-- [x] 86: Alttaki thumbnail grid'ini kaldır - tek resim varsa gereksiz (priority: High)
-- [x] 87: İndir butonunu daha uygun yere taşı (overlay veya sağ üst köşe) (priority: High)
-- [x] 89: onContextMenu korumasını muhafaza et (priority: High)
-- [x] 88: Modal tasarımını minimal hale getir - sadece resim + indir + kapatma butonu (priority: Medium)
+- [x] 92: API endpoint'lerini kontrol et - /images/jobs ve /subscriptions/credits endpoint'lerinin doğru çalıştığından emin ol (priority: High)
+- [x] 90: Dashboard istatistiklerini düzelt - API'den gelen verilerle toplam iş, tamamlanan ve bekleyen sayılarını doğru hesapla (priority: High)
+- [x] 91: Son işler bölümünde 5 yerine sadece 3 iş göster (priority: Medium)
+- [x] 93: Dashboard verilerinin doğru yüklenmesini test et (priority: Medium)
