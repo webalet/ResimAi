@@ -358,11 +358,15 @@ const Gallery: React.FC = () => {
                       })}
                     </p>
                     
-                    {job.processed_images.length > 0 && (
-                      <p className="text-xs text-purple-600 font-medium mb-3">
-                        {job.processed_images.length} sonuç
-                      </p>
-                    )}
+                    <div className="text-xs text-gray-600 mb-3 space-y-1">
+                      <p><span className="font-medium">Kategori:</span> {job.category?.display_name_tr}</p>
+                      <p><span className="font-medium">Stil:</span> {job.style}</p>
+                      <p><span className="font-medium">Tarih:</span> {new Date(job.created_at).toLocaleDateString('tr-TR', {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric'
+                      })}</p>
+                    </div>
                     
                     <div className="flex space-x-2">
                       {job.processed_images.length > 0 && (
@@ -443,11 +447,10 @@ const Gallery: React.FC = () => {
                       })}
                     </p>
                     
-                    {job.processed_images.length > 0 && (
-                      <p className="text-sm text-gray-600">
-                        {job.processed_images.length} sonuç
-                      </p>
-                    )}
+                    <div className="text-sm text-gray-600 space-y-1">
+                      <p><span className="font-medium">Kategori:</span> {job.category?.display_name_tr}</p>
+                      <p><span className="font-medium">Stil:</span> {job.style}</p>
+                    </div>
                     
                     {job.status === 'failed' && job.error_message && (
                       <p className="text-sm text-red-600">
