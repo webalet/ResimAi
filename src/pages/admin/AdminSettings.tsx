@@ -96,14 +96,18 @@ const AdminSettings = () => {
   const loadCategoriesAndPrompts = async () => {
     try {
       const token = localStorage.getItem('adminToken');
-      const response = await fetch('/api/admin/admin-settings', {
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
+      console.log('Loading categories and prompts from:', `${API_BASE_URL}/api/admin/admin-settings`);
+      const response = await fetch(`${API_BASE_URL}/api/admin/admin-settings`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
+      console.log('Response status:', response.status, response.statusText);
       if (response.ok) {
         const result = await response.json();
+        console.log('Loaded admin settings:', result);
         const data = result.data;
         if (data.categories) {
           setCategories(data.categories);
@@ -142,7 +146,8 @@ const AdminSettings = () => {
       }
     } catch (error) {
       console.error('Error loading categories and prompts:', error);
-      toast.error('Kategoriler ve prompt\'lar yüklenirken hata oluştu');
+      console.error('Error details:', error.message);
+      toast.error('Kategoriler ve prompt\'lar yüklenirken hata oluştu: ' + error.message);
     }
   };
 
@@ -244,6 +249,12 @@ const AdminSettings = () => {
     setMessage({ type, text });
     setTimeout(() => setMessage({ type: '', text: '' }), 3000);
   };
+
+  // Load data on component mount
+  useEffect(() => {
+    loadCategoriesAndPrompts();
+    loadSettings();
+  }, []);
 
   const validateConfig = (section: string, config: any): ValidationErrors => {
     const errors = {} as ValidationErrors;

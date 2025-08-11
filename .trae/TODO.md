@@ -1,10 +1,8 @@
 # TODO:
 
-- [x] 94: AdminSettings.tsx'deki mevcut prompt yapısını analiz et (priority: High)
-- [x] 95: Categories.tsx'deki resim oluşturma prompt yapısını incele (priority: High)
-- [x] 96: API'de kullanılan prompt formatını kontrol et (priority: High)
-- [x] 97: Prompt senkronizasyonu için temel altyapıyı kur (priority: High)
-- [x] 100: AdminSettings'e prompt düzenleme arayüzü ekle (priority: High)
-- [x] 101: API ile gerçek zamanlı prompt senkronizasyonu sağla (priority: High)
-- [x] 98: Boş promptları TODO'daki örneklerle doldur (priority: Medium)
-- [x] 99: API konfigürasyonunu gerçek verilerle entegre et (priority: Medium)
+- [x] 102: Categories.tsx'deki API çağrılarını kontrol et ve JSON parse hatasını tespit et (priority: High)
+- [x] 103: Backend API route'larında categories ve prompts endpoint'lerini incele (priority: High)
+- [x] 104: API response'larının doğru JSON formatında döndüğünü doğrula (priority: High)
+- [x] 105: AdminSettings.tsx'deki loadCategoriesAndPrompts fonksiyonunda API_BASE_URL eksikliğini düzelt (priority: High)
+- [x] 107: useEffect hook'u ekleyerek loadCategoriesAndPrompts fonksiyonunun çağrılmasını sağla (priority: High)
+- [x] 106: Hata ayıklama için console log'ları ekle ve API response'ları kontrol et (priority: Medium)
