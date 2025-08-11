@@ -498,35 +498,39 @@ const Gallery: React.FC = () => {
 
       {/* Image Modal */}
       {selectedJob && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-2 sm:p-4 z-50" onClick={() => {
+        <div className="fixed inset-0 bg-gradient-to-br from-black/80 via-purple-900/20 to-black/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 z-50" onClick={() => {
           setSelectedJob(null);
           setSelectedImageIndex(0);
         }}>
-          <div className="bg-white rounded-xl max-w-7xl w-full max-h-[95vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            <div className="p-4 sm:p-6">
-              <div className="flex items-center justify-between mb-4 sm:mb-6">
-                <h3 className="text-lg sm:text-xl font-bold text-gray-900">
-                  {selectedJob.category?.display_name_tr} - {selectedJob.style}
-                </h3>
+          <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 max-w-7xl w-full max-h-[95vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="p-6 sm:p-8">
+              <div className="flex items-center justify-between mb-6 sm:mb-8">
+                <div>
+                  <h3 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                    {selectedJob.category?.display_name_tr}
+                  </h3>
+                  <p className="text-sm text-gray-600 mt-1">{selectedJob.style}</p>
+                </div>
                 <button
                   onClick={() => {
                     setSelectedJob(null);
                     setSelectedImageIndex(0);
                   }}
-                  className="p-2 text-gray-400 hover:text-gray-600 rounded-lg transition-colors"
+                  className="p-3 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all duration-200 hover:scale-110"
                 >
                   <XCircle className="h-6 w-6" />
                 </button>
               </div>
               
               {/* Main Image Display */}
-              <div className="mb-6">
-                <div className="aspect-video bg-gray-50 rounded-lg overflow-hidden">
-                  <div className="flex-1 flex items-center justify-center bg-gray-50 rounded-lg">
+              <div className="mb-8">
+                <div className="relative aspect-video bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl overflow-hidden shadow-inner border border-gray-200/50">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent"></div>
+                  <div className="flex-1 flex items-center justify-center h-full">
                     <img
                       src={selectedJob.processed_images[selectedImageIndex]?.image_url}
                       alt={`Processed image ${selectedImageIndex + 1}`}
-                      className="w-full h-full object-contain"
+                      className="w-full h-full object-contain transition-all duration-300 hover:scale-[1.02]"
                       onContextMenu={(e) => e.preventDefault()}
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
@@ -534,20 +538,27 @@ const Gallery: React.FC = () => {
                       }}
                     />
                   </div>
+                  <div className="absolute top-4 right-4 bg-black/20 backdrop-blur-sm rounded-full px-3 py-1">
+                    <span className="text-white text-sm font-medium">
+                      {selectedImageIndex + 1} / {selectedJob.processed_images.length}
+                    </span>
+                  </div>
                 </div>
               </div>
               
               {/* Thumbnails */}
-              <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-2">
+              <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-3">
                 {selectedJob.processed_images.map((image, index) => (
                   <div key={image.id} className={cn(
-                    "aspect-square border-2 rounded-lg overflow-hidden cursor-pointer transition-all",
-                    selectedImageIndex === index ? "border-purple-500" : "border-gray-200 hover:border-gray-300"
+                    "aspect-square border-2 rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg",
+                    selectedImageIndex === index 
+                      ? "border-purple-500 shadow-lg shadow-purple-500/25 ring-2 ring-purple-200" 
+                      : "border-gray-200 hover:border-purple-300"
                   )}>
                     <img
                       src={image.thumbnail_url || image.image_url}
                       alt={`Thumbnail ${index + 1}`}
-                      className="w-full h-full object-cover rounded cursor-pointer hover:opacity-80 transition-opacity"
+                      className="w-full h-full object-cover cursor-pointer transition-all duration-300 hover:brightness-110"
                       onClick={() => setSelectedImageIndex(index)}
                       onContextMenu={(e) => e.preventDefault()}
                       onError={(e) => {
@@ -560,15 +571,15 @@ const Gallery: React.FC = () => {
               </div>
               
               {/* Download Button */}
-              <div className="mt-6 flex justify-center">
+              <div className="mt-8 flex justify-center">
                 <button
                   onClick={() => handleDownload(
                     selectedJob.processed_images[selectedImageIndex]?.image_url,
                     `${selectedJob.category?.name}_${selectedJob.style}_${selectedJob.id}_${selectedImageIndex + 1}.jpg`
                   )}
-                  className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25 font-medium"
                 >
-                  <Download className="h-4 w-4 mr-2" />
+                  <Download className="h-5 w-5 mr-2" />
                   Bu Resmi İndir
                 </button>
               </div>
