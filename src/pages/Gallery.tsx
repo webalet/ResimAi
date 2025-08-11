@@ -18,6 +18,25 @@ const Gallery: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all');
   const [selectedJob, setSelectedJob] = useState<JobWithImages | null>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+  // Helper function to check if job should timeout (5 minutes)
+  const isJobTimedOut = (createdAt: string) => {
+    const jobTime = new Date(createdAt).getTime();
+    const currentTime = new Date().getTime();
+    const fiveMinutes = 5 * 60 * 1000; // 5 minutes in milliseconds
+    return currentTime - jobTime > fiveMinutes;
+  };
+
+  // Process jobs to handle timeouts
+  const processJobsWithTimeout = (jobs: JobWithImages[]) => {
+    return jobs.map(job => {
+      if (job.status === 'processing' && isJobTimedOut(job.created_at)) {
+        return { ...job, status: 'failed' as const, error_message: 'İşlem zaman aşımına uğradı (5 dakika)' };
+      }
+      return job;
+    });
+  };
 
   // API hook for jobs
   const jobsApi = useApiWithRetry({
@@ -34,13 +53,14 @@ const Gallery: React.FC = () => {
         apiClient.get('/images/jobs?limit=50')
       );
       
-      // Map API response to frontend format
+      // Map API response to frontend format and handle timeouts
       const mappedJobs = (response.data.jobs || []).map((job: any) => ({
         ...job,
         category: job.categories // Map categories to category
       }));
       
-      setJobs(mappedJobs);
+      const processedJobs = processJobsWithTimeout(mappedJobs);
+      setJobs(processedJobs);
     } catch (error) {
       console.error('Jobs loading failed:', error);
       toast.error('İşler yüklenirken hata oluştu');
@@ -100,19 +120,6 @@ const Gallery: React.FC = () => {
     return job.status === filterStatus;
   });
 
-  // Helper function to get proxied image URL
-  const getProxiedImageUrl = (originalUrl: string) => {
-    if (!originalUrl) return originalUrl;
-    
-    // If it's already our domain, return as is
-    if (originalUrl.includes(window.location.hostname) || originalUrl.startsWith('/')) {
-      return originalUrl;
-    }
-    
-    // Proxy external URLs through our server using full backend URL
-    return `http://64.226.75.76:3001/api/images/proxy?url=${encodeURIComponent(originalUrl)}`;
-  };
-
   const handleDownload = async (imageUrl: string, filename: string) => {
     try {
       const response = await fetch(imageUrl);
@@ -147,6 +154,7 @@ const Gallery: React.FC = () => {
         // Close modal if the deleted job was selected
         if (selectedJob?.id === jobId) {
           setSelectedJob(null);
+          setSelectedImageIndex(0);
         }
       } else {
         toast.error(response.data.error || 'Silme işlemi başarısız');
@@ -206,49 +214,32 @@ const Gallery: React.FC = () => {
             className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             title="Yenile"
           >
-            <RefreshCw className={cn(
-              "h-4 w-4",
-              jobsApi.loading && "animate-spin"
-            )} />
+            <RefreshCw className={cn("h-5 w-5", jobsApi.loading && "animate-spin")} />
           </button>
           
-          {/* Filter */}
-          <div className="flex items-center space-x-2">
-            <Filter className="h-4 w-4 text-gray-500" />
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value as FilterStatus)}
-              className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            >
-              <option value="all">Tümü</option>
-              <option value="completed">Tamamlandı</option>
-              <option value="processing">İşleniyor</option>
-              <option value="pending">Bekliyor</option>
-              <option value="failed">Başarısız</option>
-            </select>
-          </div>
-          
-          {/* View Mode */}
-          <div className="flex border border-gray-300 rounded-lg">
+          {/* View Mode Toggle */}
+          <div className="flex bg-gray-100 rounded-lg p-1">
             <button
               onClick={() => setViewMode('grid')}
               className={cn(
-                'p-2 rounded-l-lg transition-colors',
+                'p-2 rounded-md transition-colors',
                 viewMode === 'grid'
-                  ? 'bg-purple-600 text-white'
-                  : 'text-gray-600 hover:bg-gray-100'
+                  ? 'bg-white text-purple-600 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
               )}
+              title="Grid görünümü"
             >
               <Grid className="h-4 w-4" />
             </button>
             <button
               onClick={() => setViewMode('list')}
               className={cn(
-                'p-2 rounded-r-lg transition-colors',
+                'p-2 rounded-md transition-colors',
                 viewMode === 'list'
-                  ? 'bg-purple-600 text-white'
-                  : 'text-gray-600 hover:bg-gray-100'
+                  ? 'bg-white text-purple-600 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
               )}
+              title="Liste görünümü"
             >
               <List className="h-4 w-4" />
             </button>
@@ -256,46 +247,84 @@ const Gallery: React.FC = () => {
         </div>
       </div>
 
-      {/* Jobs */}
+      {/* Filter Tabs */}
+      <div className="flex flex-wrap gap-2">
+        {[
+          { key: 'all', label: 'Tümü', count: jobs.length },
+          { key: 'completed', label: 'Tamamlanan', count: jobs.filter(j => j.status === 'completed').length },
+          { key: 'processing', label: 'İşleniyor', count: jobs.filter(j => j.status === 'processing').length },
+          { key: 'failed', label: 'Başarısız', count: jobs.filter(j => j.status === 'failed').length },
+          { key: 'pending', label: 'Bekleyen', count: jobs.filter(j => j.status === 'pending').length },
+        ].map(({ key, label, count }) => (
+          <button
+            key={key}
+            onClick={() => setFilterStatus(key as FilterStatus)}
+            className={cn(
+              'inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+              filterStatus === key
+                ? 'bg-purple-100 text-purple-700 border border-purple-200'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-transparent'
+            )}
+          >
+            {label}
+            <span className="ml-2 px-2 py-0.5 bg-white/50 rounded-full text-xs">
+              {count}
+            </span>
+          </button>
+        ))}
+      </div>
+
+      {/* Jobs Grid/List */}
       {filteredJobs.length === 0 ? (
         <div className="text-center py-12">
-          <div className="mx-auto h-24 w-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-            <Eye className="h-12 w-12 text-gray-400" />
+          <div className="text-gray-400 mb-4">
+            <Filter className="h-12 w-12 mx-auto" />
           </div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">
-            {filterStatus === 'all' ? 'Henüz işlenmiş fotoğraf yok' : `${getStatusText(filterStatus)} durumunda iş yok`}
+            {filterStatus === 'all' ? 'Henüz işiniz yok' : `${filterStatus} durumunda iş bulunamadı`}
           </h3>
           <p className="text-gray-600 mb-4">
-            Fotoğraf işlemeye başlamak için bir kategori seçin.
+            {filterStatus === 'all' 
+              ? 'İlk fotoğrafınızı işlemek için yeni bir iş oluşturun.'
+              : 'Farklı bir filtre seçerek diğer işlerinizi görüntüleyebilirsiniz.'
+            }
           </p>
-          <Link
-            to="/categories"
-            className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-          >
-            Fotoğraf Yükle
-          </Link>
+          {filterStatus === 'all' && (
+            <Link
+              to="/upload"
+              className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+            >
+              Yeni İş Oluştur
+            </Link>
+          )}
         </div>
       ) : (
         <div className={cn(
           viewMode === 'grid'
-            ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'
+            ? 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4'
             : 'space-y-4'
         )}>
           {filteredJobs.map((job) => (
             <div
               key={job.id}
               className={cn(
-                'bg-white rounded-xl shadow-sm border hover:shadow-md transition-shadow',
-                viewMode === 'list' && 'flex items-center space-x-4 p-4'
+                'bg-white rounded-xl border border-gray-200 overflow-hidden transition-all duration-200',
+                viewMode === 'grid'
+                  ? 'hover:shadow-lg hover:border-purple-200'
+                  : 'hover:shadow-md hover:border-purple-200 p-4'
               )}
             >
               {viewMode === 'grid' ? (
                 <>
-                  <div className="aspect-square relative overflow-hidden rounded-t-xl">
+                  <div className="aspect-square relative overflow-hidden rounded-t-xl group">
                     <img
-                      src={getProxiedImageUrl(job.processed_images.length > 0 ? job.processed_images[0].thumbnail_url || job.processed_images[0].image_url : job.original_image_url)}
+                      src={job.processed_images.length > 0 ? job.processed_images[0].thumbnail_url || job.processed_images[0].image_url : job.original_image_url}
                       alt={`${job.category?.display_name_tr} - ${job.style}`}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = '/images/ornek.jpg'; // Fallback image
+                      }}
                     />
                     <div className="absolute top-2 right-2">
                       <span className={cn(
@@ -310,52 +339,59 @@ const Gallery: React.FC = () => {
                   
                   <div className="p-4">
                     <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-semibold text-gray-900">
+                      <h3 className="font-semibold text-gray-900 text-sm truncate">
                         {job.category?.display_name_tr}
                       </h3>
-                      <span className="text-sm text-gray-500">{job.style}</span>
                     </div>
                     
-                    <p className="text-sm text-gray-600 mb-3">
+                    <p className="text-xs text-gray-600 mb-2">
+                      {job.style}
+                    </p>
+                    
+                    <p className="text-xs text-gray-500 mb-3">
                       {new Date(job.created_at).toLocaleDateString('tr-TR', {
                         day: 'numeric',
-                        month: 'long',
+                        month: 'short',
                         hour: '2-digit',
                         minute: '2-digit'
                       })}
                     </p>
                     
                     {job.processed_images.length > 0 && (
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-600">
-                          {job.processed_images.length} sonuç
-                        </span>
-                        <div className="flex space-x-2">
-                          <button
-                            onClick={() => setSelectedJob(job)}
-                            className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
-                            title="Görüntüle"
-                          >
-                            <Eye className="h-4 w-4" />
-                          </button>
-                          <button
-                            onClick={() => handleDownload(
-                              job.processed_images[0].image_url,
-                              `${job.category?.name}_${job.style}_${job.id}.jpg`
-                            )}
-                            className="p-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                            title="İndir"
-                          >
-                            <Download className="h-4 w-4" />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteJob(job.id)}
-                            className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                            title="Sil"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
+                      <p className="text-xs text-purple-600 font-medium mb-3">
+                        {job.processed_images.length} sonuç
+                      </p>
+                    )}
+                    
+                    {job.processed_images.length > 0 && (
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => {
+                            setSelectedJob(job);
+                            setSelectedImageIndex(0);
+                          }}
+                          className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                          title="Görüntüle"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDownload(
+                            job.processed_images[0].image_url,
+                            `${job.category?.name}_${job.style}_${job.id}.jpg`
+                          )}
+                          className="p-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                          title="İndir"
+                        >
+                          <Download className="h-4 w-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteJob(job.id)}
+                          className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Sil"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
                       </div>
                     )}
                     
@@ -370,9 +406,13 @@ const Gallery: React.FC = () => {
                 <>
                   <div className="w-16 h-16 flex-shrink-0">
                     <img
-                      src={getProxiedImageUrl(job.processed_images.length > 0 ? job.processed_images[0].thumbnail_url || job.processed_images[0].image_url : job.original_image_url)}
+                      src={job.processed_images.length > 0 ? job.processed_images[0].thumbnail_url || job.processed_images[0].image_url : job.original_image_url}
                       alt={`${job.category?.display_name_tr} - ${job.style}`}
                       className="w-full h-full object-cover rounded-lg"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = '/images/ornek.jpg'; // Fallback image
+                      }}
                     />
                   </div>
                   
@@ -416,7 +456,10 @@ const Gallery: React.FC = () => {
                     {job.processed_images.length > 0 && (
                       <>
                         <button
-                          onClick={() => setSelectedJob(job)}
+                          onClick={() => {
+                            setSelectedJob(job);
+                            setSelectedImageIndex(0);
+                          }}
                           className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
                           title="Görüntüle"
                         >
@@ -451,7 +494,10 @@ const Gallery: React.FC = () => {
 
       {/* Image Modal */}
       {selectedJob && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-2 sm:p-4 z-50" onClick={() => setSelectedJob(null)}>
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-2 sm:p-4 z-50" onClick={() => {
+          setSelectedJob(null);
+          setSelectedImageIndex(0);
+        }}>
           <div className="bg-white rounded-xl max-w-7xl w-full max-h-[95vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="p-4 sm:p-6">
               <div className="flex items-center justify-between mb-4 sm:mb-6">
@@ -459,39 +505,66 @@ const Gallery: React.FC = () => {
                   {selectedJob.category?.display_name_tr} - {selectedJob.style}
                 </h3>
                 <button
-                  onClick={() => setSelectedJob(null)}
+                  onClick={() => {
+                    setSelectedJob(null);
+                    setSelectedImageIndex(0);
+                  }}
                   className="p-2 text-gray-400 hover:text-gray-600 rounded-lg transition-colors"
                 >
                   <XCircle className="h-6 w-6" />
                 </button>
               </div>
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
-                {selectedJob.processed_images.map((image, index) => (
-                  <div key={image.id} className="relative group">
+              {/* Main Image Display */}
+              <div className="mb-6">
+                <div className="aspect-video bg-gray-50 rounded-lg overflow-hidden">
+                  <div className="flex-1 flex items-center justify-center bg-gray-50 rounded-lg">
                     <img
-                      src={getProxiedImageUrl(image.image_url)}
-                      alt={`Sonuç ${index + 1}`}
-                      className="w-full aspect-square object-cover rounded-lg cursor-pointer hover:scale-105 transition-transform"
-                      onClick={() => window.open(getProxiedImageUrl(image.image_url), '_blank')}
+                      src={selectedJob.processed_images[selectedImageIndex]?.image_url}
+                      alt={`Processed image ${selectedImageIndex + 1}`}
+                      className="w-full h-full object-contain"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = '/images/ornek.jpg'; // Fallback image
+                      }}
                     />
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors rounded-lg flex items-center justify-center">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDownload(
-                            image.image_url,
-                            `${selectedJob.category?.name}_${selectedJob.style}_${selectedJob.id}_${index + 1}.jpg`
-                          );
-                        }}
-                        className="opacity-0 group-hover:opacity-100 p-2 bg-white text-gray-900 rounded-lg hover:bg-gray-100 transition-all shadow-lg"
-                        title="İndir"
-                      >
-                        <Download className="h-4 w-4" />
-                      </button>
-                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Thumbnails */}
+              <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-2">
+                {selectedJob.processed_images.map((image, index) => (
+                  <div key={image.id} className={cn(
+                    "aspect-square border-2 rounded-lg overflow-hidden cursor-pointer transition-all",
+                    selectedImageIndex === index ? "border-purple-500" : "border-gray-200 hover:border-gray-300"
+                  )}>
+                    <img
+                      src={image.thumbnail_url || image.image_url}
+                      alt={`Thumbnail ${index + 1}`}
+                      className="w-full h-full object-cover rounded cursor-pointer hover:opacity-80 transition-opacity"
+                      onClick={() => setSelectedImageIndex(index)}
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = '/images/ornek.jpg'; // Fallback image
+                      }}
+                    />
                   </div>
                 ))}
+              </div>
+              
+              {/* Download Button */}
+              <div className="mt-6 flex justify-center">
+                <button
+                  onClick={() => handleDownload(
+                    selectedJob.processed_images[selectedImageIndex]?.image_url,
+                    `${selectedJob.category?.name}_${selectedJob.style}_${selectedJob.id}_${selectedImageIndex + 1}.jpg`
+                  )}
+                  className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Bu Resmi İndir
+                </button>
               </div>
             </div>
           </div>

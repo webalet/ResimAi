@@ -1,5 +1,6 @@
 # TODO:
 
-- [x] 67: Fix the issue preventing processed images from appearing in the gallery (priority: High)
-- [x] 68: Fix API endpoint to include category information in jobs response (priority: High)
-- [x] 69: Test the gallery to ensure processed images are displayed correctly (priority: Medium)
+- [ ] 70: Add all changes to git staging area (**IN PROGRESS**) (priority: High)
+- [ ] 71: Commit changes with message: feat: improve gallery layout and remove proxy system (priority: High)
+- [ ] 72: Push changes to GitHub main branch (priority: High)
+- [ ] 73: Prepare deployment commands for server (priority: Medium)
