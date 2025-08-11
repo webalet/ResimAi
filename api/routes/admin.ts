@@ -5,6 +5,10 @@ import path from 'path';
 import fs from 'fs';
 import { supabase } from '../config/supabase.js';
 import { adminAuth } from '../middleware/adminAuth.js';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const router = Router();
 
@@ -21,6 +25,44 @@ const upload = multer({
     } else {
       cb(null, false);
     }
+  }
+});
+
+// Get admin settings from admin-settings.json
+router.get('/admin-settings', adminAuth, async (req: Request, res: Response) => {
+  try {
+    const settingsPath = path.join(process.cwd(), 'admin-settings.json');
+    const settingsData = fs.readFileSync(settingsPath, 'utf8');
+    const settings = JSON.parse(settingsData);
+    res.json({
+      success: true,
+      data: settings
+    });
+  } catch (error) {
+    console.error('Error reading admin settings:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Admin ayarları yüklenirken hata oluştu'
+    });
+  }
+});
+
+// Update admin settings in admin-settings.json
+router.put('/admin-settings', adminAuth, async (req: Request, res: Response) => {
+  try {
+    const settingsPath = path.join(process.cwd(), 'admin-settings.json');
+    const updatedSettings = req.body;
+    fs.writeFileSync(settingsPath, JSON.stringify(updatedSettings, null, 2));
+    res.json({
+      success: true,
+      message: 'Admin ayarları başarıyla güncellendi'
+    });
+  } catch (error) {
+    console.error('Error updating admin settings:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Admin ayarları güncellenirken hata oluştu'
+    });
   }
 });
 

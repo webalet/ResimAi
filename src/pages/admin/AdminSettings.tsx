@@ -89,7 +89,62 @@ const AdminSettings = () => {
   // Load settings on component mount
   useEffect(() => {
     loadSettings();
+    loadCategoriesAndPrompts();
   }, []);
+
+  // Load categories and prompts from admin-settings.json
+  const loadCategoriesAndPrompts = async () => {
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch('/api/admin/admin-settings', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      if (response.ok) {
+        const result = await response.json();
+        const data = result.data;
+        if (data.categories) {
+          setCategories(data.categories);
+        }
+        if (data.aiPrompts) {
+          setAiPrompts(data.aiPrompts);
+        }
+        if (data.supabase) {
+           setSystemConfig(prev => ({
+             ...prev,
+             supabase: {
+               url: data.supabase.url || '',
+               anonKey: data.supabase.anonKey || '',
+               serviceRoleKey: data.supabase.serviceRoleKey || ''
+             }
+           }));
+        }
+        if (data.n8n) {
+          setSystemConfig(prev => ({
+            ...prev,
+            n8n: {
+              webhookUrl: data.n8n.webhookUrl || '',
+              apiKey: data.n8n.apiKey || ''
+            }
+          }));
+        }
+        if (data.jwt) {
+          setSystemConfig(prev => ({
+            ...prev,
+            jwt: {
+              secret: data.jwt.secretKey || '',
+              expiresIn: data.jwt.tokenExpiry || '24h'
+            }
+          }));
+        }
+      }
+    } catch (error) {
+      console.error('Error loading categories and prompts:', error);
+      toast.error('Kategoriler ve prompt\'lar yüklenirken hata oluştu');
+    }
+  };
 
   const loadSettings = async () => {
     try {
@@ -129,43 +184,37 @@ const AdminSettings = () => {
     }
   };
 
-  // State for editable AI prompts
+  // State for editable AI prompts - synchronized with API generatePrompt function
   const [aiPrompts, setAiPrompts] = useState({
     Corporate: {
-      Professional: 'professional corporate headshot, business attire, clean background, high quality, studio lighting',
-      'Business Casual': 'business casual portrait, approachable professional look, modern office setting',
-      Executive: 'executive portrait, confident pose, formal business suit, premium quality',
-      'Formal Meeting': 'formal meeting ready portrait, professional appearance, business environment'
+      Klasik: 'Put the person in a traditional office environment with classic wooden furniture and formal atmosphere. Also, make sure they wear a classic business suit with traditional styling and conservative colors.',
+      Modern: 'Put the person in a modern tech office environment with glass walls, contemporary furniture, and innovative workspace design. Also, make sure they wear a sleek contemporary business suit with modern cut and trendy styling.',
+      Resmi: 'Put the person in a very formal corporate boardroom environment with mahogany furniture and executive atmosphere. Also, make sure they wear a strictly formal business suit with conservative styling, tie, and traditional corporate appearance.'
     },
     Creative: {
-      Artistic: 'artistic portrait, creative lighting, unique composition, expressive style',
-      Bohemian: 'bohemian style portrait, free-spirited, natural lighting, artistic flair',
-      Vintage: 'vintage style portrait, classic aesthetic, retro elements, timeless appeal',
-      'Modern Art': 'modern artistic portrait, contemporary style, bold composition'
+      Sanatsal: 'Transform the person with artistic effects: add colorful paint splashes on their face and hair, apply vibrant artistic makeup with bold colors, add creative face painting designs, and enhance with artistic lighting effects on the person. Keep the original background unchanged, focus only on making the person artistic and colorful.',
+      Renkli: 'Transform the person into a vibrant, colorful portrait with rainbow-like color gradients on their clothing, add bright neon lighting effects around them, enhance their features with vivid makeup in electric blues, hot pinks, and golden yellows. Create a dynamic atmosphere with colorful light rays and energetic visual elements while maintaining the person as the focal point.',
+      Minimalist: 'Create a clean, minimalist portrait with the person against a pure white or soft neutral background. Simplify their clothing to solid, muted colors like white, beige, or soft gray. Remove any distracting elements, use soft natural lighting, and focus on clean lines and elegant simplicity. The composition should be balanced and serene with plenty of negative space.'
     },
     Avatar: {
-      Cartoon: 'cartoon style avatar, friendly expression, vibrant colors, stylized features',
-      Realistic: 'realistic avatar, detailed features, natural appearance, high quality',
-      Anime: 'anime style avatar, expressive eyes, stylized features, vibrant colors',
-      Fantasy: 'fantasy avatar, magical elements, creative design, imaginative style'
+      'Çizgi Film': 'Transform the person into a vibrant cartoon-style avatar with exaggerated facial features, bright cartoon colors, simplified geometric shapes, large expressive eyes, and smooth animated textures. Apply a cel-shaded effect with bold outlines and maintain the playful, animated character aesthetic typical of modern animation studios.',
+      Realistik: 'Create a high-quality realistic digital avatar that preserves all natural human features and proportions with enhanced detail. Improve skin texture, add subtle lighting effects, maintain authentic facial expressions, and ensure photorealistic quality while keeping the person\'s unique characteristics and identity intact.',
+      Fantastik: 'Transform the person into an enchanting fantasy avatar with magical elements such as glowing eyes, ethereal lighting effects, mystical aura, fantasy-themed accessories like elven ears or magical symbols, and otherworldly atmospheric effects. Add fantasy colors and magical particle effects while maintaining recognizable human features.'
     },
     Outfit: {
-      Casual: 'casual outfit portrait, relaxed style, comfortable clothing, natural pose',
-      Formal: 'formal outfit portrait, elegant attire, sophisticated style, polished look',
-      Sporty: 'sporty outfit portrait, athletic wear, active lifestyle, energetic pose',
-      Trendy: 'trendy outfit portrait, fashionable clothing, modern style, stylish appearance'
+      Casual: 'Transform the person\'s outfit to stylish casual wear: fitted dark jeans or chinos, a trendy t-shirt or casual button-down shirt, comfortable sneakers or casual shoes, and add accessories like a watch or casual jacket. Create a relaxed, everyday look that\'s both comfortable and fashionable.',
+      Formal: 'Change the person\'s outfit to elegant formal attire: for men, a well-tailored dark suit with dress shirt, tie, and polished dress shoes; for women, an elegant cocktail dress or professional pantsuit with heels and refined accessories. Ensure the styling is sophisticated and appropriate for formal events.',
+      Spor: 'Transform the person into athletic sportswear: moisture-wicking workout clothes, athletic shorts or leggings, performance t-shirt or tank top, quality running shoes, and sport-specific accessories like a fitness tracker or gym bag. Create an active, energetic appearance suitable for exercise or sports activities.'
     },
     Background: {
-      Office: 'professional office background, modern workspace, clean environment',
-      Studio: 'studio background, professional lighting, neutral backdrop',
-      Nature: 'natural background, outdoor setting, scenic environment',
-      Abstract: 'abstract background, artistic elements, creative composition'
+      Ofis: 'Replace the background with a sophisticated modern office environment featuring floor-to-ceiling windows with city views, sleek glass conference tables, contemporary furniture, soft ambient lighting, and professional workplace atmosphere. Add subtle details like modern art on walls and high-tech equipment.',
+      Doğa: 'Transform the background into a breathtaking natural outdoor scene with lush green forests, golden sunlight filtering through trees, scenic mountain landscapes, or serene lakeside views. Include natural elements like flowing water, wildflowers, and soft natural lighting that creates a peaceful, organic atmosphere.',
+      Stüdyo: 'Create a professional photography studio background with seamless gradient lighting, soft diffused illumination, clean minimalist backdrop in neutral tones (white, gray, or subtle colors), and professional studio lighting setup that enhances the subject without distractions.'
     },
     Skincare: {
-      Natural: 'natural skincare portrait, healthy glow, fresh appearance, clean beauty',
-      Glowing: 'glowing skin portrait, radiant complexion, healthy appearance',
-      Professional: 'professional skincare portrait, polished look, refined appearance',
-      Fresh: 'fresh skincare portrait, youthful glow, vibrant appearance'
+      Doğal: 'Apply professional natural skin enhancement: subtly even out skin tone, reduce minor blemishes while preserving natural texture and pores, enhance the skin\'s inherent glow with soft lighting, and maintain authentic skin characteristics. Focus on healthy, realistic improvements that look naturally beautiful.',
+      Pürüzsüz: 'Create flawless, magazine-quality skin with professional retouching: smooth out all imperfections, minimize pores, even skin tone completely, remove blemishes and fine lines, and apply subtle contouring for a polished, airbrushed finish while keeping facial features natural.',
+      Parlak: 'Transform the skin with a luminous, radiant glow: enhance natural skin luminosity, add subtle highlighting to cheekbones and high points of the face, create a healthy dewy finish, boost overall skin radiance with warm golden undertones, and apply professional-grade skin brightening effects for a vibrant, youthful appearance.'
     }
   });
 
@@ -287,23 +336,49 @@ const AdminSettings = () => {
         return;
       }
 
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
-      const response = await fetch(`${API_BASE_URL}/api/admin/settings/config`, {
+      const token = localStorage.getItem('adminToken');
+      
+      // Get current settings first
+      const currentResponse = await fetch('/api/admin/admin-settings', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      let currentSettings = {};
+      if (currentResponse.ok) {
+        const result = await currentResponse.json();
+        currentSettings = result.data;
+      }
+      
+      // Update with new system config
+      const updatedSettings = {
+        ...currentSettings,
+        [section]: section === 'jwt' ? {
+          secretKey: systemConfig.jwt.secret,
+          tokenExpiry: systemConfig.jwt.expiresIn
+        } : section === 'n8n' ? {
+          webhookUrl: systemConfig.n8n.webhookUrl,
+          apiKey: systemConfig.n8n.apiKey
+        } : systemConfig[section]
+      };
+      
+      const response = await fetch('/api/admin/admin-settings', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+          'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ section, config: systemConfig[section] })
+        body: JSON.stringify(updatedSettings)
       });
 
-      const data = await response.json();
-      
-      if (data.success) {
+      if (response.ok) {
         toggleEditMode(section);
         showMessage('success', `${section} konfigürasyonu başarıyla kaydedildi!`);
       } else {
-        throw new Error(data.message || 'Kaydetme işlemi başarısız');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Kaydetme işlemi başarısız');
       }
     } catch (error) {
       console.error('Save config error:', error);
@@ -326,40 +401,44 @@ const AdminSettings = () => {
         return;
       }
 
-      // Save both categories and prompts
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
-      const [categoriesResponse, promptsResponse] = await Promise.all([
-        fetch(`${API_BASE_URL}/api/admin/settings/categories`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
-          },
-          body: JSON.stringify({ categories })
-        }),
-        fetch(`${API_BASE_URL}/api/admin/settings/prompts`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
-          },
-          body: JSON.stringify({ prompts: aiPrompts })
-        })
-      ]);
-
-      const [categoriesData, promptsData] = await Promise.all([
-        categoriesResponse.json(),
-        promptsResponse.json()
-      ]);
+      const token = localStorage.getItem('adminToken');
       
-      if (categoriesData.success && promptsData.success) {
-        setCategories(categoriesData.data);
-        setAiPrompts(promptsData.data);
+      // Get current settings first
+      const currentResponse = await fetch('/api/admin/admin-settings', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      let currentSettings = {};
+      if (currentResponse.ok) {
+        const result = await currentResponse.json();
+        currentSettings = result.data;
+      }
+      
+      // Update with new categories and prompts
+      const updatedSettings = {
+        ...currentSettings,
+        categories,
+        aiPrompts
+      };
+      
+      const response = await fetch('/api/admin/admin-settings', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(updatedSettings)
+      });
+
+      if (response.ok) {
         toggleEditMode('categories');
         showMessage('success', 'Kategoriler ve prompt\'lar başarıyla kaydedildi!');
       } else {
-        const errorMsg = categoriesData.message || promptsData.message || 'Kaydetme işlemi başarısız';
-        throw new Error(errorMsg);
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Kategoriler kaydedilirken hata oluştu');
       }
     } catch (error) {
       console.error('Save categories error:', error);

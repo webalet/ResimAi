@@ -369,7 +369,7 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
   }
 }
 
-// Generate dynamic prompt based on category and style
+// Generate dynamic prompt based on category and style - synchronized with AdminSettings
 const generatePrompt = (category: string, style: string): string => {
   const prompts: { [key: string]: { [key: string]: string } } = {
     'Corporate': {
@@ -404,7 +404,7 @@ const generatePrompt = (category: string, style: string): string => {
     }
   };
 
-  return prompts[category]?.[style] || 'Enhance and improve the person in the image with professional quality.';
+  return prompts[category]?.[style] || 'professional portrait, high quality, studio lighting';
 };
 
 // Process image endpoint (simplified - no webhook call)
