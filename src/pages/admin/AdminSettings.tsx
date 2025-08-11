@@ -207,23 +207,23 @@ const AdminSettings = () => {
       
       // API direkt admin-settings.json içeriğini döndürüyor
       if (data) {
-        // Update system config from direct data properties
+        // Update system config from data.data properties
         const systemConfig = {
-          supabase: data.supabase || {},
-          n8n: data.n8n || {},
-          jwt: data.jwt || {},
-          server: data.server || { port: '3001', url: 'http://64.226.75.76:3001' }
+          supabase: data.data.supabase || {},
+          n8n: data.data.n8n || {},
+          jwt: data.data.jwt || {},
+          server: data.data.server || { port: '3001', url: 'http://64.226.75.76:3001' }
         };
         setSystemConfig(systemConfig);
         
         // Update categories
-        if (data.categories) {
-          setCategories(data.categories);
+        if (data.data.categories) {
+          setCategories(data.data.categories);
         }
         
         // Update AI prompts
-        if (data.aiPrompts) {
-          setAiPrompts(data.aiPrompts);
+        if (data.data.aiPrompts) {
+          setAiPrompts(data.data.aiPrompts);
         }
       }
     } catch (error) {
