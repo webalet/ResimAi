@@ -321,6 +321,7 @@ const Gallery: React.FC = () => {
                       src={job.processed_images.length > 0 ? job.processed_images[0].thumbnail_url || job.processed_images[0].image_url : job.original_image_url}
                       alt={`${job.category?.display_name_tr} - ${job.style}`}
                       className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      onContextMenu={(e) => e.preventDefault()}
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src = '/images/ornek.jpg'; // Fallback image
@@ -363,37 +364,39 @@ const Gallery: React.FC = () => {
                       </p>
                     )}
                     
-                    {job.processed_images.length > 0 && (
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => {
-                            setSelectedJob(job);
-                            setSelectedImageIndex(0);
-                          }}
-                          className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
-                          title="Görüntüle"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDownload(
-                            job.processed_images[0].image_url,
-                            `${job.category?.name}_${job.style}_${job.id}.jpg`
-                          )}
-                          className="p-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                          title="İndir"
-                        >
-                          <Download className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteJob(job.id)}
-                          className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Sil"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    )}
+                    <div className="flex space-x-2">
+                      {job.processed_images.length > 0 && (
+                        <>
+                          <button
+                            onClick={() => {
+                              setSelectedJob(job);
+                              setSelectedImageIndex(0);
+                            }}
+                            className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                            title="Görüntüle"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDownload(
+                              job.processed_images[0].image_url,
+                              `${job.category?.name}_${job.style}_${job.id}.jpg`
+                            )}
+                            className="p-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                            title="İndir"
+                          >
+                            <Download className="h-4 w-4" />
+                          </button>
+                        </>
+                      )}
+                      <button
+                        onClick={() => handleDeleteJob(job.id)}
+                        className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Sil"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
                     
                     {job.status === 'failed' && job.error_message && (
                       <p className="text-sm text-red-600 mt-2">
@@ -409,6 +412,7 @@ const Gallery: React.FC = () => {
                       src={job.processed_images.length > 0 ? job.processed_images[0].thumbnail_url || job.processed_images[0].image_url : job.original_image_url}
                       alt={`${job.category?.display_name_tr} - ${job.style}`}
                       className="w-full h-full object-cover rounded-lg"
+                      onContextMenu={(e) => e.preventDefault()}
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src = '/images/ornek.jpg'; // Fallback image
@@ -523,6 +527,7 @@ const Gallery: React.FC = () => {
                       src={selectedJob.processed_images[selectedImageIndex]?.image_url}
                       alt={`Processed image ${selectedImageIndex + 1}`}
                       className="w-full h-full object-contain"
+                      onContextMenu={(e) => e.preventDefault()}
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src = '/images/ornek.jpg'; // Fallback image
@@ -544,6 +549,7 @@ const Gallery: React.FC = () => {
                       alt={`Thumbnail ${index + 1}`}
                       className="w-full h-full object-cover rounded cursor-pointer hover:opacity-80 transition-opacity"
                       onClick={() => setSelectedImageIndex(index)}
+                      onContextMenu={(e) => e.preventDefault()}
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src = '/images/ornek.jpg'; // Fallback image
