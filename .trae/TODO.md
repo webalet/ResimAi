@@ -1,11 +1,8 @@
 # TODO:
 
-- [ ] 123: Local değişiklikleri git commit ve push yap (**IN PROGRESS**) (priority: High)
-- [ ] 124: Remote sunucuda (64.226.75.76) git pull yap (priority: High)
-- [ ] 125: npm run build ile build al (priority: High)
-- [ ] 126: pm2 restart all ile servisleri yeniden başlat (priority: High)
-- [ ] 127: AdminSettings sayfasını test et - Authentication çalışıyor mu (priority: Medium)
-- [ ] 128: API çağrıları başarılı mı test et (priority: Medium)
-- [ ] 129: Form validasyonları çalışıyor mu test et (priority: Medium)
-- [ ] 130: Kaydetme işlemleri çalışıyor mu test et (priority: Medium)
-- [ ] 131: UI/UX düzgün görünüyor mu test et (priority: Low)
+- [x] 147: admin-settings.json dosyasını AdminSettings.tsx'teki doğru Supabase, n8n ve JWT değerleriyle güncelle (priority: High)
+- [x] 148: admin.ts dosyasındaki hatalı default/fallback değerleri admin-settings.json'daki gerçek değerlerle senkronize et (priority: High)
+- [x] 149: AdminSettings.tsx'teki hardcoded değerleri kaldır ve tamamen API'den gelen veriye bağımlı hale getir (priority: High)
+- [ ] 150: Değişiklikleri commit ve push yap (**IN PROGRESS**) (priority: Medium)
+- [ ] 151: Uzak sunucuda git pull, build ve restart yap (priority: Medium)
+- [ ] 152: Admin ayarları sayfasını test et - artık hardcoded değerler yerine API'den gelen veriler kullanılıyor mu kontrol et (priority: Medium)

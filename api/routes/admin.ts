@@ -451,9 +451,9 @@ router.get('/settings', adminAuth, async (req: Request, res: Response) => {
     const settings = {
       systemConfig: {
         supabase: {
-          url: savedSettings.supabase?.url || 'https://ixqjqvqvqvqvqvqv.supabase.co',
-          anonKey: savedSettings.supabase?.anonKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4cWpxdnF2cXZxdnF2cXYiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTczNDk2NzIwMCwiZXhwIjoyMDUwNTQzMjAwfQ.example_anon_key',
-          serviceRoleKey: savedSettings.supabase?.serviceRoleKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml4cWpxdnF2cXZxdnF2cXYiLCJyb2xlIjoic2VydmljZV9yb2xlIiwiaWF0IjoxNzM0OTY3MjAwLCJleHAiOjIwNTA1NDMyMDB9.example_service_role_key'
+          url: savedSettings.supabase?.url || 'https://pfpaeiyshitndugrzmmb.supabase.co',
+          anonKey: savedSettings.supabase?.anonKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmcGFlaXlzaGl0bmR1Z3J6bW1iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ2NzM0MTAsImV4cCI6MjA3MDI0OTQxMH0.CZzstaQmMmEdA1PVntBskuzdqHKe6_ovVSLfYFkD23E',
+          serviceRoleKey: savedSettings.supabase?.serviceRoleKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmcGFlaXlzaGl0bmR1Z3J6bW1iIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NDY3MzQxMCwiZXhwIjoyMDcwMjQ5NDEwfQ.ZZdQIiHsHJm43fPoRNGYjPAzXztkckmV2e27LmnnRiY'
         },
         n8n: {
           webhookUrl: savedSettings.n8n?.webhookUrl || 'https://1qe4j72v.rpcld.net/webhook/cd11e789-5e4e-4dda-a86e-e1204e036c82',

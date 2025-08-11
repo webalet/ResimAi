@@ -11,21 +11,21 @@ const AdminSettings = () => {
   // State for editable configuration
   const [systemConfig, setSystemConfig] = useState({
     supabase: {
-      url: 'https://pfpaeiyshitndugrzmmb.supabase.co',
-      anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmcGFlaXlzaGl0bmR1Z3J6bW1iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ2NzM0MTAsImV4cCI6MjA3MDI0OTQxMH0.CZzstaQmMmEdA1PVntBskuzdqHKe6_ovVSLfYFkD23E',
-      serviceRoleKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmcGFlaXlzaGl0bmR1Z3J6bW1iIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NDY3MzQxMCwiZXhwIjoyMDcwMjQ5NDEwfQ.ZZdQIiHsHJm43fPoRNGYjPAzXztkckmV2e27LmnnRiY'
+      url: '',
+      anonKey: '',
+      serviceRoleKey: ''
     },
     n8n: {
-      webhookUrl: 'https://1qe4j72v.rpcld.net/webhook/cd11e789-5e4e-4dda-a86e-e1204e036c82',
-      apiKey: 'n8n_api_key_example_12345'
+      webhookUrl: '',
+      apiKey: ''
     },
     jwt: {
-      secret: 'your-super-secret-jwt-key-here-make-it-long-and-secure',
-      expiresIn: '7d'
+      secret: '',
+      expiresIn: ''
     },
     server: {
-      port: '3001',
-      url: 'http://64.226.75.76:3001'
+      port: '',
+      url: ''
     }
   });
 
