@@ -181,7 +181,7 @@ const AdminSettings = () => {
       }
       
       const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
-      const response = await fetch(`${API_BASE_URL}/api/admin/settings`, {
+      const response = await fetch(`${API_BASE_URL}/api/admin/admin-settings`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -200,24 +200,29 @@ const AdminSettings = () => {
 
       const data = await response.json();
       
-      if (!data.success) {
-        throw new Error(data.message || 'Ayarlar yükleme başarısız');
-      }
+      // Debug: API'den gelen veriyi kontrol et
+      console.log('API Response Data:', data);
+      console.log('Data type:', typeof data);
+      console.log('Data keys:', Object.keys(data || {}));
       
-      if (data.data) {
-        // Update system config
-        if (data.data.systemConfig) {
-          setSystemConfig(data.data.systemConfig);
-        }
+      // API direkt admin-settings.json içeriğini döndürüyor
+      if (data) {
+        // Update system config from direct data properties
+        const systemConfig = {
+          supabase: data.supabase || {},
+          n8n: data.n8n || {},
+          jwt: data.jwt || {}
+        };
+        setSystemConfig(systemConfig);
         
         // Update categories
-        if (data.data.categories) {
-          setCategories(data.data.categories);
+        if (data.categories) {
+          setCategories(data.categories);
         }
         
         // Update AI prompts
-        if (data.data.aiPrompts) {
-          setAiPrompts(data.data.aiPrompts);
+        if (data.aiPrompts) {
+          setAiPrompts(data.aiPrompts);
         }
       }
     } catch (error) {
