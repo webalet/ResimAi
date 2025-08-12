@@ -310,7 +310,8 @@
     }
   },
   "layout": {
-    "credits": "credits"
+    "credits": "credits",
+    "subscription": "Subscription"
   },
   "sidebar": {
     "categories": "Categories",
