@@ -178,7 +178,7 @@ export default function App() {
             } />
           </Routes>
           
-          <Toaster position="top-right" richColors />
+          <Toaster position="bottom-right" richColors />
         </div>
       </Router>
     </AuthProvider>

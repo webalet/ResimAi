@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState, useRef } from 'r
 import { User } from '../types/auth';
 import { authService } from '../services/authService';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 interface AuthContextType {
   user: User | null;
@@ -29,6 +30,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const lastLoginAttemptRef = useRef<number>(0);
   const lastRegisterAttemptRef = useRef<number>(0);
   const RATE_LIMIT_MS = 2000; // 2 seconds between auth requests
+  const { t } = useTranslation();
 
   useEffect(() => {
     checkAuthStatus();
@@ -98,7 +100,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const response = await authService.login(email, password);
       localStorage.setItem('token', response.token);
       setUser(response.user);
-      toast.success('Başarıyla giriş yapıldı!');
+      toast.success(t('auth.success.login'));
     } catch (error: any) {
       // Don't show toast messages here - let the calling component handle it
       // Just throw the error with enhanced information
@@ -136,7 +138,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const response = await authService.register(name, email, password);
       localStorage.setItem('token', response.token);
       setUser(response.user);
-      toast.success('Hesap başarıyla oluşturuldu!');
+      toast.success(t('auth.success.register'));
     } catch (error: any) {
       // Don't show toast messages here - let the calling component handle it
       // Just throw the error with enhanced information
@@ -162,9 +164,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.removeItem('token');
       localStorage.removeItem('adminToken');
       setUser(null);
-      toast.success('Başarıyla çıkış yapıldı');
+      toast.success(t('auth.success.logout'));
     } catch (error: any) {
-      toast.error('Çıkış yapılırken hata oluştu');
+      toast.error(t('auth.errors.serverError'));
     }
   };
 

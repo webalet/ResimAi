@@ -75,6 +75,11 @@
       "signIn": "Sign in",
       "link": "Sign up"
     },
+    "success": {
+      "login": "Successfully logged in!",
+      "logout": "Successfully logged out",
+      "register": "Account created successfully!"
+    },
     "errors": {
       "invalidCredentials": "Invalid email or password",
       "emailRequired": "Email is required",

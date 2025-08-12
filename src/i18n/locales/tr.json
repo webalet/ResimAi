@@ -79,6 +79,11 @@
       "signIn": "Giriş yapın",
       "link": "Kayıt olun"
     },
+    "success": {
+      "login": "Başarıyla giriş yapıldı!",
+      "logout": "Başarıyla çıkış yapıldı",
+      "register": "Hesap başarıyla oluşturuldu!"
+    },
     "errors": {
       "invalidCredentials": "Geçersiz e-posta veya şifre",
       "emailRequired": "E-posta gerekli",
