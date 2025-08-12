@@ -360,7 +360,7 @@ const Categories: React.FC = () => {
 
             {/* Upload Method Selection */}
             <div className="bg-white rounded-xl shadow-sm border p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Yükleme Yöntemi</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('categories.uploadMethod')}</h3>
               <div className="flex space-x-4 mb-4">
                 <button
                   onClick={() => setUploadState(prev => ({ ...prev, uploadMethod: 'file' }))}
@@ -582,7 +582,7 @@ const Categories: React.FC = () => {
               <p className="text-gray-600 mb-4">{category.description}</p>
               
               <div className="mb-4">
-                <p className="text-sm font-medium text-gray-700 mb-2">Mevcut Stiller:</p>
+                <p className="text-sm font-medium text-gray-700 mb-2">{t('categories.availableStyles')}:</p>
                 <div className="flex flex-wrap gap-2">
                   {category.styles.map((style, index) => (
                     <span

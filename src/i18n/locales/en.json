@@ -379,7 +379,14 @@
     "loginRequired": "Please log in",
     "insufficientCredits": "Insufficient credits. Please buy credits.",
     "uploadError": "Error occurred during upload",
-    "jobCreated": "Job created successfully! You can track it from the gallery page."
+    "jobCreated": "Job created successfully! You can track it from the gallery page.",
+    "uploadMethod": "Upload Method",
+    "availableStyles": "Available Styles",
+    "invalidFileType": "Please select a valid image file (PNG, JPG, JPEG)",
+    "fileSizeError": "File size must be less than 10MB",
+    "selectCategoryAndStyle": "Please select category and style",
+    "enterImageUrl": "Please enter image URL",
+    "pleaseLogin": "Please log in"
   },
   "gallery": {
     "title": "Gallery",

@@ -383,7 +383,14 @@
     "loginRequired": "Lütfen giriş yapın",
     "insufficientCredits": "Yetersiz kredi. Lütfen kredi satın alın.",
     "uploadError": "Yükleme sırasında hata oluştu",
-    "jobCreated": "İş başarıyla oluşturuldu! Galeri sayfasından takip edebilirsiniz."
+    "jobCreated": "İş başarıyla oluşturuldu! Galeri sayfasından takip edebilirsiniz.",
+    "uploadMethod": "Yükleme Yöntemi",
+    "availableStyles": "Mevcut Stiller",
+    "invalidFileType": "Lütfen geçerli bir resim dosyası seçin (PNG, JPG, JPEG)",
+    "fileSizeError": "Dosya boyutu 10MB'dan küçük olmalıdır",
+    "selectCategoryAndStyle": "Lütfen kategori ve stil seçin",
+    "enterImageUrl": "Lütfen resim URL'si girin",
+    "pleaseLogin": "Lütfen giriş yapın"
   },
   "gallery": {
     "title": "Galeri",
