@@ -308,13 +308,18 @@
       "totalJobs": "Toplam İş",
       "completedJobs": "Tamamlanan İş",
       "remainingCredits": "Kalan Kredi",
-      "successRate": "Başarı Oranı"
+      "successRate": "Başarı Oranı",
+      "pendingJobs": "Bekleyen İşler"
     },
     "quickActions": {
       "title": "Hızlı İşlemler",
       "newJob": "Yeni İş Oluştur",
       "viewGallery": "Galeriyi Görüntüle",
-      "buyCredits": "Kredi Satın Al"
+      "buyCredits": "Kredi Satın Al",
+      "uploadPhoto": {
+        "title": "Fotoğraf Yükle",
+        "description": "Yeni bir fotoğraf yükleyerek işleme başlayın"
+      }
     },
     "recentJobs": {
       "title": "Son İşler",
@@ -329,6 +334,9 @@
       "failed": "Başarısız",
       "pending": "Bekliyor"
     }
+  },
+  "layout": {
+    "credits": "kredi"
   },
   "sidebar": {
     "categories": "Kategoriler",

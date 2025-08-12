@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { 
   Home, 
   Grid3X3, 
@@ -26,22 +26,23 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const { lang } = useParams();
   const { t } = useTranslation();
 
   const navigation = [
-    { name: t('navigation.dashboard'), href: '/dashboard', icon: Home },
-    { name: t('navigation.categories'), href: '/categories', icon: Grid3X3 },
-    { name: t('navigation.gallery'), href: '/gallery', icon: Image },
-    { name: t('layout.subscription'), href: '/subscription', icon: CreditCard },
-    { name: t('navigation.profile'), href: '/profile', icon: User },
+    { name: t('navigation.dashboard'), href: `/${lang}/dashboard`, icon: Home },
+    { name: t('navigation.categories'), href: `/${lang}/categories`, icon: Grid3X3 },
+    { name: t('navigation.gallery'), href: `/${lang}/gallery`, icon: Image },
+    { name: t('layout.subscription'), href: `/${lang}/subscription`, icon: CreditCard },
+    { name: t('navigation.profile'), href: `/${lang}/profile`, icon: User },
   ];
 
   const handleLogout = async () => {
     try {
       await logout();
-      navigate('/login');
+      navigate(`/${lang}/login`);
     } catch (error) {
-      toast.error(t('layout.logoutError'));
+      toast.error(t('sidebar.logoutError'));
     }
   };
 

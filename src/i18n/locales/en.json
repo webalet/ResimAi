@@ -304,13 +304,18 @@
       "totalJobs": "Total Jobs",
       "completedJobs": "Completed Jobs",
       "remainingCredits": "Remaining Credits",
-      "successRate": "Success Rate"
+      "successRate": "Success Rate",
+      "pendingJobs": "Pending Jobs"
     },
     "quickActions": {
       "title": "Quick Actions",
       "newJob": "Create New Job",
       "viewGallery": "View Gallery",
-      "buyCredits": "Buy Credits"
+      "buyCredits": "Buy Credits",
+      "uploadPhoto": {
+        "title": "Upload Photo",
+        "description": "Start processing by uploading a new photo"
+      }
     },
     "recentJobs": {
       "title": "Recent Jobs",
@@ -325,6 +330,9 @@
       "failed": "Failed",
       "pending": "Pending"
     }
+  },
+  "layout": {
+    "credits": "credits"
   },
   "sidebar": {
     "categories": "Categories",
