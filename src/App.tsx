@@ -13,7 +13,7 @@ import Pricing from "./pages/Pricing";
 import Dashboard from "./pages/Dashboard";
 import Categories from "./pages/Categories";
 
-import Gallery from "./pages/gallery";
+import Gallery from "./pages/Gallery";
 import Subscription from "./pages/Subscription";
 import Profile from "./pages/Profile";
 
