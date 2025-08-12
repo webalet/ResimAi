@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { 
   Upload, 
   Image, 
@@ -33,6 +34,7 @@ interface Stats {
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [recentJobs, setRecentJobs] = useState<DashboardJob[]>([]);
   const [stats, setStats] = useState<Stats>({
     totalJobs: 0,
@@ -129,13 +131,13 @@ const Dashboard: React.FC = () => {
   const getStatusText = (status: string) => {
     switch (status) {
       case 'completed':
-        return 'Tamamlandı';
+        return t('dashboard.status.completed');
       case 'processing':
-        return 'İşleniyor';
+        return t('dashboard.status.processing');
       case 'failed':
-        return 'Başarısız';
+        return t('dashboard.status.failed');
       default:
-        return 'Bekliyor';
+        return t('dashboard.status.pending');
     }
   };
 
@@ -151,7 +153,7 @@ const Dashboard: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-96">
-        <LoadingSpinner size="lg" text="Dashboard yükleniyor..." />
+        <LoadingSpinner size="lg" text={t('dashboard.loading.text')} />
       </div>
     );
   }
@@ -161,7 +163,7 @@ const Dashboard: React.FC = () => {
       <div className="flex items-center justify-center min-h-96">
         <div className="text-center max-w-md">
           <XCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Veri Yüklenemedi</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('dashboard.error.title')}</h3>
           <p className="text-gray-600 mb-6">{error}</p>
           <div className="space-y-3">
             <button
@@ -169,10 +171,10 @@ const Dashboard: React.FC = () => {
               className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors inline-flex items-center"
             >
               <RefreshCw className="h-4 w-4 mr-2" />
-              Tekrar Dene
+              {t('dashboard.error.retry')}
             </button>
             <p className="text-sm text-gray-500">
-              Sorun devam ederse, lütfen bir süre bekleyip tekrar deneyin.
+              {t('dashboard.error.retryNote')}
             </p>
           </div>
         </div>
@@ -184,16 +186,16 @@ const Dashboard: React.FC = () => {
     <div className="space-y-6">
       {/* Welcome Section */}
       <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg p-6 text-white">
-        <h1 className="text-2xl font-bold mb-2">Hoş geldin, {user?.name}!</h1>
+        <h1 className="text-2xl font-bold mb-2">{t('dashboard.welcome.title', { name: user?.name })}</h1>
         <p className="text-purple-100 mb-4">
-          AI destekli fotoğraf işleme platformuna hoş geldin. Hemen yeni bir proje başlat!
+          {t('dashboard.welcome.subtitle')}
         </p>
         <Link
           to="/categories"
           className="bg-white text-purple-600 px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition-colors inline-flex items-center"
         >
           <Plus className="h-4 w-4 mr-2" />
-          Yeni Proje Başlat
+          {t('dashboard.welcome.newProject')}
         </Link>
       </div>
 
@@ -205,7 +207,7 @@ const Dashboard: React.FC = () => {
               <TrendingUp className="h-6 w-6 text-blue-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Toplam İş</p>
+              <p className="text-sm font-medium text-gray-600">{t('dashboard.stats.totalJobs')}</p>
               <p className="text-2xl font-bold text-gray-900">{stats.totalJobs}</p>
             </div>
           </div>
@@ -217,7 +219,7 @@ const Dashboard: React.FC = () => {
               <CheckCircle className="h-6 w-6 text-green-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Tamamlanan</p>
+              <p className="text-sm font-medium text-gray-600">{t('dashboard.stats.completedJobs')}</p>
               <p className="text-2xl font-bold text-gray-900">{stats.completedJobs}</p>
             </div>
           </div>
@@ -229,7 +231,7 @@ const Dashboard: React.FC = () => {
               <Clock className="h-6 w-6 text-yellow-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Bekleyen</p>
+              <p className="text-sm font-medium text-gray-600">{t('dashboard.stats.pendingJobs')}</p>
               <p className="text-2xl font-bold text-gray-900">{stats.pendingJobs}</p>
             </div>
           </div>
@@ -241,7 +243,7 @@ const Dashboard: React.FC = () => {
               <Zap className="h-6 w-6 text-purple-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Kalan Kredi</p>
+              <p className="text-sm font-medium text-gray-600">{t('dashboard.stats.remainingCredits')}</p>
               <p className="text-2xl font-bold text-gray-900">{stats.remainingCredits}</p>
             </div>
           </div>
@@ -258,9 +260,9 @@ const Dashboard: React.FC = () => {
             <div className="p-2 bg-purple-100 rounded-lg group-hover:bg-purple-200 transition-colors">
               <Upload className="h-6 w-6 text-purple-600" />
             </div>
-            <h3 className="ml-3 text-lg font-semibold text-gray-900">Fotoğraf Yükle</h3>
+            <h3 className="ml-3 text-lg font-semibold text-gray-900">{t('dashboard.quickActions.uploadPhoto.title')}</h3>
           </div>
-          <p className="text-gray-600">Yeni bir fotoğraf yükleyip AI ile işle</p>
+          <p className="text-gray-600">{t('dashboard.quickActions.uploadPhoto.description')}</p>
         </Link>
 
         <Link
@@ -271,9 +273,9 @@ const Dashboard: React.FC = () => {
             <div className="p-2 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
               <Image className="h-6 w-6 text-blue-600" />
             </div>
-            <h3 className="ml-3 text-lg font-semibold text-gray-900">Galeri</h3>
+            <h3 className="ml-3 text-lg font-semibold text-gray-900">{t('dashboard.quickActions.gallery.title')}</h3>
           </div>
-          <p className="text-gray-600">İşlenmiş fotoğraflarını görüntüle</p>
+          <p className="text-gray-600">{t('dashboard.quickActions.gallery.description')}</p>
         </Link>
 
         <Link
@@ -284,9 +286,9 @@ const Dashboard: React.FC = () => {
             <div className="p-2 bg-green-100 rounded-lg group-hover:bg-green-200 transition-colors">
               <Star className="h-6 w-6 text-green-600" />
             </div>
-            <h3 className="ml-3 text-lg font-semibold text-gray-900">Premium</h3>
+            <h3 className="ml-3 text-lg font-semibold text-gray-900">{t('dashboard.quickActions.premium.title')}</h3>
           </div>
-          <p className="text-gray-600">Premium özelliklerini keşfet</p>
+          <p className="text-gray-600">{t('dashboard.quickActions.premium.description')}</p>
         </Link>
       </div>
 
@@ -294,13 +296,13 @@ const Dashboard: React.FC = () => {
       <div className="bg-white rounded-lg shadow-sm border">
         <div className="px-6 py-4 border-b border-gray-200">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">Son İşler</h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t('dashboard.recentJobs.title')}</h2>
             <div className="flex items-center space-x-3">
               <button
                 onClick={handleRetry}
                 disabled={loading}
                 className="text-gray-500 hover:text-gray-700 p-1 rounded-md hover:bg-gray-100 transition-colors disabled:opacity-50"
-                title="Verileri yenile"
+                title={t('dashboard.recentJobs.refresh')}
               >
                 <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
               </button>
@@ -308,7 +310,7 @@ const Dashboard: React.FC = () => {
                 to="/gallery"
                 className="text-purple-600 hover:text-purple-700 text-sm font-medium"
               >
-                Tümünü Gör
+                {t('dashboard.recentJobs.viewAll')}
               </Link>
             </div>
           </div>
@@ -357,12 +359,12 @@ const Dashboard: React.FC = () => {
           ) : (
             <div className="px-6 py-8 text-center">
               <Image className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500">Henüz işlenmiş fotoğraf yok</p>
+              <p className="text-gray-500">{t('dashboard.recentJobs.empty.title')}</p>
               <Link
                 to="/categories"
                 className="text-purple-600 hover:text-purple-700 text-sm font-medium mt-2 inline-block"
               >
-                İlk fotoğrafını yükle
+                {t('dashboard.recentJobs.empty.startProject')}
               </Link>
             </div>
           )}

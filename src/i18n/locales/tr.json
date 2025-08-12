@@ -296,6 +296,54 @@
     "update": "Başarıyla güncellendi",
     "login": "Başarıyla giriş yapıldı",
     "register": "Başarıyla kayıt olundu",
-    "logout": "Başarıyla çıkış yapıldı"
+    "logout": "Başarıyla çıkış yapıldı"}
+  },
+  "dashboard": {
+    "welcome": {
+      "title": "Hoş geldin, {{name}}!",
+      "subtitle": "AI destekli fotoğraf işleme platformuna hoş geldin. Hemen yeni bir proje başlat!",
+      "newProject": "Yeni Proje Başlat"
+    },
+    "stats": {
+      "totalJobs": "Toplam İş",
+      "completedJobs": "Tamamlanan",
+      "pendingJobs": "Bekleyen",
+      "remainingCredits": "Kalan Kredi"
+    },
+    "quickActions": {
+      "uploadPhoto": {
+        "title": "Fotoğraf Yükle",
+        "description": "Yeni bir fotoğraf yükleyip AI ile işle"
+      },
+      "gallery": {
+        "title": "Galeri",
+        "description": "İşlenmiş fotoğraflarını görüntüle"
+      },
+      "premium": {
+        "title": "Premium",
+        "description": "Premium özelliklerini keşfet"
+      }
+    },
+    "recentJobs": {
+      "title": "Son İşler",
+      "viewAll": "Tümünü Gör",
+      "refreshData": "Verileri yenile",
+      "noJobs": "Henüz işlenmiş fotoğraf yok",
+      "uploadFirst": "İlk fotoğrafını yükle"
+    },
+    "status": {
+      "completed": "Tamamlandı",
+      "processing": "İşleniyor",
+      "failed": "Başarısız",
+      "pending": "Bekliyor"
+    },
+    "loading": {
+      "text": "Dashboard yükleniyor..."
+    },
+    "error": {
+      "title": "Veri Yüklenemedi",
+      "retry": "Tekrar Dene",
+      "retryNote": "Sorun devam ederse, lütfen bir süre bekleyip tekrar deneyin."
+    }
   }
 }

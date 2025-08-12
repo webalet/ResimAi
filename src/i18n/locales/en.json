@@ -292,6 +292,54 @@
     "update": "Successfully updated",
     "login": "Successfully logged in",
     "register": "Successfully registered",
-    "logout": "Successfully logged out"
+    "logout": "Successfully logged out"}
+  },
+  "dashboard": {
+    "welcome": {
+      "title": "Welcome, {{name}}!",
+      "subtitle": "Welcome to the AI-powered photo processing platform. Start a new project right away!",
+      "newProject": "Start New Project"
+    },
+    "stats": {
+      "totalJobs": "Total Jobs",
+      "completedJobs": "Completed",
+      "pendingJobs": "Pending",
+      "remainingCredits": "Remaining Credits"
+    },
+    "quickActions": {
+      "uploadPhoto": {
+        "title": "Upload Photo",
+        "description": "Upload a new photo and process it with AI"
+      },
+      "gallery": {
+        "title": "Gallery",
+        "description": "View your processed photos"
+      },
+      "premium": {
+        "title": "Premium",
+        "description": "Discover premium features"
+      }
+    },
+    "recentJobs": {
+      "title": "Recent Jobs",
+      "viewAll": "View All",
+      "refreshData": "Refresh data",
+      "noJobs": "No processed photos yet",
+      "uploadFirst": "Upload your first photo"
+    },
+    "status": {
+      "completed": "Completed",
+      "processing": "Processing",
+      "failed": "Failed",
+      "pending": "Pending"
+    },
+    "loading": {
+      "text": "Loading dashboard..."
+    },
+    "error": {
+      "title": "Failed to Load Data",
+      "retry": "Retry",
+      "retryNote": "If the problem persists, please wait a moment and try again."
+    }
   }
 }
