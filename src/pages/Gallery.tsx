@@ -204,8 +204,8 @@ const Gallery: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Galeri</h1>
-          <p className="text-gray-600">İşlenmiş fotoğraflarınızı görüntüleyin ve indirin</p>
+          <h1 className="text-3xl font-bold text-gray-900">{t('gallery.title')}</h1>
+          <p className="text-gray-600">{t('gallery.subtitle')}</p>
         </div>
         
         <div className="flex items-center space-x-4">
@@ -214,7 +214,7 @@ const Gallery: React.FC = () => {
             onClick={handleRetry}
             disabled={jobsApi.loading}
             className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            title="Yenile"
+            title={t('gallery.refresh')}
           >
             <RefreshCw className={cn("h-5 w-5", jobsApi.loading && "animate-spin")} />
           </button>
@@ -229,7 +229,7 @@ const Gallery: React.FC = () => {
                   ? 'bg-white text-purple-600 shadow-sm'
                   : 'text-gray-600 hover:text-gray-900'
               )}
-              title="Grid görünümü"
+              title={t('gallery.gridView')}
             >
               <Grid className="h-4 w-4" />
             </button>
@@ -241,7 +241,7 @@ const Gallery: React.FC = () => {
                   ? 'bg-white text-purple-600 shadow-sm'
                   : 'text-gray-600 hover:text-gray-900'
               )}
-              title="Liste görünümü"
+              title={t('gallery.listView')}
             >
               <List className="h-4 w-4" />
             </button>
@@ -252,11 +252,11 @@ const Gallery: React.FC = () => {
       {/* Filter Tabs */}
       <div className="flex flex-wrap gap-2">
         {[
-          { key: 'all', label: 'Tümü', count: jobs.length },
-          { key: 'completed', label: 'Tamamlanan', count: jobs.filter(j => j.status === 'completed').length },
-          { key: 'processing', label: 'İşleniyor', count: jobs.filter(j => j.status === 'processing').length },
-          { key: 'failed', label: 'Başarısız', count: jobs.filter(j => j.status === 'failed').length },
-          { key: 'pending', label: 'Bekleyen', count: jobs.filter(j => j.status === 'pending').length },
+          { key: 'all', label: t('gallery.filterAll'), count: jobs.length },
+           { key: 'completed', label: t('gallery.filterCompleted'), count: jobs.filter(j => j.status === 'completed').length },
+           { key: 'processing', label: t('gallery.filterProcessing'), count: jobs.filter(j => j.status === 'processing').length },
+           { key: 'failed', label: t('gallery.filterFailed'), count: jobs.filter(j => j.status === 'failed').length },
+           { key: 'pending', label: t('gallery.filterPending'), count: jobs.filter(j => j.status === 'pending').length },
         ].map(({ key, label, count }) => (
           <button
             key={key}
@@ -283,20 +283,20 @@ const Gallery: React.FC = () => {
             <Filter className="h-12 w-12 mx-auto" />
           </div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">
-            {filterStatus === 'all' ? 'Henüz işiniz yok' : `${filterStatus} durumunda iş bulunamadı`}
+            {filterStatus === 'all' ? t('gallery.noJobs') : `${filterStatus} ${t('gallery.noJobsInStatus')}`}
           </h3>
           <p className="text-gray-600 mb-4">
             {filterStatus === 'all' 
-              ? 'İlk fotoğrafınızı işlemek için yeni bir iş oluşturun.'
-              : 'Farklı bir filtre seçerek diğer işlerinizi görüntüleyebilirsiniz.'
-            }
+               ? t('gallery.createFirstJob')
+               : t('gallery.tryDifferentFilter')
+              }
           </p>
           {filterStatus === 'all' && (
             <Link
               to="/upload"
               className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
             >
-              Yeni İş Oluştur
+              {t('gallery.createNewJob')}
             </Link>
           )}
         </div>
@@ -344,9 +344,9 @@ const Gallery: React.FC = () => {
 
                     
                     <div className="text-xs text-gray-600 mb-3 space-y-1">
-                      <p><span className="font-medium">Kategori:</span> {job.category?.display_name_tr}</p>
-                      <p><span className="font-medium">Stil:</span> {job.style}</p>
-                      <p><span className="font-medium">Tarih:</span> {new Date(job.created_at).toLocaleDateString('tr-TR', {
+                      <p><span className="font-medium">{t('gallery.category')}:</span> {job.category?.display_name_tr}</p>
+                      <p><span className="font-medium">{t('gallery.style')}:</span> {job.style}</p>
+                      <p><span className="font-medium">{t('gallery.date')}:</span> {new Date(job.created_at).toLocaleDateString('tr-TR', {
                         day: 'numeric',
                         month: 'short',
                         year: 'numeric'
@@ -362,7 +362,7 @@ const Gallery: React.FC = () => {
                               setSelectedImageIndex(0);
                             }}
                             className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
-                            title="Görüntüle"
+                            title={t('gallery.view')}
                           >
                             <Eye className="h-4 w-4" />
                           </button>
@@ -372,7 +372,7 @@ const Gallery: React.FC = () => {
                               `${job.category?.name}_${job.style}_${job.id}.jpg`
                             )}
                             className="p-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                            title="İndir"
+                            title={t('gallery.download')}
                           >
                             <Download className="h-4 w-4" />
                           </button>
@@ -381,7 +381,7 @@ const Gallery: React.FC = () => {
                       <button
                         onClick={() => handleDeleteJob(job.id)}
                         className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                        title="Sil"
+                        title={t('gallery.delete')}
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -424,9 +424,9 @@ const Gallery: React.FC = () => {
                     </div>
                     
                     <div className="text-sm text-gray-600 space-y-1">
-                      <p><span className="font-medium">Kategori:</span> {job.category?.display_name_tr}</p>
-                      <p><span className="font-medium">Stil:</span> {job.style}</p>
-                      <p><span className="font-medium">Tarih:</span> {new Date(job.created_at).toLocaleDateString('tr-TR', {
+                      <p><span className="font-medium">{t('gallery.category')}:</span> {job.category?.display_name_tr}</p>
+                      <p><span className="font-medium">{t('gallery.style')}:</span> {job.style}</p>
+                      <p><span className="font-medium">{t('gallery.date')}:</span> {new Date(job.created_at).toLocaleDateString('tr-TR', {
                         day: 'numeric',
                         month: 'short',
                         year: 'numeric'
@@ -449,7 +449,7 @@ const Gallery: React.FC = () => {
                             setSelectedImageIndex(0);
                           }}
                           className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
-                          title="Görüntüle"
+                          title={t('gallery.view')}
                         >
                           <Eye className="h-4 w-4" />
                         </button>
@@ -459,7 +459,7 @@ const Gallery: React.FC = () => {
                             `${job.category?.name}_${job.style}_${job.id}.jpg`
                           )}
                           className="p-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                          title="İndir"
+                          title={t('gallery.download')}
                         >
                           <Download className="h-4 w-4" />
                         </button>
@@ -468,7 +468,7 @@ const Gallery: React.FC = () => {
                     <button
                       onClick={() => handleDeleteJob(job.id)}
                       className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                      title="Sil"
+                      title={t('gallery.delete')}
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -520,7 +520,7 @@ const Gallery: React.FC = () => {
                 className="absolute bottom-4 left-1/2 transform -translate-x-1/2 inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25 font-medium backdrop-blur-sm"
               >
                 <Download className="h-5 w-5 mr-2" />
-                İndir
+                {t('gallery.download')}
               </button>
               
               {/* Image Counter */}
