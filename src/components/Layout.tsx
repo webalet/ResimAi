@@ -33,7 +33,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { name: t('navigation.dashboard'), href: `/${lang}/dashboard`, icon: Home },
     { name: t('navigation.categories'), href: `/${lang}/categories`, icon: Grid3X3 },
     { name: t('navigation.gallery'), href: `/${lang}/gallery`, icon: Image },
-    { name: t('sidebar.subscription'), href: `/${lang}/subscription`, icon: CreditCard },
+    { name: t('navigation.pricing'), href: `/${lang}/subscription`, icon: CreditCard },
     { name: t('navigation.profile'), href: `/${lang}/profile`, icon: User },
   ];
 

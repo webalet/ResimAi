@@ -242,41 +242,6 @@
       "subtitle": "Ücretsiz hesap oluşturun ve AI destekli fotoğraf işleme deneyimini yaşayın"
     }
   },
-  "gallery": {
-    "title": "Galeri",
-    "subtitle": "AI ile oluşturulan görseller",
-    "empty": "Henüz görsel yok",
-    "loadMore": "Daha Fazla Yükle",
-    "filter": {
-      "all": "Tümü",
-      "recent": "Son Eklenenler",
-      "popular": "Popüler"
-    }
-  },
-  "profile": {
-    "title": "Profil",
-    "credits": "Krediler",
-    "usage": "Kullanım",
-    "history": "Geçmiş",
-    "settings": "Ayarlar",
-    "subscription": "Abonelik",
-    "billing": "Faturalama"
-  },
-  "dashboard": {
-    "title": "Panel",
-    "welcome": "Hoş geldiniz",
-    "stats": {
-      "totalCredits": "Toplam Kredi",
-      "usedCredits": "Kullanılan Kredi",
-      "remainingCredits": "Kalan Kredi",
-      "totalImages": "Toplam Görsel"
-    }
-  },
-  "categories": {
-    "title": "Kategoriler",
-    "subtitle": "Görsel kategorilerini keşfedin",
-    "viewAll": "Tümünü Gör"
-  },
   "errors": {
     "404": "Sayfa bulunamadı",
     "500": "Sunucu hatası",
@@ -319,14 +284,27 @@
       "uploadPhoto": {
         "title": "Fotoğraf Yükle",
         "description": "Yeni bir fotoğraf yükleyerek işleme başlayın"
+      },
+      "gallery": {
+        "title": "Galeri",
+        "description": "İşlenmiş fotoğraflarınızı görüntüleyin"
+      },
+      "premium": {
+        "title": "Kredi Satın Al",
+        "description": "Daha fazla fotoğraf işlemek için kredi satın alın"
       }
     },
     "recentJobs": {
       "title": "Son İşler",
       "viewAll": "Tümünü Gör",
+      "refresh": "Yenile",
       "refreshData": "Verileri yenile",
       "noJobs": "Henüz işlenmiş fotoğraf yok",
-      "uploadFirst": "İlk fotoğrafını yükle"
+      "uploadFirst": "İlk fotoğrafını yükle",
+      "empty": {
+        "title": "Henüz işlenmiş fotoğraf yok",
+        "startProject": "İlk projenizi başlatın"
+      }
     },
     "status": {
       "completed": "Tamamlandı",
@@ -341,7 +319,6 @@
   "sidebar": {
     "categories": "Kategoriler",
     "gallery": "Galeri",
-    "subscription": "Abonelik",
     "profile": "Profil",
     "credits": "kredi",
     "logout": "Çıkış Yap",

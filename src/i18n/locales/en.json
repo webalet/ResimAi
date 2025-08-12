@@ -238,41 +238,6 @@
       "subtitle": "Create a free account and experience AI-powered photo processing"
     }
   },
-  "gallery": {
-    "title": "Gallery",
-    "subtitle": "AI-generated images",
-    "empty": "No images yet",
-    "loadMore": "Load More",
-    "filter": {
-      "all": "All",
-      "recent": "Recent",
-      "popular": "Popular"
-    }
-  },
-  "profile": {
-    "title": "Profile",
-    "credits": "Credits",
-    "usage": "Usage",
-    "history": "History",
-    "settings": "Settings",
-    "subscription": "Subscription",
-    "billing": "Billing"
-  },
-  "dashboard": {
-    "title": "Dashboard",
-    "welcome": "Welcome",
-    "stats": {
-      "totalCredits": "Total Credits",
-      "usedCredits": "Used Credits",
-      "remainingCredits": "Remaining Credits",
-      "totalImages": "Total Images"
-    }
-  },
-  "categories": {
-    "title": "Categories",
-    "subtitle": "Explore image categories",
-    "viewAll": "View All"
-  },
   "errors": {
     "404": "Page not found",
     "500": "Server error",
@@ -315,14 +280,27 @@
       "uploadPhoto": {
         "title": "Upload Photo",
         "description": "Start processing by uploading a new photo"
+      },
+      "gallery": {
+        "title": "Gallery",
+        "description": "View your processed photos"
+      },
+      "premium": {
+        "title": "Buy Credits",
+        "description": "Purchase credits to process more photos"
       }
     },
     "recentJobs": {
       "title": "Recent Jobs",
       "viewAll": "View All",
+      "refresh": "Refresh",
       "refreshData": "Refresh data",
       "noJobs": "No processed photos yet",
-      "uploadFirst": "Upload your first photo"
+      "uploadFirst": "Upload your first photo",
+      "empty": {
+        "title": "No processed photos yet",
+        "startProject": "Start your first project"
+      }
     },
     "status": {
       "completed": "Completed",
@@ -337,7 +315,6 @@
   "sidebar": {
     "categories": "Categories",
     "gallery": "Gallery",
-    "subscription": "Subscription",
     "profile": "Profile",
     "credits": "credits",
     "logout": "Logout",
