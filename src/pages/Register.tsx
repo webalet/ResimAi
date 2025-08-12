@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, User, UserPlus } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 const Register: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -22,6 +23,7 @@ const Register: React.FC = () => {
   const navigate = useNavigate();
   const submitTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastSubmitTimeRef = useRef<number>(0);
+  const { t } = useTranslation();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -32,32 +34,32 @@ const Register: React.FC = () => {
 
   const validateForm = () => {
     if (!formData.name.trim()) {
-      toast.error('Lütfen adınızı girin');
+      toast.error(t('auth.errors.enterName'));
       return false;
     }
     
     if (!formData.email) {
-      toast.error('Lütfen e-posta adresinizi girin');
+      toast.error(t('auth.errors.enterEmail'));
       return false;
     }
     
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      toast.error('Lütfen geçerli bir e-posta adresi girin');
+      toast.error(t('auth.errors.validEmail'));
       return false;
     }
     
     if (formData.password.length < 6) {
-      toast.error('Şifre en az 6 karakter olmalıdır');
+      toast.error(t('auth.errors.passwordLength'));
       return false;
     }
     
     if (formData.password !== formData.confirmPassword) {
-      toast.error('Şifreler eşleşmiyor');
+      toast.error(t('auth.errors.passwordMismatch'));
       return false;
     }
     
     if (!acceptTerms) {
-      toast.error('Lütfen kullanım şartlarını kabul edin');
+      toast.error(t('auth.errors.acceptTerms'));
       return false;
     }
     
@@ -84,7 +86,7 @@ const Register: React.FC = () => {
           const waitTime = retryAfter ? parseInt(retryAfter) * 1000 : backoffDelay;
           
           setRetryCount(attempt + 1);
-          toast.error(`Çok fazla istek gönderildi. ${Math.ceil(waitTime / 1000)} saniye sonra tekrar denenecek...`, {
+          toast.error(t('auth.errors.rateLimitRetry', { seconds: Math.ceil(waitTime / 1000) }), {
             duration: waitTime
           });
           
@@ -92,7 +94,7 @@ const Register: React.FC = () => {
             handleSubmitWithRetry(name, email, password, attempt + 1);
           }, waitTime);
         } else {
-          toast.error('Çok fazla deneme yapıldı. Lütfen birkaç dakika bekleyip tekrar deneyin.');
+          toast.error(t('auth.errors.tooManyAttempts'));
           setRetryCount(0);
         }
       } else {
@@ -116,7 +118,7 @@ const Register: React.FC = () => {
     
     if (timeSinceLastSubmit < RATE_LIMIT_MS) {
       const remainingTime = Math.ceil((RATE_LIMIT_MS - timeSinceLastSubmit) / 1000);
-      toast.error(`Lütfen ${remainingTime} saniye bekleyip tekrar deneyin.`);
+      toast.error(t('auth.errors.waitSeconds', { seconds: remainingTime }));
       return;
     }
 
@@ -152,15 +154,15 @@ const Register: React.FC = () => {
               <UserPlus className="h-6 w-6 text-white" />
             </div>
           </Link>
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">Kayıt Ol</h2>
-          <p className="text-gray-600">Yeni hesap oluşturun</p>
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">{t('auth.register.title')}</h2>
+          <p className="text-gray-600">{t('auth.register.subtitle')}</p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                Ad Soyad
+                {t('auth.fields.fullName')}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -175,14 +177,14 @@ const Register: React.FC = () => {
                   value={formData.name}
                   onChange={handleChange}
                   className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
-                  placeholder="Adınızı ve soyadınızı girin"
+                  placeholder={t('auth.placeholders.fullName')}
                 />
               </div>
             </div>
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                E-posta Adresi
+                {t('auth.fields.email')}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -197,14 +199,14 @@ const Register: React.FC = () => {
                   value={formData.email}
                   onChange={handleChange}
                   className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
-                  placeholder="ornek@email.com"
+                  placeholder={t('auth.placeholders.email')}
                 />
               </div>
             </div>
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Şifre
+                {t('auth.fields.password')}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -219,7 +221,7 @@ const Register: React.FC = () => {
                   value={formData.password}
                   onChange={handleChange}
                   className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
-                  placeholder="En az 6 karakter"
+                  placeholder={t('auth.placeholders.passwordLength')}
                 />
                 <button
                   type="button"
@@ -237,7 +239,7 @@ const Register: React.FC = () => {
 
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
-                Şifre Tekrar
+                {t('auth.fields.confirmPassword')}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -252,7 +254,7 @@ const Register: React.FC = () => {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
-                  placeholder="Şifrenizi tekrar girin"
+                  placeholder={t('auth.placeholders.confirmPassword')}
                 />
                 <button
                   type="button"
@@ -279,13 +281,13 @@ const Register: React.FC = () => {
               />
               <label htmlFor="accept-terms" className="ml-2 block text-sm text-gray-700">
                 <Link to="/terms" className="text-purple-600 hover:text-purple-500">
-                  Kullanım şartlarını
+                  {t('auth.terms')}
                 </Link>{' '}
-                ve{' '}
+                {t('common.and')}{' '}
                 <Link to="/privacy" className="text-purple-600 hover:text-purple-500">
-                  gizlilik politikasını
+                  {t('auth.privacy')}
                 </Link>{' '}
-                kabul ediyorum
+                {t('auth.acceptText')}
               </label>
             </div>
 
@@ -294,7 +296,7 @@ const Register: React.FC = () => {
                 <div className="flex items-center">
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-yellow-600 mr-2"></div>
                   <p className="text-sm text-yellow-800">
-                    Yeniden deneniyor... ({retryCount}/{MAX_RETRY_ATTEMPTS})
+                    {t('auth.retrying', { current: retryCount, max: MAX_RETRY_ATTEMPTS })}
                   </p>
                 </div>
               </div>
@@ -308,10 +310,10 @@ const Register: React.FC = () => {
               {isLoading ? (
                 <div className="flex items-center">
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  {rateLimitError && retryCount > 0 ? 'Yeniden deneniyor...' : 'Hesap oluşturuluyor...'}
+                  {rateLimitError && retryCount > 0 ? t('auth.retryingShort') : t('auth.creatingAccount')}
                 </div>
               ) : (
-                'Hesap Oluştur'
+                t('auth.register.button')
               )}
             </button>
           </form>
@@ -322,18 +324,18 @@ const Register: React.FC = () => {
                 <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">veya</span>
+                <span className="px-2 bg-white text-gray-500">{t('common.or')}</span>
               </div>
             </div>
 
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600">
-                Zaten hesabınız var mı?{' '}
+                {t('auth.hasAccount')}{' '}
                 <Link
                   to="/login"
                   className="font-medium text-purple-600 hover:text-purple-500 transition-colors"
                 >
-                  Giriş yapın
+                  {t('auth.login.link')}
                 </Link>
               </p>
             </div>

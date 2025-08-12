@@ -1,0 +1,301 @@
+{
+  "common": {
+    "loading": "Yükleniyor...",
+    "error": "Hata",
+    "success": "Başarılı",
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "delete": "Sil",
+    "edit": "Düzenle",
+    "close": "Kapat",
+    "back": "Geri",
+    "next": "İleri",
+    "previous": "Önceki",
+    "submit": "Gönder",
+    "confirm": "Onayla",
+    "yes": "Evet",
+    "no": "Hayır",
+    "search": "Ara",
+    "filter": "Filtrele",
+    "clear": "Temizle",
+    "select": "Seç",
+    "upload": "Yükle",
+    "download": "İndir",
+    "copy": "Kopyala",
+    "share": "Paylaş",
+    "startFree": "Ücretsiz Başla",
+    "tryNow": "Şimdi Dene",
+    "goToDashboard": "Panele Git",
+    "startNow": "Hemen Başla"
+  },
+  "navigation": {
+    "home": "Ana Sayfa",
+    "gallery": "Galeri",
+    "pricing": "Fiyatlandırma",
+    "profile": "Profil",
+    "dashboard": "Panel",
+    "categories": "Kategoriler",
+    "features": "Özellikler",
+    "login": "Giriş Yap",
+    "register": "Kayıt Ol",
+    "logout": "Çıkış Yap",
+    "settings": "Ayarlar"
+  },
+  "auth": {
+    "login": {
+      "title": "Giriş Yap",
+      "subtitle": "Hesabınıza giriş yapın",
+      "button": "Giriş Yap",
+      "email": "E-posta",
+      "password": "Şifre",
+      "remember": "Beni hatırla",
+      "forgot": "Şifremi unuttum",
+      "submit": "Giriş Yap",
+      "noAccount": "Hesabınız yok mu?",
+      "signUp": "Kayıt olun"
+    },
+    "fields": {
+      "email": "E-posta",
+      "password": "Şifre"
+    },
+    "placeholders": {
+      "email": "E-posta adresinizi girin",
+      "password": "Şifrenizi girin"
+    },
+    "rememberMe": "Beni hatırla",
+    "forgotPassword": "Şifremi unuttum",
+    "loggingIn": "Giriş yapılıyor...",
+    "retryingShort": "Tekrar deneniyor...",
+    "register": {
+      "title": "Kayıt Ol",
+      "name": "Ad Soyad",
+      "email": "E-posta",
+      "password": "Şifre",
+      "confirmPassword": "Şifre Tekrar",
+      "terms": "Kullanım koşullarını kabul ediyorum",
+      "submit": "Kayıt Ol",
+      "hasAccount": "Zaten hesabınız var mı?",
+      "signIn": "Giriş yapın"
+    },
+    "errors": {
+      "invalidCredentials": "Geçersiz e-posta veya şifre",
+      "emailRequired": "E-posta gerekli",
+      "passwordRequired": "Şifre gerekli",
+      "passwordMismatch": "Şifreler eşleşmiyor",
+      "emailInvalid": "Geçersiz e-posta formatı",
+      "passwordTooShort": "Şifre en az 6 karakter olmalı"
+    }
+  },
+  "home": {
+    "hero": {
+      "title": "AI ile Görsellerinizi Dönüştürün",
+      "titleHighlight": "Sanat Eserine",
+      "subtitle": "Yapay zeka teknolojisi ile fotoğraflarınızı sanat eserine çevirin",
+      "cta": "Hemen Başla",
+      "tryFree": "Ücretsiz Dene"
+    },
+    "examples": {
+      "title": "Örnek Çalışmalar",
+      "subtitle": "AI ile dönüştürülmüş gerçek örnekleri keşfedin",
+      "corporate": {
+        "title": "Yaratıcı Portre"
+      },
+      "outfit": {
+        "title": "Avatar Oluşturucu"
+      },
+      "background": {
+        "title": "Arkaplan Değiştirici"
+      },
+      "skin": {
+        "title": "Cilt Düzeltici"
+      },
+      "original": "Orijinal",
+      "aiProcessed": "AI İşlenmiş"
+    },
+    "features": {
+      "title": "Özellikler",
+      "subtitle": "Gelişmiş AI teknolojisi ile profesyonel sonuçlar",
+      "categories": {
+        "title": "Çoklu Kategori Desteği",
+        "description": "Portre, manzara, sanat ve daha fazlası"
+      },
+      "ai": {
+        "title": "Yapay Zeka",
+        "description": "En gelişmiş AI teknolojisi"
+      },
+      "fast": {
+        "title": "Hızlı İşlem",
+        "description": "Saniyeler içinde sonuç"
+      },
+      "secure": {
+        "title": "Güvenli",
+        "description": "Verileriniz güvende"
+      },
+      "quality": {
+        "title": "Yüksek Kalite",
+        "description": "4K çözünürlük desteği"
+      }
+    },
+    "testimonials": {
+      "title": "Müşteri Yorumları",
+      "subtitle": "Kullanıcılarımızın deneyimlerini keşfedin",
+      "customer1": {
+        "content": "ResimAI ile fotoğraflarım profesyonel kaliteye ulaştı. Harika bir deneyim!",
+        "name": "Mehmet Demir",
+        "role": "Fotoğrafçı"
+      },
+      "customer2": {
+        "content": "Bu platform sayesinde fotoğraflarım gerçek sanat eserlerine dönüştü. Sonuçlar inanılmaz!",
+        "name": "Ahmet Yılmaz",
+        "role": "Grafik Tasarımcı"
+      },
+      "customer3": {
+        "content": "AI teknolojisi gerçekten etkileyici. Sonuçlar beklentilerimi aştı!",
+        "name": "Ayşe Kaya",
+        "role": "Sanat Yönetmeni"
+      }
+    },
+    "cta": {
+      "title": "Hemen Başlayın",
+      "subtitle": "Fotoğraflarınızı sanat eserine dönüştürün"
+    },
+    "footer": {
+      "description": "AI ile görsellerinizi dönüştürün",
+      "product": "Ürün",
+      "features": "Özellikler",
+      "pricing": "Fiyatlandırma",
+      "support": "Destek",
+      "helpCenter": "Yardım Merkezi",
+      "contact": "İletişim",
+      "status": "Durum",
+      "legal": "Yasal",
+      "privacy": "Gizlilik",
+      "terms": "Şartlar",
+      "cookies": "Çerezler",
+      "copyright": "© 2024 ResimAI. Tüm hakları saklıdır."
+    }
+  },
+  "pricing": {
+    "title": "Size Uygun",
+    "titleHighlight": "Kredi Paketini Seçin",
+    "subtitle": "İhtiyaçlarınıza göre tasarlanmış esnek kredi paketleri. Her resim işleme 1 kredi harcar.",
+    "credits": "kredi",
+    "currency": "₺",
+    "mostPopular": "En Popüler",
+    "selectPlan": "Planı Seç",
+    "packages": {
+      "basic": {
+        "name": "Ücretsiz",
+        "description": "Başlamak için mükemmel"
+      },
+      "standard": {
+        "name": "Starter",
+        "description": "Küçük projeler için"
+      },
+      "premium": {
+        "name": "Professional",
+        "description": "Profesyoneller için ideal"
+      },
+      "pro": {
+        "name": "Premium",
+        "description": "Yoğun kullanım için"
+      },
+      "business": {
+        "name": "Corporate",
+        "description": "Büyük ekipler için"
+      },
+      "enterprise": {
+        "name": "Kurumsal Paket",
+        "description": "Büyük ölçekli projeler"
+      }
+    },
+    "features": {
+      "oneCredit": "1 görsel işleme kredisi",
+      "tenCredits": "10 görsel işleme kredisi",
+      "twentyFiveCredits": "25 görsel işleme kredisi",
+      "sixtyCredits": "60 görsel işleme kredisi",
+      "oneHundredFiftyCredits": "150 görsel işleme kredisi",
+      "allCategories": "Tüm kategoriler (Kurumsal fotoğraf, Yaratıcı portre, Avatar oluşturucu, Elbise değişimi, Arkaplan değiştirme, Cilt düzeltme)",
+      "allCategoriesAccess": "Tüm kategoriler erişimi",
+      "allCategoriesPlusCustom": "Tüm kategoriler + özel stiller",
+      "standardQuality": "Standart kalite",
+      "highQuality": "Yüksek kalite çıktı",
+      "ultraHighQuality": "Ultra yüksek kalite",
+      "emailSupport": "Email destek",
+      "prioritySupport": "Öncelikli destek",
+      "twentyFourSevenSupport": "7/24 destek",
+      "basicStyles": "Temel stiller",
+      "advancedStyles": "Gelişmiş stiller",
+      "batchProcessing": "Toplu işleme",
+      "customIntegrations": "Özel entegrasyonlar"
+    },
+    "faq": {
+      "title": "Sıkça Sorulan Sorular",
+      "question1": "Kredi sistemi nasıl çalışır?",
+      "answer1": "Her görsel işleme işlemi 1 kredi harcar. Satın aldığınız krediler hesabınıza anında eklenir ve süresiz olarak kullanabilirsiniz.",
+      "question2": "Krediler ne kadar süre geçerli?",
+      "answer2": "Satın aldığınız krediler süresizdir ve hesabınızda kalır. İstediğiniz zaman kullanabilirsiniz.",
+      "question3": "Hangi ödeme yöntemlerini kabul ediyorsunuz?",
+      "answer3": "Kredi kartı, banka kartı ve PayPal ile ödeme yapabilirsiniz. Tüm ödemeler güvenli SSL şifreleme ile korunmaktadır."
+    },
+    "cta": {
+      "subtitle": "Ücretsiz hesap oluşturun ve AI destekli fotoğraf işleme deneyimini yaşayın"
+    }
+  },
+  "gallery": {
+    "title": "Galeri",
+    "subtitle": "AI ile oluşturulan görseller",
+    "empty": "Henüz görsel yok",
+    "loadMore": "Daha Fazla Yükle",
+    "filter": {
+      "all": "Tümü",
+      "recent": "Son Eklenenler",
+      "popular": "Popüler"
+    }
+  },
+  "profile": {
+    "title": "Profil",
+    "credits": "Krediler",
+    "usage": "Kullanım",
+    "history": "Geçmiş",
+    "settings": "Ayarlar",
+    "subscription": "Abonelik",
+    "billing": "Faturalama"
+  },
+  "dashboard": {
+    "title": "Panel",
+    "welcome": "Hoş geldiniz",
+    "stats": {
+      "totalCredits": "Toplam Kredi",
+      "usedCredits": "Kullanılan Kredi",
+      "remainingCredits": "Kalan Kredi",
+      "totalImages": "Toplam Görsel"
+    }
+  },
+  "categories": {
+    "title": "Kategoriler",
+    "subtitle": "Görsel kategorilerini keşfedin",
+    "viewAll": "Tümünü Gör"
+  },
+  "errors": {
+    "404": "Sayfa bulunamadı",
+    "500": "Sunucu hatası",
+    "network": "Ağ bağlantı hatası",
+    "upload": "Yükleme hatası",
+    "processing": "İşleme hatası",
+    "unauthorized": "Yetkisiz erişim",
+    "forbidden": "Erişim engellendi",
+    "notFound": "Bulunamadı",
+    "timeout": "Zaman aşımı",
+    "generic": "Bir hata oluştu"
+  },
+  "success": {
+    "upload": "Başarıyla yüklendi",
+    "save": "Başarıyla kaydedildi",
+    "delete": "Başarıyla silindi",
+    "update": "Başarıyla güncellendi",
+    "login": "Başarıyla giriş yapıldı",
+    "register": "Başarıyla kayıt olundu",
+    "logout": "Başarıyla çıkış yapıldı"
+  }
+}

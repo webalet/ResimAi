@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, LogIn } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -18,6 +19,7 @@ const Login: React.FC = () => {
   const location = useLocation();
   const submitTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastSubmitTimeRef = useRef<number>(0);
+  const { t } = useTranslation();
   
   const from = location.state?.from?.pathname || '/dashboard';
 
@@ -44,7 +46,7 @@ const Login: React.FC = () => {
           const waitTime = retryAfter ? parseInt(retryAfter) * 1000 : backoffDelay;
           
           setRetryCount(attempt + 1);
-          toast.error(`Çok fazla istek gönderildi. ${Math.ceil(waitTime / 1000)} saniye sonra tekrar denenecek...`, {
+          toast.error(t('auth.errors.rateLimitRetry', { seconds: Math.ceil(waitTime / 1000) }), {
             duration: waitTime
           });
           
@@ -52,7 +54,7 @@ const Login: React.FC = () => {
             handleSubmitWithRetry(email, password, attempt + 1);
           }, waitTime);
         } else {
-          toast.error('Çok fazla deneme yapıldı. Lütfen birkaç dakika bekleyip tekrar deneyin.');
+          toast.error(t('auth.errors.tooManyAttempts'));
           setRetryCount(0);
           setRateLimitError(false);
         }
@@ -61,7 +63,7 @@ const Login: React.FC = () => {
         setRetryCount(0);
         
         // Show user-friendly error message from AuthContext
-        const errorMessage = error.userMessage || error.message || 'Giriş yapılırken hata oluştu';
+        const errorMessage = error.userMessage || error.message || t('auth.errors.loginFailed');
         toast.error(errorMessage);
         
         // Set form-level error for display
@@ -77,7 +79,7 @@ const Login: React.FC = () => {
     setErrors({});
     
     if (!email || !password) {
-      const errorMessage = 'Lütfen tüm alanları doldurun';
+      const errorMessage = t('auth.errors.fillAllFields');
       setErrors({ general: errorMessage });
       toast.error(errorMessage);
       return;
@@ -89,7 +91,7 @@ const Login: React.FC = () => {
     
     if (timeSinceLastSubmit < RATE_LIMIT_MS) {
       const remainingTime = Math.ceil((RATE_LIMIT_MS - timeSinceLastSubmit) / 1000);
-      const errorMessage = `Lütfen ${remainingTime} saniye bekleyip tekrar deneyin.`;
+      const errorMessage = t('auth.errors.waitSeconds', { seconds: remainingTime });
       setErrors({ general: errorMessage });
       toast.error(errorMessage);
       return;
@@ -125,15 +127,15 @@ const Login: React.FC = () => {
           <div className="mx-auto h-12 w-12 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl flex items-center justify-center mb-4">
             <LogIn className="h-6 w-6 text-white" />
           </div>
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">Giriş Yap</h2>
-          <p className="text-gray-600">Hesabınıza giriş yapın</p>
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">{t('auth.login.title')}</h2>
+          <p className="text-gray-600">{t('auth.login.subtitle')}</p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                E-posta Adresi
+                {t('auth.fields.email')}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -154,14 +156,14 @@ const Login: React.FC = () => {
                     }
                   }}
                   className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
-                  placeholder="ornek@email.com"
+                  placeholder={t('auth.placeholders.email')}
                 />
               </div>
             </div>
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Şifre
+                {t('auth.fields.password')}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -182,7 +184,7 @@ const Login: React.FC = () => {
                     }
                   }}
                   className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
-                  placeholder="Şifrenizi girin"
+                  placeholder={t('auth.placeholders.password')}
                 />
                 <button
                   type="button"
@@ -207,7 +209,7 @@ const Login: React.FC = () => {
                   className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
                 />
                 <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
-                  Beni hatırla
+                  {t('auth.rememberMe')}
                 </label>
               </div>
 
@@ -216,7 +218,7 @@ const Login: React.FC = () => {
                   to="/forgot-password"
                   className="font-medium text-purple-600 hover:text-purple-500 transition-colors"
                 >
-                  Şifremi unuttum
+                  {t('auth.forgotPassword')}
                 </Link>
               </div>
             </div>
@@ -234,7 +236,7 @@ const Login: React.FC = () => {
                 <div className="flex items-center">
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-yellow-600 mr-2"></div>
                   <p className="text-sm text-yellow-800">
-                    Yeniden deneniyor... ({retryCount}/{MAX_RETRY_ATTEMPTS})
+                    {t('auth.retrying', { current: retryCount, max: MAX_RETRY_ATTEMPTS })}
                   </p>
                 </div>
               </div>
@@ -248,10 +250,10 @@ const Login: React.FC = () => {
               {isLoading ? (
                 <div className="flex items-center">
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  {rateLimitError && retryCount > 0 ? 'Yeniden deneniyor...' : 'Giriş yapılıyor...'}
+                  {rateLimitError && retryCount > 0 ? t('auth.retryingShort') : t('auth.loggingIn')}
                 </div>
               ) : (
-                'Giriş Yap'
+                t('auth.login.button')
               )}
             </button>
           </form>
@@ -262,18 +264,18 @@ const Login: React.FC = () => {
                 <div className="w-full border-t border-gray-300" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">veya</span>
+                <span className="px-2 bg-white text-gray-500">{t('common.or')}</span>
               </div>
             </div>
 
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600">
-                Hesabınız yok mu?{' '}
+                {t('auth.noAccount')}{' '}
                 <Link
                   to="/register"
                   className="font-medium text-purple-600 hover:text-purple-500 transition-colors"
                 >
-                  Kayıt olun
+                  {t('auth.register.link')}
                 </Link>
               </p>
             </div>
