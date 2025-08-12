@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation, useParams } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, LogIn } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'sonner';
@@ -17,11 +17,13 @@ const Login: React.FC = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const { lang } = useParams();
   const submitTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastSubmitTimeRef = useRef<number>(0);
   const { t } = useTranslation();
   
-  const from = location.state?.from?.pathname || '/dashboard';
+  const currentLang = lang || 'tr';
+  const from = location.state?.from?.pathname || `/${currentLang}/dashboard`;
 
   // Rate limiting: minimum 2 seconds between requests
   const RATE_LIMIT_MS = 2000;
@@ -155,7 +157,7 @@ const Login: React.FC = () => {
                       setErrors(prev => ({ ...prev, email: undefined, general: undefined }));
                     }
                   }}
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
+                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ease-in-out focus:scale-[1.02] focus:shadow-lg"
                   placeholder={t('auth.placeholders.email')}
                 />
               </div>
@@ -183,7 +185,7 @@ const Login: React.FC = () => {
                       setErrors(prev => ({ ...prev, password: undefined, general: undefined }));
                     }
                   }}
-                  className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
+                  className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ease-in-out focus:scale-[1.02] focus:shadow-lg"
                   placeholder={t('auth.placeholders.password')}
                 />
                 <button
@@ -215,7 +217,7 @@ const Login: React.FC = () => {
 
               <div className="text-sm">
                 <Link
-                  to="/forgot-password"
+                  to={`/${currentLang}/forgot-password`}
                   className="font-medium text-purple-600 hover:text-purple-500 transition-colors"
                 >
                   {t('auth.forgotPassword')}
@@ -272,7 +274,7 @@ const Login: React.FC = () => {
               <p className="text-sm text-gray-600">
                 {t('auth.noAccount')}{' '}
                 <Link
-                  to="/register"
+                  to={`/${currentLang}/register`}
                   className="font-medium text-purple-600 hover:text-purple-500 transition-colors"
                 >
                   {t('auth.register.link')}

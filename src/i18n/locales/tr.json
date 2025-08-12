@@ -66,6 +66,7 @@
     "forgotPassword": "Şifremi unuttum",
     "loggingIn": "Giriş yapılıyor...",
     "retryingShort": "Tekrar deneniyor...",
+    "noAccount": "Hesabınız yok mu?",
     "register": {
       "title": "Kayıt Ol",
       "name": "Ad Soyad",
@@ -75,7 +76,8 @@
       "terms": "Kullanım koşullarını kabul ediyorum",
       "submit": "Kayıt Ol",
       "hasAccount": "Zaten hesabınız var mı?",
-      "signIn": "Giriş yapın"
+      "signIn": "Giriş yapın",
+      "link": "Kayıt olun"
     },
     "errors": {
       "invalidCredentials": "Geçersiz e-posta veya şifre",

@@ -62,6 +62,7 @@
     "forgotPassword": "Forgot password",
     "loggingIn": "Logging in...",
     "retryingShort": "Retrying...",
+    "noAccount": "Don't have an account?",
     "register": {
       "title": "Register",
       "name": "Full Name",
@@ -71,7 +72,8 @@
       "terms": "I accept the terms and conditions",
       "submit": "Register",
       "hasAccount": "Already have an account?",
-      "signIn": "Sign in"
+      "signIn": "Sign in",
+      "link": "Sign up"
     },
     "errors": {
       "invalidCredentials": "Invalid email or password",
