@@ -5,6 +5,7 @@ import { JobWithImages, Category } from '../../shared/types';
 import { useAuth } from '../contexts/AuthContext';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import { cn } from '../utils/cn';
 import { useApiWithRetry } from '../hooks/useApiWithRetry';
 import { apiClient } from '../services/apiClient';
@@ -14,6 +15,7 @@ type FilterStatus = 'all' | 'pending' | 'processing' | 'completed' | 'failed';
 
 const Gallery: React.FC = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [jobs, setJobs] = useState<JobWithImages[]>([]);
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all');
@@ -32,7 +34,7 @@ const Gallery: React.FC = () => {
   const processJobsWithTimeout = (jobs: JobWithImages[]) => {
     return jobs.map(job => {
       if (job.status === 'processing' && isJobTimedOut(job.created_at)) {
-        return { ...job, status: 'failed' as const, error_message: 'İşlem zaman aşımına uğradı (5 dakika)' };
+        return { ...job, status: 'failed' as const, error_message: t('gallery.timeoutError') };
       }
       return job;
     });
@@ -63,7 +65,7 @@ const Gallery: React.FC = () => {
       setJobs(processedJobs);
     } catch (error) {
       console.error('Jobs loading failed:', error);
-      toast.error('İşler yüklenirken hata oluştu');
+      toast.error(t('gallery.loadError'));
     }
   }, [jobsApi.request]);
 
@@ -92,13 +94,13 @@ const Gallery: React.FC = () => {
   const getStatusText = (status: string) => {
     switch (status) {
       case 'completed':
-        return 'Tamamlandı';
+        return t('gallery.status.completed');
       case 'processing':
-        return 'İşleniyor';
+        return t('gallery.status.processing');
       case 'failed':
-        return 'Başarısız';
+        return t('gallery.status.failed');
       default:
-        return 'Bekliyor';
+        return t('gallery.status.pending');
     }
   };
 
@@ -132,15 +134,15 @@ const Gallery: React.FC = () => {
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-      toast.success('Fotoğraf indirildi');
+      toast.success(t('gallery.downloadSuccess'));
     } catch (error) {
       console.error('Download failed:', error);
-      toast.error('İndirme sırasında hata oluştu');
+      toast.error(t('gallery.downloadError'));
     }
   };
 
   const handleDeleteJob = async (jobId: string) => {
-    if (!confirm('Bu işi ve tüm işlenmiş görselleri silmek istediğinizden emin misiniz?')) {
+    if (!confirm(t('gallery.deleteConfirm'))) {
       return;
     }
 
@@ -148,7 +150,7 @@ const Gallery: React.FC = () => {
       const response = await apiClient.delete(`/images/jobs/${jobId}`);
       
       if (response.data.success) {
-        toast.success('İş başarıyla silindi');
+        toast.success(t('gallery.deleteSuccess'));
         // Remove the job from local state
         setJobs(prevJobs => prevJobs.filter(job => job.id !== jobId));
         // Close modal if the deleted job was selected
@@ -157,18 +159,18 @@ const Gallery: React.FC = () => {
           setSelectedImageIndex(0);
         }
       } else {
-        toast.error(response.data.error || 'Silme işlemi başarısız');
+        toast.error(response.data.error || t('gallery.deleteError'));
       }
     } catch (error) {
       console.error('Delete failed:', error);
-      toast.error('Silme sırasında hata oluştu');
+      toast.error(t('gallery.deleteError'));
     }
   };
 
   if (jobsApi.loading) {
     return (
       <div className="flex items-center justify-center min-h-96">
-        <LoadingSpinner size="lg" text="İşler yükleniyor..." />
+        <LoadingSpinner size="lg" text={t('gallery.loading')} />
       </div>
     );
   }
@@ -178,7 +180,7 @@ const Gallery: React.FC = () => {
       <div className="flex flex-col items-center justify-center min-h-96 space-y-4">
         <div className="text-center">
           <XCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">İşler yüklenemedi</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">{t('gallery.loadFailed')}</h3>
           <p className="text-gray-600 mb-4">{jobsApi.error}</p>
           <button
             onClick={handleRetry}
@@ -190,7 +192,7 @@ const Gallery: React.FC = () => {
             ) : (
               <RefreshCw className="h-4 w-4 mr-2" />
             )}
-            Tekrar Dene
+            {t('gallery.retry')}
           </button>
         </div>
       </div>

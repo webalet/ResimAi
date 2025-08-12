@@ -4,6 +4,7 @@ import { Category } from '../../shared/types';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ProcessedImageResult from '../components/ProcessedImageResult';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 
 interface UploadState {
@@ -35,6 +36,7 @@ const Categories: React.FC = () => {
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   useEffect(() => {
     loadCategories();
@@ -122,7 +124,7 @@ const Categories: React.FC = () => {
       }, 1000);
     } catch (error) {
       console.error('Categories loading failed:', error);
-      toast.error('Kategoriler yüklenirken hata oluştu');
+      toast.error(t('categories.loadError'));
       setLoading(false);
     }
   };
@@ -137,12 +139,12 @@ const Categories: React.FC = () => {
 
   const handleFileSelect = (file: File) => {
     if (!file.type.startsWith('image/')) {
-      toast.error('Lütfen geçerli bir resim dosyası seçin');
+      toast.error(t('categories.invalidFileType'));
       return;
     }
 
     if (file.size > 10 * 1024 * 1024) {
-      toast.error('Dosya boyutu 10MB\'dan küçük olmalıdır');
+      toast.error(t('categories.fileSizeError'));
       return;
     }
 
@@ -177,17 +179,17 @@ const Categories: React.FC = () => {
 
   const handleUpload = async () => {
     if (!uploadState.selectedCategory || !uploadState.selectedStyle) {
-      toast.error('Lütfen kategori ve stil seçin');
+      toast.error(t('categories.selectCategoryAndStyle'));
       return;
     }
 
     if (uploadState.uploadMethod === 'file' && !uploadState.file) {
-      toast.error('Lütfen bir dosya seçin');
+      toast.error(t('categories.selectFile'));
       return;
     }
 
     if (uploadState.uploadMethod === 'url' && !uploadState.imageUrl) {
-      toast.error('Lütfen bir resim URL\'si girin');
+      toast.error(t('categories.enterImageUrl'));
       return;
     }
 
@@ -196,7 +198,7 @@ const Categories: React.FC = () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        toast.error('Lütfen giriş yapın');
+        toast.error(t('categories.pleaseLogin'));
         return;
       }
 

@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Check, Crown, Zap, Star, CreditCard } from 'lucide-react';
 import { StripePrice } from '../../shared/types';
 import { useAuth } from '../contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { toast } from 'sonner';
 import { cn } from '../utils/cn';
 
 const Subscription: React.FC = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [prices, setPrices] = useState<StripePrice[]>([]);
   const [loading, setLoading] = useState(true);
   const [processingPayment, setProcessingPayment] = useState<string | null>(null);
@@ -149,10 +151,10 @@ const Subscription: React.FC = () => {
       {/* Header */}
       <div className="text-center">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">
-          Kredi Paketleri
+          {t('subscription.title')}
         </h1>
         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-          AI destekli fotoğraf işleme için kredi satın alın. Her işlem 1 kredi tüketir.
+          {t('subscription.subtitle')}
         </p>
       </div>
 
@@ -162,10 +164,10 @@ const Subscription: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                Mevcut Krediniz
+                {t('subscription.currentCredits')}
               </h3>
               <p className="text-gray-600">
-                Hesabınızda <span className="font-bold text-purple-600">{user.credits}</span> kredi bulunuyor
+                {t('subscription.creditsAvailable', { credits: user.credits })}
               </p>
             </div>
             <div className="p-3 bg-purple-100 rounded-lg">
@@ -190,7 +192,7 @@ const Subscription: React.FC = () => {
             {price.popular && (
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                 <span className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-1 rounded-full text-sm font-semibold">
-                  En Popüler
+                  {t('subscription.popular')}
                 </span>
               </div>
             )}
@@ -220,10 +222,10 @@ const Subscription: React.FC = () => {
                   {formatPrice(price.amount, price.currency)}
                 </div>
                 <div className="text-lg font-semibold text-purple-600 mb-2">
-                  {price.credits} Kredi
+                  {price.credits} {t('subscription.credits')}
                 </div>
                 <div className="text-sm text-gray-500">
-                  Kredi başına {getPricePerCredit(price.amount, price.credits)} ₺
+                  {t('subscription.pricePerCredit', { price: getPricePerCredit(price.amount, price.credits) })}
                 </div>
               </div>
               
@@ -273,16 +275,16 @@ const Subscription: React.FC = () => {
                 )}
               >
                 {processingPayment === price.id ? (
-                  <>
-                    <LoadingSpinner size="sm" className="mr-2" />
-                    İşleniyor...
-                  </>
-                ) : (
-                  <>
-                    <CreditCard className="mr-2 h-4 w-4" />
-                    Satın Al
-                  </>
-                )}
+                    <>
+                      <LoadingSpinner size="sm" className="mr-2" />
+                      {t('subscription.processing')}
+                    </>
+                  ) : (
+                    <>
+                      <CreditCard className="mr-2 h-4 w-4" />
+                      {t('subscription.purchase')}
+                    </>
+                  )}
               </button>
             </div>
           </div>
@@ -292,34 +294,34 @@ const Subscription: React.FC = () => {
       {/* FAQ Section */}
       <div className="bg-gray-50 rounded-xl p-8">
         <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-          Sık Sorulan Sorular
+          {t('subscription.faq.title')}
         </h3>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <h4 className="font-semibold text-gray-900 mb-2">
-              Krediler ne kadar süre geçerli?
+              {t('subscription.faq.validity.question')}
             </h4>
             <p className="text-gray-600 text-sm">
-              Satın aldığınız krediler süresiz olarak hesabınızda kalır ve istediğiniz zaman kullanabilirsiniz.
+              {t('subscription.faq.validity.answer')}
             </p>
           </div>
           
           <div>
             <h4 className="font-semibold text-gray-900 mb-2">
-              Her işlem kaç kredi tüketir?
+              {t('subscription.faq.usage.question')}
             </h4>
             <p className="text-gray-600 text-sm">
-              Her fotoğraf işleme işlemi 1 kredi tüketir. Başarısız işlemler için kredi iadesi yapılır.
+              {t('subscription.faq.usage.answer')}
             </p>
           </div>
           
           <div>
             <h4 className="font-semibold text-gray-900 mb-2">
-              Hangi ödeme yöntemleri kabul ediliyor?
+              {t('subscription.faq.payment.question')}
             </h4>
             <p className="text-gray-600 text-sm">
-              Kredi kartı, banka kartı ve havale ile ödeme yapabilirsiniz. Tüm ödemeler güvenli Stripe altyapısı ile işlenir.
+              {t('subscription.faq.payment.answer')}
             </p>
           </div>
           
@@ -330,13 +332,13 @@ const Subscription: React.FC = () => {
       {/* Contact Section */}
       <div className="text-center bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl p-8">
         <h3 className="text-2xl font-bold mb-4">
-          Daha fazla krediye mi ihtiyacınız var?
+          {t('subscription.contact.title')}
         </h3>
         <p className="text-purple-100 mb-6">
-          Kurumsal çözümler ve özel fiyatlandırma için bizimle iletişime geçin.
+          {t('subscription.contact.description')}
         </p>
         <button className="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-          İletişime Geç
+          {t('subscription.contact.button')}
         </button>
       </div>
     </div>

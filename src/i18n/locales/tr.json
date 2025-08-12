@@ -300,29 +300,21 @@
   },
   "dashboard": {
     "welcome": {
-      "title": "Hoş geldin, {{name}}!",
-      "subtitle": "AI destekli fotoğraf işleme platformuna hoş geldin. Hemen yeni bir proje başlat!",
+      "title": "Hoş geldiniz, {{name}}!",
+      "subtitle": "AI destekli fotoğraf işleme platformuna hoş geldiniz. Hemen yeni bir projeye başlayın!",
       "newProject": "Yeni Proje Başlat"
     },
     "stats": {
       "totalJobs": "Toplam İş",
-      "completedJobs": "Tamamlanan",
-      "pendingJobs": "Bekleyen",
-      "remainingCredits": "Kalan Kredi"
+      "completedJobs": "Tamamlanan İş",
+      "remainingCredits": "Kalan Kredi",
+      "successRate": "Başarı Oranı"
     },
     "quickActions": {
-      "uploadPhoto": {
-        "title": "Fotoğraf Yükle",
-        "description": "Yeni bir fotoğraf yükleyip AI ile işle"
-      },
-      "gallery": {
-        "title": "Galeri",
-        "description": "İşlenmiş fotoğraflarını görüntüle"
-      },
-      "premium": {
-        "title": "Premium",
-        "description": "Premium özelliklerini keşfet"
-      }
+      "title": "Hızlı İşlemler",
+      "newJob": "Yeni İş Oluştur",
+      "viewGallery": "Galeriyi Görüntüle",
+      "buyCredits": "Kredi Satın Al"
     },
     "recentJobs": {
       "title": "Son İşler",
@@ -336,14 +328,154 @@
       "processing": "İşleniyor",
       "failed": "Başarısız",
       "pending": "Bekliyor"
+    }
+  },
+  "sidebar": {
+    "categories": "Kategoriler",
+    "gallery": "Galeri",
+    "subscription": "Abonelik",
+    "profile": "Profil",
+    "credits": "kredi",
+    "logout": "Çıkış Yap",
+    "logoutError": "Çıkış yapılırken hata oluştu"
+  },
+  "categories": {
+    "loadError": "Kategoriler yüklenirken hata oluştu",
+    "invalidFile": "Lütfen geçerli bir resim dosyası seçin",
+    "selectCategoryStyle": "Lütfen kategori ve stil seçin",
+    "loginRequired": "Lütfen giriş yapın",
+    "insufficientCredits": "Yetersiz kredi. Lütfen kredi satın alın.",
+    "uploadError": "Yükleme sırasında hata oluştu",
+    "jobCreated": "İş başarıyla oluşturuldu! Galeri sayfasından takip edebilirsiniz."
+  },
+  "gallery": {
+    "timeoutError": "İşlem zaman aşımına uğradı (5 dakika)",
+    "loadError": "İşler yüklenirken hata oluştu",
+    "status": {
+      "completed": "Tamamlandı",
+      "processing": "İşleniyor",
+      "failed": "Başarısız",
+      "pending": "Bekliyor"
     },
-    "loading": {
-      "text": "Dashboard yükleniyor..."
+    "downloadSuccess": "Fotoğraf indirildi",
+    "downloadError": "İndirme sırasında hata oluştu",
+    "deleteConfirm": "Bu işi ve tüm işlenmiş görselleri silmek istediğinizden emin misiniz?",
+    "deleteSuccess": "İş başarıyla silindi",
+    "deleteError": "Silme işlemi başarısız",
+    "loading": "İşler yükleniyor...",
+    "loadFailed": "İşler yüklenemedi",
+    "retry": "Tekrar Dene"
+  },
+  "subscription": {
+    "title": "Kredi Paketleri",
+    "subtitle": "AI destekli fotoğraf işleme için kredi satın alın. Her işlem 1 kredi tüketir.",
+    "currentCredits": "Mevcut Krediniz",
+    "creditsAvailable": "Hesabınızda {{credits}} kredi bulunuyor",
+    "popular": "En Popüler",
+    "credits": "Kredi",
+    "pricePerCredit": "Kredi başına {{price}} ₺",
+    "processing": "İşleniyor...",
+    "purchase": "Satın Al",
+    "paymentSuccess": "Ödeme başarılı! Krediniz hesabınıza eklendi.",
+    "paymentError": "Ödeme sırasında hata oluştu",
+    "faq": {
+      "title": "Sık Sorulan Sorular",
+      "validity": {
+        "question": "Krediler ne kadar süre geçerli?",
+        "answer": "Satın aldığınız krediler süresiz olarak hesabınızda kalır ve istediğiniz zaman kullanabilirsiniz."
+      },
+      "usage": {
+        "question": "Her işlem kaç kredi tüketir?",
+        "answer": "Her fotoğraf işleme işlemi 1 kredi tüketir. Başarısız işlemler için kredi iadesi yapılır."
+      },
+      "payment": {
+        "question": "Hangi ödeme yöntemleri kabul ediliyor?",
+        "answer": "Kredi kartı, banka kartı ve havale ile ödeme yapabilirsiniz. Tüm ödemeler güvenli Stripe altyapısı ile işlenir."
+      }
     },
-    "error": {
-      "title": "Veri Yüklenemedi",
-      "retry": "Tekrar Dene",
-      "retryNote": "Sorun devam ederse, lütfen bir süre bekleyip tekrar deneyin."
+    "contact": {
+      "title": "Daha fazla krediye mi ihtiyacınız var?",
+      "description": "Kurumsal çözümler ve özel fiyatlandırma için bizimle iletişime geçin.",
+      "button": "İletişime Geç"
+    }
+  },
+  "profile": {
+    "title": "Profil Ayarları",
+    "subtitle": "Hesap bilgilerinizi ve tercihlerinizi yönetin",
+    "tabs": {
+      "profile": "Profil Bilgileri",
+      "security": "Güvenlik",
+      "notifications": "Bildirimler"
+    },
+    "sections": {
+      "profileInfo": "Profil Bilgileri",
+      "changePassword": "Şifre Değiştir",
+      "security": "Güvenlik Ayarları",
+      "notifications": "Bildirim Ayarları"
+    },
+    "fields": {
+      "name": "Ad Soyad",
+      "firstName": "Ad",
+      "lastName": "Soyad",
+      "email": "E-posta",
+      "currentPassword": "Mevcut Şifre",
+      "newPassword": "Yeni Şifre",
+      "confirmPassword": "Yeni Şifre (Tekrar)"
+    },
+    "placeholders": {
+      "name": "Adınızı girin",
+      "firstName": "Adınızı girin",
+      "lastName": "Soyadınızı girin",
+      "email": "E-posta adresinizi girin",
+      "currentPassword": "Mevcut şifrenizi girin",
+      "newPassword": "Yeni şifrenizi girin",
+      "confirmPassword": "Yeni şifrenizi tekrar girin"
+    },
+    "currentCredits": "Mevcut Kredi",
+    "accountType": "Hesap türü",
+    "admin": "Yönetici",
+    "user": "Kullanıcı",
+    "edit": "Düzenle",
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "saving": "Kaydediliyor...",
+    "updating": "Güncelleniyor...",
+    "updatePassword": "Şifreyi Güncelle",
+    "saveSettings": "Ayarları Kaydet",
+    "updateSuccess": "Profil bilgileri güncellendi",
+    "updateError": "Profil güncellenirken hata oluştu",
+    "currentPasswordRequired": "Mevcut şifrenizi girin",
+    "newPasswordRequired": "Yeni şifrenizi girin",
+    "passwordTooShort": "Yeni şifre en az 6 karakter olmalıdır",
+    "passwordMismatch": "Yeni şifreler eşleşmiyor",
+    "passwordUpdateSuccess": "Şifre başarıyla güncellendi",
+    "passwordUpdateError": "Şifre güncellenirken hata oluştu",
+    "notificationUpdateSuccess": "Bildirim ayarları güncellendi",
+    "notificationUpdateError": "Bildirim ayarları güncellenirken hata oluştu",
+    "passwordRequirements": {
+      "title": "Şifre Gereksinimleri",
+      "length": "En az 6 karakter uzunluğunda olmalıdır",
+      "case": "Büyük ve küçük harf içermelidir",
+      "number": "En az bir rakam içermelidir",
+      "special": "Özel karakter kullanmanız önerilir"
+    },
+    "notifications": {
+      "email": {
+        "title": "E-posta Bildirimleri",
+        "description": "Genel e-posta bildirimlerini alın"
+      },
+      "jobCompletion": {
+        "title": "İş Tamamlama Bildirimleri",
+        "description": "Fotoğraf işleme tamamlandığında bildirim alın"
+      },
+      "promotional": {
+        "title": "Promosyon E-postaları",
+        "description": "Özel teklifler ve kampanyalar hakkında bilgi alın"
+      },
+      "security": {
+        "title": "Güvenlik Uyarıları",
+        "description": "Hesap güvenliği ile ilgili önemli bildirimler"
+      }
     }
   }
 }

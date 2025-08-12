@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { User, Mail, CreditCard, Shield, Bell, Eye, EyeOff, Save, Edit2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { toast } from 'sonner';
 import { cn } from '../utils/cn';
@@ -22,6 +23,7 @@ interface NotificationSettings {
 
 const Profile: React.FC = () => {
   const { user, updateUser } = useAuth();
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'profile' | 'security' | 'notifications'>('profile');
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -87,11 +89,11 @@ const Profile: React.FC = () => {
         });
       }
       
-      toast.success('Profil bilgileri güncellendi');
+      toast.success(t('profile.updateSuccess'));
       setIsEditing(false);
     } catch (error) {
       console.error('Profile update failed:', error);
-      toast.error('Profil güncellenirken hata oluştu');
+      toast.error(t('profile.updateError'));
     } finally {
       setLoading(false);
     }
@@ -101,22 +103,22 @@ const Profile: React.FC = () => {
     e.preventDefault();
     
     if (!formData.currentPassword) {
-      toast.error('Mevcut şifrenizi girin');
+      toast.error(t('profile.currentPasswordRequired'));
       return;
     }
     
     if (!formData.newPassword) {
-      toast.error('Yeni şifrenizi girin');
+      toast.error(t('profile.newPasswordRequired'));
       return;
     }
     
     if (formData.newPassword.length < 6) {
-      toast.error('Yeni şifre en az 6 karakter olmalıdır');
+      toast.error(t('profile.passwordTooShort'));
       return;
     }
     
     if (formData.newPassword !== formData.confirmPassword) {
-      toast.error('Yeni şifreler eşleşmiyor');
+      toast.error(t('profile.passwordMismatch'));
       return;
     }
     
@@ -126,7 +128,7 @@ const Profile: React.FC = () => {
       // Mock API call - will be replaced with actual API
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      toast.success('Şifre başarıyla güncellendi');
+      toast.success(t('profile.passwordUpdateSuccess'));
       setFormData(prev => ({
         ...prev,
         currentPassword: '',
@@ -135,7 +137,7 @@ const Profile: React.FC = () => {
       }));
     } catch (error) {
       console.error('Password update failed:', error);
-      toast.error('Şifre güncellenirken hata oluştu');
+      toast.error(t('profile.passwordUpdateError'));
     } finally {
       setLoading(false);
     }
@@ -148,19 +150,19 @@ const Profile: React.FC = () => {
       // Mock API call - will be replaced with actual API
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      toast.success('Bildirim ayarları güncellendi');
+      toast.success(t('profile.notificationUpdateSuccess'));
     } catch (error) {
       console.error('Notification update failed:', error);
-      toast.error('Bildirim ayarları güncellenirken hata oluştu');
+      toast.error(t('profile.notificationUpdateError'));
     } finally {
       setLoading(false);
     }
   };
 
   const tabs = [
-    { id: 'profile' as const, label: 'Profil Bilgileri', icon: User },
-    { id: 'security' as const, label: 'Güvenlik', icon: Shield },
-    { id: 'notifications' as const, label: 'Bildirimler', icon: Bell }
+    { id: 'profile' as const, label: t('profile.tabs.profile'), icon: User },
+    { id: 'security' as const, label: t('profile.tabs.security'), icon: Shield },
+    { id: 'notifications' as const, label: t('profile.tabs.notifications'), icon: Bell }
   ];
 
   if (!user) {
@@ -176,10 +178,10 @@ const Profile: React.FC = () => {
       {/* Header */}
       <div className="text-center">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Profil Ayarları
+          {t('profile.title')}
         </h1>
         <p className="text-gray-600">
-          Hesap bilgilerinizi ve tercihlerinizi yönetin
+          {t('profile.subtitle')}
         </p>
       </div>
 
@@ -213,14 +215,14 @@ const Profile: React.FC = () => {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold text-gray-900">
-                Profil Bilgileri
+                {t('profile.sections.profileInfo')}
               </h2>
               <button
                 onClick={() => setIsEditing(!isEditing)}
                 className="flex items-center space-x-2 px-4 py-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
               >
                 <Edit2 className="h-4 w-4" />
-                <span>{isEditing ? 'İptal' : 'Düzenle'}</span>
+                <span>{isEditing ? t('profile.cancel') : t('profile.edit')}</span>
               </button>
             </div>
             
@@ -228,7 +230,7 @@ const Profile: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Ad Soyad
+                    {t('profile.fields.name')}
                   </label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -242,14 +244,14 @@ const Profile: React.FC = () => {
                         'w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors',
                         !isEditing && 'bg-gray-50 cursor-not-allowed'
                       )}
-                      placeholder="Adınızı girin"
+                      placeholder={t('profile.placeholders.name')}
                     />
                   </div>
                 </div>
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    E-posta
+                    {t('profile.fields.email')}
                   </label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -263,7 +265,7 @@ const Profile: React.FC = () => {
                         'w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors',
                         !isEditing && 'bg-gray-50 cursor-not-allowed'
                       )}
-                      placeholder="E-posta adresinizi girin"
+                      placeholder={t('profile.placeholders.email')}
                     />
                   </div>
                 </div>
@@ -276,10 +278,10 @@ const Profile: React.FC = () => {
                   </div>
                   <div>
                     <h3 className="font-medium text-gray-900">
-                      Mevcut Kredi: {user.credits}
+                      {t('profile.currentCredits')}: {user.credits}
                     </h3>
                     <p className="text-sm text-gray-600">
-                      Hesap türü: {user.is_admin ? 'Yönetici' : 'Kullanıcı'}
+                      {t('profile.accountType')}: {user.is_admin ? t('profile.admin') : t('profile.user')}
                     </p>
                   </div>
                 </div>
@@ -297,7 +299,7 @@ const Profile: React.FC = () => {
                     ) : (
                       <Save className="h-4 w-4" />
                     )}
-                    <span>{loading ? 'Kaydediliyor...' : 'Kaydet'}</span>
+                    <span>{loading ? t('profile.saving') : t('profile.save')}</span>
                   </button>
                 </div>
               )}
@@ -308,13 +310,13 @@ const Profile: React.FC = () => {
         {activeTab === 'security' && (
           <div className="space-y-6">
             <h2 className="text-xl font-semibold text-gray-900">
-              Güvenlik Ayarları
+              {t('profile.sections.security')}
             </h2>
             
             <form onSubmit={handlePasswordUpdate} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Mevcut Şifre
+                  {t('profile.fields.currentPassword')}
                 </label>
                 <div className="relative">
                   <Shield className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -324,7 +326,7 @@ const Profile: React.FC = () => {
                     value={formData.currentPassword}
                     onChange={handleInputChange}
                     className="w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    placeholder="Mevcut şifrenizi girin"
+                    placeholder={t('profile.placeholders.currentPassword')}
                   />
                   <button
                     type="button"
@@ -339,7 +341,7 @@ const Profile: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Yeni Şifre
+                    {t('profile.fields.newPassword')}
                   </label>
                   <div className="relative">
                     <Shield className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -349,7 +351,7 @@ const Profile: React.FC = () => {
                       value={formData.newPassword}
                       onChange={handleInputChange}
                       className="w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                      placeholder="Yeni şifrenizi girin"
+                      placeholder={t('profile.placeholders.newPassword')}
                     />
                     <button
                       type="button"
@@ -363,7 +365,7 @@ const Profile: React.FC = () => {
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Yeni Şifre (Tekrar)
+                    {t('profile.fields.confirmPassword')}
                   </label>
                   <div className="relative">
                     <Shield className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -373,7 +375,7 @@ const Profile: React.FC = () => {
                       value={formData.confirmPassword}
                       onChange={handleInputChange}
                       className="w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                      placeholder="Yeni şifrenizi tekrar girin"
+                      placeholder={t('profile.placeholders.confirmPassword')}
                     />
                     <button
                       type="button"
@@ -387,12 +389,12 @@ const Profile: React.FC = () => {
               </div>
               
               <div className="bg-blue-50 rounded-lg p-4">
-                <h4 className="font-medium text-blue-900 mb-2">Şifre Gereksinimleri</h4>
+                <h4 className="font-medium text-blue-900 mb-2">{t('profile.passwordRequirements.title')}</h4>
                 <ul className="text-sm text-blue-800 space-y-1">
-                  <li>• En az 6 karakter uzunluğunda olmalıdır</li>
-                  <li>• Büyük ve küçük harf içermelidir</li>
-                  <li>• En az bir rakam içermelidir</li>
-                  <li>• Özel karakter kullanmanız önerilir</li>
+                  <li>• {t('profile.passwordRequirements.length')}</li>
+                  <li>• {t('profile.passwordRequirements.case')}</li>
+                  <li>• {t('profile.passwordRequirements.number')}</li>
+                  <li>• {t('profile.passwordRequirements.special')}</li>
                 </ul>
               </div>
               
@@ -407,7 +409,7 @@ const Profile: React.FC = () => {
                   ) : (
                     <Save className="h-4 w-4" />
                   )}
-                  <span>{loading ? 'Güncelleniyor...' : 'Şifreyi Güncelle'}</span>
+                  <span>{loading ? t('profile.updating') : t('profile.updatePassword')}</span>
                 </button>
               </div>
             </form>
@@ -417,14 +419,14 @@ const Profile: React.FC = () => {
         {activeTab === 'notifications' && (
           <div className="space-y-6">
             <h2 className="text-xl font-semibold text-gray-900">
-              Bildirim Ayarları
+              {t('profile.sections.notifications')}
             </h2>
             
             <div className="space-y-4">
               <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                 <div>
-                  <h4 className="font-medium text-gray-900">E-posta Bildirimleri</h4>
-                  <p className="text-sm text-gray-600">Genel e-posta bildirimlerini alın</p>
+                  <h4 className="font-medium text-gray-900">{t('profile.notifications.email.title')}</h4>
+                  <p className="text-sm text-gray-600">{t('profile.notifications.email.description')}</p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input
@@ -439,8 +441,8 @@ const Profile: React.FC = () => {
               
               <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                 <div>
-                  <h4 className="font-medium text-gray-900">İş Tamamlama Bildirimleri</h4>
-                  <p className="text-sm text-gray-600">Fotoğraf işleme tamamlandığında bildirim alın</p>
+                  <h4 className="font-medium text-gray-900">{t('profile.notifications.jobCompletion.title')}</h4>
+                  <p className="text-sm text-gray-600">{t('profile.notifications.jobCompletion.description')}</p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input
@@ -455,8 +457,8 @@ const Profile: React.FC = () => {
               
               <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                 <div>
-                  <h4 className="font-medium text-gray-900">Promosyon E-postaları</h4>
-                  <p className="text-sm text-gray-600">Özel teklifler ve kampanyalar hakkında bilgi alın</p>
+                  <h4 className="font-medium text-gray-900">{t('profile.notifications.promotional.title')}</h4>
+                  <p className="text-sm text-gray-600">{t('profile.notifications.promotional.description')}</p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input
@@ -471,8 +473,8 @@ const Profile: React.FC = () => {
               
               <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                 <div>
-                  <h4 className="font-medium text-gray-900">Güvenlik Uyarıları</h4>
-                  <p className="text-sm text-gray-600">Hesap güvenliği ile ilgili önemli bildirimler</p>
+                  <h4 className="font-medium text-gray-900">{t('profile.notifications.security.title')}</h4>
+                  <p className="text-sm text-gray-600">{t('profile.notifications.security.description')}</p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input
@@ -497,7 +499,7 @@ const Profile: React.FC = () => {
                 ) : (
                   <Save className="h-4 w-4" />
                 )}
-                <span>{loading ? 'Kaydediliyor...' : 'Ayarları Kaydet'}</span>
+                <span>{loading ? t('profile.saving') : t('profile.saveSettings')}</span>
               </button>
             </div>
           </div>

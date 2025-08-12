@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
 
 interface LayoutProps {
@@ -25,13 +26,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const navigation = [
-    { name: 'Dashboard', href: '/dashboard', icon: Home },
-    { name: 'Kategoriler', href: '/categories', icon: Grid3X3 },
-    { name: 'Galeri', href: '/gallery', icon: Image },
-    { name: 'Abonelik', href: '/subscription', icon: CreditCard },
-    { name: 'Profil', href: '/profile', icon: User },
+    { name: t('navigation.dashboard'), href: '/dashboard', icon: Home },
+    { name: t('navigation.categories'), href: '/categories', icon: Grid3X3 },
+    { name: t('navigation.gallery'), href: '/gallery', icon: Image },
+    { name: t('layout.subscription'), href: '/subscription', icon: CreditCard },
+    { name: t('navigation.profile'), href: '/profile', icon: User },
   ];
 
   const handleLogout = async () => {
@@ -39,7 +41,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       await logout();
       navigate('/login');
     } catch (error) {
-      toast.error('Çıkış yapılırken hata oluştu');
+      toast.error(t('layout.logoutError'));
     }
   };
 
@@ -98,7 +100,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <p className="text-base font-medium text-gray-700">{user?.name}</p>
                 <p className="text-sm font-medium text-gray-500 flex items-center">
                   <Coins className="h-4 w-4 mr-1" />
-                  {user?.credits} kredi
+                  {user?.credits} {t('layout.credits')}
                 </p>
               </div>
             </div>
@@ -148,13 +150,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <p className="text-sm font-medium text-gray-700">{user?.name}</p>
                 <p className="text-xs font-medium text-gray-500 flex items-center">
                   <Coins className="h-3 w-3 mr-1" />
-                  {user?.credits} kredi
+                  {user?.credits} {t('layout.credits')}
                 </p>
               </div>
               <button
                 onClick={handleLogout}
                 className="ml-2 p-2 text-gray-400 hover:text-gray-600 transition-colors"
-                title="Çıkış Yap"
+                title={t('navigation.logout')}
               >
                 <LogOut className="h-4 w-4" />
               </button>
