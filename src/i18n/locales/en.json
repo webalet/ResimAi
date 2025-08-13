@@ -59,7 +59,9 @@
     },
     "fields": {
       "email": "Email",
-      "password": "Password"
+      "password": "Password",
+      "fullName": "Full Name",
+      "confirmPassword": "Confirm Password"
     },
     "placeholders": {
       "email": "Enter your email address",

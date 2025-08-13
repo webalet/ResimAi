@@ -63,7 +63,9 @@
     },
     "fields": {
       "email": "E-posta",
-      "password": "Şifre"
+      "password": "Şifre",
+      "fullName": "Ad Soyad",
+      "confirmPassword": "Şifre Tekrar"
     },
     "placeholders": {
       "email": "E-posta adresinizi girin",
