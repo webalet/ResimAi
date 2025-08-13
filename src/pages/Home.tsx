@@ -70,13 +70,32 @@ const Home: React.FC = () => {
               {t('home.hero.subtitle')}
             </p>
             <div className="flex justify-center">
-              <Link
-                to={user ? `/${currentLang}/dashboard` : `/${currentLang}/register`}
-                className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-200 flex items-center justify-center"
-              >
-                {user ? t('common.goToDashboard') : t('common.startFree')}
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
+              {user ? (
+                <Link
+                  to={`/${currentLang}/dashboard`}
+                  className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-200 flex items-center justify-center"
+                >
+                  {t('common.goToDashboard')}
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              ) : (
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Link
+                    to={`/${currentLang}/login`}
+                    className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-200 flex items-center justify-center"
+                  >
+                    {t('navigation.login')}
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                  <Link
+                    to={`/${currentLang}/register`}
+                    className="bg-white border-2 border-purple-600 text-purple-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-purple-50 transition-all duration-200 flex items-center justify-center"
+                  >
+                    {t('navigation.register')}
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -245,13 +264,32 @@ const Home: React.FC = () => {
             </div>
           </div>
           <div className="text-center mt-12">
-            <Link
-              to={user ? `/${currentLang}/dashboard` : `/${currentLang}/register`}
-              className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-200 inline-flex items-center"
-            >
-              {user ? t('common.tryNow') : t('common.startFree')}
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Link>
+            {user ? (
+              <Link
+                to={`/${currentLang}/dashboard`}
+                className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-200 inline-flex items-center"
+              >
+                {t('common.tryNow')}
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+            ) : (
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link
+                  to={`/${currentLang}/login`}
+                  className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-200 inline-flex items-center"
+                >
+                  {t('navigation.login')}
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+                <Link
+                  to={`/${currentLang}/register`}
+                  className="bg-white border-2 border-purple-600 text-purple-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-purple-50 transition-all duration-200 inline-flex items-center"
+                >
+                  {t('navigation.register')}
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </section>
