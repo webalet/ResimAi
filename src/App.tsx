@@ -48,7 +48,7 @@ const LanguageRoutes: React.FC = () => {
     <Routes>
       {/* Public routes */}
       <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
-      <Route path="/login" element={<Navigate to={`/${lang || 'tr'}`} replace />} />
+      <Route path="/login" element={<Navigate to="/" replace />} />
       <Route path="/register" element={<PublicLayout><Register /></PublicLayout>} />
       <Route path="/pricing" element={<PublicLayout><Pricing /></PublicLayout>} />
           
