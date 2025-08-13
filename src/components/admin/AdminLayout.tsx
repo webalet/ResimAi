@@ -121,25 +121,26 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
 
       {/* Main content */}
       <div className="lg:pl-64">
-        {/* Top bar */}
-        <div className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 md:px-8">
+        {/* Mobile menu button */}
+        <div className="sticky top-0 z-10 flex h-16 items-center bg-white border-b border-gray-200 px-4 lg:hidden">
           <button
             type="button"
-            className="-m-2.5 p-2.5 text-gray-700 lg:hidden"
+            className="-m-2.5 p-2.5 text-gray-700"
             onClick={() => setSidebarOpen(true)}
           >
             <Menu className="h-6 w-6" />
           </button>
-
-          <h2 className="flex-1 text-lg font-semibold text-gray-900">
+          <h2 className="ml-4 text-lg font-semibold text-gray-900">
             {navigation.find(item => item.href === location.pathname)?.name || 'Admin Panel'}
           </h2>
         </div>
 
         {/* Page content */}
-        <main className="py-6">
-          <div className="px-4 sm:px-6 lg:px-8">
-            {children}
+        <main className="min-h-screen bg-gray-50 pt-0 lg:pt-6">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="py-6">
+              {children}
+            </div>
           </div>
         </main>
       </div>
