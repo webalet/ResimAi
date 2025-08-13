@@ -135,10 +135,17 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           </h2>
         </div>
 
+        {/* Desktop header */}
+        <div className="sticky top-0 z-10 hidden h-16 items-center bg-white border-b border-gray-200 px-6 lg:flex">
+          <h2 className="text-lg font-semibold text-gray-900">
+            {navigation.find(item => item.href === location.pathname)?.name || 'Dashboard'}
+          </h2>
+        </div>
+
         {/* Page content */}
-        <main className="min-h-screen bg-gray-50 pt-0 lg:pt-6">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="py-6">
+        <main className="min-h-screen bg-gray-50 pt-0 lg:pt-0">
+          <div className="mx-auto max-w-full px-4 sm:px-6 lg:px-8">
+            <div className="py-4">
               {children}
             </div>
           </div>
