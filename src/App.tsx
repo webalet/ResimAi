@@ -48,7 +48,7 @@ const LanguageRoutes: React.FC = () => {
     <Routes>
       {/* Public routes */}
       <Route path="/" element={<PublicLayout><Home /></PublicLayout>} />
-      <Route path="/login" element={<PublicLayout><Login /></PublicLayout>} />
+      <Route path="/login" element={<Navigate to={`/${lang || 'tr'}`} replace />} />
       <Route path="/register" element={<PublicLayout><Register /></PublicLayout>} />
       <Route path="/pricing" element={<PublicLayout><Pricing /></PublicLayout>} />
           
@@ -116,7 +116,7 @@ export default function App() {
             <Route path="/" element={<Navigate to="/tr" replace />} />
             
             {/* Dil prefix'i olmayan URL'leri varsayılan dile yönlendir */}
-            <Route path="/login" element={<Navigate to="/tr/login" replace />} />
+            <Route path="/login" element={<Navigate to="/tr" replace />} />
             <Route path="/register" element={<Navigate to="/tr/register" replace />} />
             <Route path="/pricing" element={<Navigate to="/tr/pricing" replace />} />
             <Route path="/dashboard" element={<Navigate to="/tr/dashboard" replace />} />
