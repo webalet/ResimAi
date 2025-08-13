@@ -41,7 +41,7 @@
   },
   "auth": {
     "login": {
-      "title": "Login",
+      "title": "Sign In",
       "subtitle": "Sign in to your account",
       "button": "Login",
       "email": "Email",
@@ -50,13 +50,13 @@
       "forgot": "Forgot password",
       "submit": "Login",
       "noAccount": "Don't have an account?",
-    "hasAccount": "Already have an account?",
+      "link": "Sign in"
+    },
     "terms": "Terms of Service",
     "privacy": "Privacy Policy",
     "acceptText": "I accept",
     "creatingAccount": "Creating account...",
-      "signUp": "Sign up"
-    },
+    "hasAccount": "Already have an account?",
     "fields": {
       "email": "Email",
       "password": "Password",
@@ -73,12 +73,6 @@
     "rememberMe": "Remember me",
     "forgotPassword": "Forgot password",
     "loggingIn": "Logging in...",
-    "retryingShort": "Retrying...",
-    "noAccount": "Don't have an account?",
-    "hasAccount": "Already have an account?",
-    "login": {
-      "link": "Sign in"
-    },
     "register": {
       "title": "Register",
       "subtitle": "Create a free account and get started",
@@ -104,8 +98,20 @@
       "passwordRequired": "Password is required",
       "passwordMismatch": "Passwords do not match",
       "emailInvalid": "Invalid email format",
-      "passwordTooShort": "Password must be at least 6 characters"
-    }
+      "passwordTooShort": "Password must be at least 6 characters",
+      "enterName": "Please enter your name",
+      "enterEmail": "Please enter your email address",
+      "validEmail": "Please enter a valid email address",
+      "passwordLength": "Password must be at least 6 characters",
+      "acceptTerms": "You must accept the terms and conditions",
+      "rateLimitRetry": "Too many attempts. Retrying in {{seconds}} seconds",
+      "waitSeconds": "Please wait {{seconds}} seconds",
+      "tooManyAttempts": "Too many attempts. Please try again later",
+      "loginFailed": "Login failed",
+      "fillAllFields": "Please fill in all fields"
+    },
+    "retrying": "Retrying... ({{current}}/{{max}})",
+    "retryingShort": "Retrying..."
   },
   "home": {
     "hero": {

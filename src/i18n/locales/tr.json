@@ -54,13 +54,13 @@
       "forgot": "Şifremi unuttum",
       "submit": "Giriş Yap",
       "noAccount": "Hesabınız yok mu?",
-    "hasAccount": "Zaten hesabınız var mı?",
+      "link": "Giriş yapın"
+    },
     "terms": "Kullanım Koşulları",
     "privacy": "Gizlilik Politikası",
     "acceptText": "kabul ediyorum",
     "creatingAccount": "Hesap oluşturuluyor...",
-      "signUp": "Kayıt olun"
-    },
+    "hasAccount": "Zaten hesabınız var mı?",
     "fields": {
       "email": "E-posta",
       "password": "Şifre",
@@ -77,12 +77,6 @@
     "rememberMe": "Beni hatırla",
     "forgotPassword": "Şifremi unuttum",
     "loggingIn": "Giriş yapılıyor...",
-    "retryingShort": "Tekrar deneniyor...",
-    "noAccount": "Hesabınız yok mu?",
-    "hasAccount": "Zaten hesabınız var mı?",
-    "login": {
-      "link": "Giriş yapın"
-    },
     "register": {
       "title": "Kayıt Ol",
       "subtitle": "Ücretsiz hesap oluşturun ve başlayın",
@@ -108,8 +102,20 @@
       "passwordRequired": "Şifre gerekli",
       "passwordMismatch": "Şifreler eşleşmiyor",
       "emailInvalid": "Geçersiz e-posta formatı",
-      "passwordTooShort": "Şifre en az 6 karakter olmalı"
-    }
+      "passwordTooShort": "Şifre en az 6 karakter olmalı",
+      "enterName": "Lütfen adınızı girin",
+      "enterEmail": "Lütfen e-posta adresinizi girin",
+      "validEmail": "Lütfen geçerli bir e-posta adresi girin",
+      "passwordLength": "Şifre en az 6 karakter olmalıdır",
+      "acceptTerms": "Kullanım koşullarını kabul etmelisiniz",
+      "rateLimitRetry": "Çok fazla deneme yapıldı. {{seconds}} saniye sonra tekrar denenecek",
+      "waitSeconds": "Lütfen {{seconds}} saniye bekleyin",
+      "tooManyAttempts": "Çok fazla deneme yapıldı. Lütfen daha sonra tekrar deneyin",
+      "loginFailed": "Giriş başarısız oldu",
+      "fillAllFields": "Lütfen tüm alanları doldurun"
+    },
+    "retrying": "Tekrar deneniyor... ({{current}}/{{max}})",
+    "retryingShort": "Tekrar deneniyor..."
   },
   "home": {
     "hero": {
