@@ -822,17 +822,7 @@ const AdminSettings = () => {
   return (
     <AdminLayout>
       <div className="space-y-8">
-        <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 sm:p-8">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-            <div className="p-3 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl">
-              <Settings className="h-8 w-8 text-blue-600" />
-            </div>
-            <div className="flex-1">
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Sistem Ayarları</h1>
-              <p className="text-gray-600 mt-1 text-sm sm:text-base">Sistem konfigürasyonu ve ayarları</p>
-            </div>
-          </div>
-        </div>
+
 
         {/* Success/Error Messages */}
         {message.text && (

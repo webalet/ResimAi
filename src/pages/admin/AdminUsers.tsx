@@ -115,14 +115,6 @@ const AdminUsers: React.FC = () => {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Kullanıcı Yönetimi</h1>
-            <p className="text-gray-600">Tüm kullanıcıları görüntüleyin ve yönetin</p>
-          </div>
-        </div>
-
         {/* Search and Filters */}
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex flex-col sm:flex-row gap-4">
