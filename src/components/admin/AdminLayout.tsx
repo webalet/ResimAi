@@ -37,7 +37,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 overflow-x-hidden">
       {/* Mobile sidebar */}
       <div className={`fixed inset-0 flex z-40 md:hidden ${sidebarOpen ? '' : 'pointer-events-none'}`}>
         <div className={`fixed inset-0 bg-gray-600 bg-opacity-75 transition-opacity ${sidebarOpen ? 'opacity-100' : 'opacity-0'}`} onClick={() => setSidebarOpen(false)} />
@@ -149,10 +149,6 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                 <Menu className="h-5 w-5" />
               </button>
             </div>
-            <div className="md:hidden flex-1 text-center">
-              <h1 className="text-lg font-semibold text-gray-900">Admin Panel</h1>
-            </div>
-            <div className="md:hidden w-10"></div>
           </div>
         </div>
         <main className="flex-1">
