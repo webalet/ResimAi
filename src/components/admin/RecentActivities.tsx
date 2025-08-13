@@ -70,7 +70,7 @@ const RecentActivities: React.FC<RecentActivitiesProps> = ({ activities }) => {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 max-h-96 overflow-y-auto">
       {activities.map((activity) => (
         <div key={activity.id} className="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
           <div className="flex-shrink-0">
@@ -80,25 +80,25 @@ const RecentActivities: React.FC<RecentActivitiesProps> = ({ activities }) => {
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <span className="text-sm font-medium text-gray-900">
+              <div className="flex items-center space-x-2 min-w-0 flex-1">
+                <span className="text-sm font-medium text-gray-900 truncate">
                   {getCategoryDisplayName(activity.category_type)}
                 </span>
-                <span className="text-sm text-gray-500">•</span>
-                <span className="text-sm text-gray-600">{activity.style}</span>
+                <span className="text-sm text-gray-500 flex-shrink-0">•</span>
+                <span className="text-sm text-gray-600 truncate">{activity.style}</span>
               </div>
-              <div className="flex items-center space-x-1">
+              <div className="flex items-center space-x-1 flex-shrink-0 ml-2">
                 {getStatusIcon(activity.status)}
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-gray-500 whitespace-nowrap">
                   {getStatusText(activity.status)}
                 </span>
               </div>
             </div>
             <div className="flex items-center mt-1 text-xs text-gray-500">
-              <User className="h-3 w-3 mr-1" />
-              <span>{activity.users.name}</span>
-              <span className="mx-2">•</span>
-              <span>
+              <User className="h-3 w-3 mr-1 flex-shrink-0" />
+              <span className="truncate">{activity.users.name}</span>
+              <span className="mx-2 flex-shrink-0">•</span>
+              <span className="whitespace-nowrap">
                 {formatDistanceToNow(new Date(activity.created_at), {
                   addSuffix: true,
                   locale: tr

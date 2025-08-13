@@ -80,9 +80,9 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           <StatsCard
             title="Toplam Kullanıcı"
             value={stats?.totalUsers || 0}
@@ -118,9 +118,9 @@ const AdminDashboard: React.FC = () => {
         </div>
 
         {/* Charts and Activities */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
           {/* Category Usage Chart */}
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900">Kategori Kullanımı</h3>
               <BarChart3 className="h-5 w-5 text-gray-400" />
@@ -129,7 +129,7 @@ const AdminDashboard: React.FC = () => {
           </div>
 
           {/* Recent Activities */}
-          <div className="bg-white rounded-lg shadow p-6">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900">Son Aktiviteler</h3>
               <Calendar className="h-5 w-5 text-gray-400" />
@@ -139,9 +139,9 @@ const AdminDashboard: React.FC = () => {
         </div>
 
         {/* Quick Stats */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Hızlı İstatistikler</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="text-center p-4 bg-blue-50 rounded-lg">
               <div className="text-2xl font-bold text-blue-600">{stats?.monthlyJobs || 0}</div>
               <div className="text-sm text-blue-800">Aylık İşlem</div>

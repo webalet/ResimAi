@@ -105,9 +105,9 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         aria-label="Navigasyon menüsü"
       >
         <div 
-          className="fixed inset-0 bg-gray-600 z-40 transition-opacity duration-300" 
+          className="fixed inset-0 bg-gray-900 z-40 transition-opacity duration-300" 
           style={{
-            opacity: sidebarOpen ? 0.75 : 0,
+            opacity: sidebarOpen ? 0.5 : 0,
             transform: 'translate3d(0, 0, 0)'
           }}
           onClick={useCallback(() => setSidebarOpen(false), [])}
@@ -208,7 +208,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
 
       {/* Main content */}
       <div 
-        className="lg:pl-64"
+        className="lg:pl-64 min-h-screen flex flex-col"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -217,7 +217,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         <div className="sticky top-0 z-20 flex h-16 items-center bg-white border-b border-gray-200 px-4 lg:hidden will-change-transform backdrop-blur-sm bg-white/95">
           <button
               type="button"
-              className="-m-2.5 p-2.5 text-gray-700"
+              className="-m-2.5 p-2.5 text-gray-700 hover:text-gray-900 transition-colors"
               onClick={useCallback(() => setSidebarOpen(true), [])}
               aria-label="Menüyü aç"
               aria-expanded={sidebarOpen}
@@ -225,15 +225,12 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
             >
               <Menu className="h-6 w-6" aria-hidden="true" />
             </button>
-          <h2 className="ml-4 text-lg font-semibold text-gray-900">
-            {navigation.find(item => item.href === location.pathname)?.name || 'Dashboard'}
-          </h2>
         </div>
 
         {/* Page content */}
-        <main className="min-h-screen bg-gray-50 overflow-x-hidden flex flex-col">
-           <div className="flex-1 w-full max-w-none px-4 sm:px-6 lg:px-8 py-4 overflow-x-hidden">
-             <div className="max-w-7xl mx-auto h-full">
+        <main className="flex-1 bg-gray-50 overflow-x-hidden">
+           <div className="w-full px-4 sm:px-6 lg:px-8 py-4">
+             <div className="max-w-7xl mx-auto">
                {children}
              </div>
            </div>
