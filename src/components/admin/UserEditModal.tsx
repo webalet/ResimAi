@@ -9,14 +9,13 @@ interface User {
   credits: number;
   is_admin: boolean;
   created_at: string;
-  updated_at: string;
 }
 
 interface UserEditModalProps {
   user: User;
   isOpen: boolean;
   onClose: () => void;
-  onUserUpdated: () => void;
+  onUserUpdated: (updatedUser: User) => void;
 }
 
 const UserEditModal: React.FC<UserEditModalProps> = ({
@@ -59,7 +58,8 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
         updateData.password = formData.password;
       }
 
-      const response = await fetch(`/api/admin/users/${user.id}`, {
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
+      const response = await fetch(`${API_BASE_URL}/api/admin/users/${user.id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -72,7 +72,13 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
 
       if (data.success) {
         toast.success('Kullanıcı başarıyla güncellendi');
-        onUserUpdated();
+        const updatedUser = {
+          ...user,
+          credits: parseInt(formData.credits.toString()),
+          is_admin: formData.is_admin
+        };
+        onUserUpdated(updatedUser);
+        onClose();
       } else {
         toast.error(data.message || 'Güncelleme başarısız');
       }

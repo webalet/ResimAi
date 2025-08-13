@@ -1,73 +1,50 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, RefreshCw, Eye, RotateCcw, Calendar, FileImage } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
-import { tr } from 'date-fns/locale';
-import { toast } from 'sonner';
-import AdminLayout from '../components/admin/AdminLayout';
+import { Search, Eye, Clock, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 
 interface Job {
   id: string;
-  user_id: string;
   user_name: string;
   user_email: string;
   category_type: string;
   style: string;
   status: 'pending' | 'processing' | 'completed' | 'failed';
-  original_image_url: string;
+  original_image_url?: string;
+  processed_images?: { image_url: string }[];
   error_message?: string;
   created_at: string;
   updated_at: string;
-  processed_images: { image_url: string }[];
-}
-
-interface JobsResponse {
-  data: Job[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-  };
 }
 
 const AdminJobs: React.FC = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
-  const [retryingJobs, setRetryingJobs] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     fetchJobs();
-  }, [currentPage, searchTerm, statusFilter, categoryFilter]);
+  }, [currentPage, searchTerm, statusFilter]);
 
   const fetchJobs = async () => {
     try {
       setLoading(true);
-      setError(null);
       const token = localStorage.getItem('adminToken');
       if (!token) {
-        const errorMsg = 'Admin token bulunamadı';
-        setError(errorMsg);
-        toast.error(errorMsg);
-        return;
+        throw new Error('Admin token bulunamadı');
       }
 
-      const params = new URLSearchParams({
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
+      const queryParams = new URLSearchParams({
         page: currentPage.toString(),
         limit: '20',
         ...(searchTerm && { search: searchTerm }),
-        ...(statusFilter !== 'all' && { status: statusFilter }),
-        ...(categoryFilter !== 'all' && { category: categoryFilter })
+        ...(statusFilter !== 'all' && { status: statusFilter })
       });
 
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
-      const response = await fetch(`${API_BASE_URL}/api/admin/jobs?${params}`, {
+      const response = await fetch(`${API_BASE_URL}/api/admin/jobs?${queryParams}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -75,82 +52,39 @@ const AdminJobs: React.FC = () => {
       });
 
       if (!response.ok) {
-        const errorMsg = `İşlemler alınamadı (${response.status})`;
-        throw new Error(errorMsg);
+        throw new Error('İşlemler alınamadı');
       }
 
-      const result = await response.json();
-      console.log('Jobs API response:', result);
-      
-      if (result.success && result.data) {
-        // API'den gelen yanıt yapısını kontrol et
-        if (Array.isArray(result.data)) {
-          // Eğer result.data doğrudan array ise
-          setJobs(result.data);
-          setTotalPages(result.pagination?.totalPages || 1);
-        } else if (result.data.jobs && Array.isArray(result.data.jobs)) {
-          // Eğer result.data.jobs array ise
-          setJobs(result.data.jobs);
-          setTotalPages(result.data.pagination?.totalPages || 1);
-        } else {
-          // Beklenmeyen format
-          console.error('Unexpected data format:', result.data);
-          setJobs([]);
-          setTotalPages(1);
-          setError('Veri formatı beklenenden farklı');
-        }
-      } else {
-        setJobs([]);
-        setTotalPages(1);
-        const errorMsg = result.message || 'Veri formatı hatalı';
-        setError(errorMsg);
-        toast.error(errorMsg);
-      }
+      const data = await response.json();
+      setJobs(data.data.jobs);
+      setTotalPages(data.data.totalPages);
     } catch (error) {
-      console.error('Fetch jobs error:', error);
-      const errorMsg = error instanceof Error ? error.message : 'İşlemler yüklenirken hata oluştu';
-      setError(errorMsg);
-      toast.error(errorMsg);
-      setJobs([]);
-      setTotalPages(1);
+      console.error('Error fetching jobs:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleRetryJob = async (jobId: string) => {
-    try {
-      setRetryingJobs(prev => new Set(prev).add(jobId));
-      const token = localStorage.getItem('adminToken');
-      if (!token) {
-        toast.error('Admin token bulunamadı');
-        return;
-      }
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1);
+  };
 
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
-      const response = await fetch(`${API_BASE_URL}/api/admin/jobs/${jobId}/retry`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+  const handleStatusFilter = (status: string) => {
+    setStatusFilter(status);
+    setCurrentPage(1);
+  };
 
-      if (!response.ok) {
-        throw new Error('İşlem yeniden başlatılamadı');
-      }
-
-      toast.success('İşlem yeniden başlatıldı');
-      fetchJobs();
-    } catch (error) {
-      console.error('Retry job error:', error);
-      toast.error('İşlem yeniden başlatılırken hata oluştu');
-    } finally {
-      setRetryingJobs(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(jobId);
-        return newSet;
-      });
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return <CheckCircle className="h-4 w-4 text-green-500" />;
+      case 'failed':
+        return <XCircle className="h-4 w-4 text-red-500" />;
+      case 'processing':
+        return <Clock className="h-4 w-4 text-blue-500" />;
+      default:
+        return <AlertCircle className="h-4 w-4 text-yellow-500" />;
     }
   };
 
@@ -166,7 +100,8 @@ const AdminJobs: React.FC = () => {
     
     return (
       <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.bg} ${config.text}`}>
-        {config.label}
+        {getStatusIcon(status)}
+        <span className="ml-1">{config.label}</span>
       </span>
     );
   };
@@ -193,266 +128,199 @@ const AdminJobs: React.FC = () => {
     });
   };
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    setCurrentPage(1);
-    fetchJobs();
-  };
-
   return (
-    <AdminLayout>
-      <div className="space-y-6">
-        <div className="flex justify-end">
-          <button
-            onClick={fetchJobs}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Yenile
-          </button>
+    <div className="space-y-6">
+      {/* Search and Filters */}
+      <div className="bg-white rounded-lg shadow p-6">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex-1">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+              <input
+                type="text"
+                placeholder="İşlem ara (kullanıcı adı veya e-posta)..."
+                value={searchTerm}
+                onChange={handleSearch}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => handleStatusFilter('all')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                statusFilter === 'all'
+                  ? 'bg-blue-100 text-blue-800'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Tümü
+            </button>
+            <button
+              onClick={() => handleStatusFilter('pending')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                statusFilter === 'pending'
+                  ? 'bg-yellow-100 text-yellow-800'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Bekliyor
+            </button>
+            <button
+              onClick={() => handleStatusFilter('processing')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                statusFilter === 'processing'
+                  ? 'bg-blue-100 text-blue-800'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              İşleniyor
+            </button>
+            <button
+              onClick={() => handleStatusFilter('completed')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                statusFilter === 'completed'
+                  ? 'bg-green-100 text-green-800'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Tamamlandı
+            </button>
+            <button
+              onClick={() => handleStatusFilter('failed')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                statusFilter === 'failed'
+                  ? 'bg-red-100 text-red-800'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Başarısız
+            </button>
+          </div>
         </div>
+      </div>
 
-        {/* Filters */}
-        <div className="bg-white p-6 rounded-lg shadow">
-          <form onSubmit={handleSearch} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Arama
-                </label>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <input
-                    type="text"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Kullanıcı adı veya e-posta..."
-                    className="pl-10 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Durum
-                </label>
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="all">Tüm Durumlar</option>
-                  <option value="completed">Tamamlandı</option>
-                  <option value="failed">Başarısız</option>
-                  <option value="processing">İşleniyor</option>
-                  <option value="pending">Bekliyor</option>
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Kategori
-                </label>
-                <select
-                  value={categoryFilter}
-                  onChange={(e) => setCategoryFilter(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="all">Tüm Kategoriler</option>
-                  <option value="Corporate">Kurumsal</option>
-                  <option value="Creative">Yaratıcı</option>
-                  <option value="Avatar">Avatar</option>
-                  <option value="Outfit">Kıyafet</option>
-                  <option value="Background">Arka Plan</option>
-                  <option value="Skincare">Cilt Bakımı</option>
-                </select>
-              </div>
-              
-              <div className="flex items-end">
-                <button
-                  type="submit"
-                  className="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                >
-                  <Filter className="h-4 w-4 mr-2" />
-                  Filtrele
-                </button>
-              </div>
-            </div>
-          </form>
+      {/* Jobs Table */}
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h3 className="text-lg font-medium text-gray-900">
+            İşlemler ({jobs.length})
+          </h3>
         </div>
-
-        {/* Jobs Table */}
-        <div className="bg-white shadow rounded-lg overflow-hidden">
-          {loading ? (
-            <div className="flex items-center justify-center h-64">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            </div>
-          ) : error ? (
-            <div className="text-center py-12">
-              <div className="bg-red-50 border border-red-200 rounded-md p-4 mx-4">
-                <div className="flex">
-                  <div className="flex-shrink-0">
-                    <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                  <div className="ml-3">
-                    <h3 className="text-sm font-medium text-red-800">Hata Oluştu</h3>
-                    <div className="mt-2 text-sm text-red-700">
-                      <p>{error}</p>
-                    </div>
-                    <div className="mt-4">
-                      <button
-                        onClick={fetchJobs}
-                        className="bg-red-100 px-3 py-2 rounded-md text-sm font-medium text-red-800 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                      >
-                        Tekrar Dene
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ) : jobs.length === 0 ? (
-            <div className="text-center py-12">
-              <FileImage className="h-12 w-12 mx-auto text-gray-300 mb-4" />
-              <p className="text-gray-500">İşlem bulunamadı</p>
-            </div>
-          ) : (
-            <>
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Kullanıcı
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Kategori
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Stil
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Durum
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Tarih
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        İşlemler
-                      </th>
+        
+        {loading ? (
+          <div className="flex items-center justify-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          </div>
+        ) : (
+          <>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Kullanıcı
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Kategori/Stil
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Durum
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Tarih
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      İşlemler
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {jobs.map((job) => (
+                    <tr key={job.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">{job.user_name}</div>
+                          <div className="text-sm text-gray-500">{job.user_email}</div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {getCategoryDisplayName(job.category_type)}
+                          </div>
+                          <div className="text-sm text-gray-500">{job.style}</div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {getStatusBadge(job.status)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {formatDate(job.created_at)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button
+                          onClick={() => setSelectedJob(job)}
+                          className="text-blue-600 hover:text-blue-900 p-1 rounded"
+                          title="Detayları Görüntüle"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </button>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {jobs.map((job) => (
-                      <tr key={job.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div>
-                            <div className="text-sm font-medium text-gray-900">
-                              {job.user_name}
-                            </div>
-                            <div className="text-sm text-gray-500">
-                              {job.user_email}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {getCategoryDisplayName(job.category_type)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {job.style}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {getStatusBadge(job.status)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          <div>
-                            <div>{formatDate(job.created_at)}</div>
-                            <div className="text-xs">
-                              {formatDistanceToNow(new Date(job.created_at), {
-                                addSuffix: true,
-                                locale: tr
-                              })}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                          <button
-                            onClick={() => setSelectedJob(job)}
-                            className="text-blue-600 hover:text-blue-900"
-                          >
-                            <Eye className="h-4 w-4" />
-                          </button>
-                          {job.status === 'failed' && (
-                            <button
-                              onClick={() => handleRetryJob(job.id)}
-                              disabled={retryingJobs.has(job.id)}
-                              className="text-green-600 hover:text-green-900 disabled:opacity-50"
-                            >
-                              {retryingJobs.has(job.id) ? (
-                                <div className="animate-spin h-4 w-4 border-2 border-green-600 border-t-transparent rounded-full" />
-                              ) : (
-                                <RotateCcw className="h-4 w-4" />
-                              )}
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-                  <div className="flex-1 flex justify-between sm:hidden">
-                    <button
-                      onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                      disabled={currentPage === 1}
-                      className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-                    >
-                      Önceki
-                    </button>
-                    <button
-                      onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                      disabled={currentPage === totalPages}
-                      className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-                    >
-                      Sonraki
-                    </button>
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+                <div className="flex-1 flex justify-between sm:hidden">
+                  <button
+                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                    disabled={currentPage === 1}
+                    className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                  >
+                    Önceki
+                  </button>
+                  <button
+                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                    disabled={currentPage === totalPages}
+                    className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                  >
+                    Sonraki
+                  </button>
+                </div>
+                <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-sm text-gray-700">
+                      Sayfa <span className="font-medium">{currentPage}</span> / <span className="font-medium">{totalPages}</span>
+                    </p>
                   </div>
-                  <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                    <div>
-                      <p className="text-sm text-gray-700">
-                        Sayfa <span className="font-medium">{currentPage}</span> / <span className="font-medium">{totalPages}</span>
-                      </p>
-                    </div>
-                    <div>
-                      <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                        <button
-                          onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                          disabled={currentPage === 1}
-                          className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
-                        >
-                          Önceki
-                        </button>
-                        <button
-                          onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                          disabled={currentPage === totalPages}
-                          className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
-                        >
-                          Sonraki
-                        </button>
-                      </nav>
-                    </div>
+                  <div>
+                    <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                      <button
+                        onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                        disabled={currentPage === 1}
+                        className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                      >
+                        Önceki
+                      </button>
+                      <button
+                        onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                        disabled={currentPage === totalPages}
+                        className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
+                      >
+                        Sonraki
+                      </button>
+                    </nav>
                   </div>
                 </div>
-              )}
-            </>
-          )}
-        </div>
+              </div>
+            )}
+          </>
+        )}
       </div>
 
       {/* Job Detail Modal */}
@@ -463,7 +331,7 @@ const AdminJobs: React.FC = () => {
           onClose={() => setSelectedJob(null)}
         />
       )}
-    </AdminLayout>
+    </div>
   );
 };
 

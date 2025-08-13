@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Users, FileImage, TrendingUp, Activity, Calendar, BarChart3 } from 'lucide-react';
-import AdminLayout from '../../components/admin/AdminLayout';
 import StatsCard from '../../components/admin/StatsCard';
 import RecentActivities from '../../components/admin/RecentActivities';
 import CategoryChart from '../../components/admin/CategoryChart';
@@ -54,32 +53,27 @@ const AdminDashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <AdminLayout>
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-        </div>
-      </AdminLayout>
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <AdminLayout>
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <p className="text-red-800">{error}</p>
-          <button 
-            onClick={fetchDashboardStats}
-            className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-          >
-            Tekrar Dene
-          </button>
-        </div>
-      </AdminLayout>
+      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+        <p className="text-red-800">{error}</p>
+        <button 
+          onClick={fetchDashboardStats}
+          className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+        >
+          Tekrar Dene
+        </button>
+      </div>
     );
   }
 
   return (
-    <AdminLayout>
       <div className="space-y-4 sm:space-y-6">
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
@@ -163,7 +157,6 @@ const AdminDashboard: React.FC = () => {
           </div>
         </div>
       </div>
-    </AdminLayout>
   );
 };
 

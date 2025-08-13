@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Settings, Key, Database, Webhook, Code, Edit2, Save, X, Plus, Trash2, ChevronDown, ChevronUp, Upload, Image } from 'lucide-react';
-import AdminLayout from '../../components/admin/AdminLayout';
 import { toast } from 'sonner';
 
 type ValidationErrors = Record<string, string>;
@@ -808,19 +807,16 @@ const AdminSettings = () => {
 
   if (loading) {
     return (
-      <AdminLayout>
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Ayarlar yükleniyor...</p>
-          </div>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Ayarlar yükleniyor...</p>
         </div>
-      </AdminLayout>
+      </div>
     );
   }
 
   return (
-    <AdminLayout>
       <div className="space-y-8">
 
 
@@ -1366,7 +1362,6 @@ const AdminSettings = () => {
           )}
         </div>
       </div>
-    </AdminLayout>
   );
 };
 

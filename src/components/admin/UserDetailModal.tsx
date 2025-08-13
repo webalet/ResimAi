@@ -10,7 +10,6 @@ interface User {
   credits: number;
   is_admin: boolean;
   created_at: string;
-  updated_at: string;
 }
 
 interface Job {
@@ -61,7 +60,8 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
         throw new Error('Admin token bulunamadı');
       }
 
-      const response = await fetch(`/api/admin/users/${user.id}`, {
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
+      const response = await fetch(`${API_BASE_URL}/api/admin/users/${user.id}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -218,30 +218,79 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
             </div>
 
             {/* Tab Content */}
-            <div className="max-h-96 overflow-y-auto">
+            <div className="min-h-[400px]">
               {loading ? (
-                <div className="flex items-center justify-center h-32">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <div className="flex items-center justify-center h-64">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
                 </div>
               ) : (
                 <>
                   {activeTab === 'overview' && (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="bg-blue-50 p-4 rounded-lg">
-                        <div className="text-2xl font-bold text-blue-600">{jobs.length}</div>
-                        <div className="text-sm text-blue-800">Toplam İşlem</div>
-                      </div>
-                      <div className="bg-green-50 p-4 rounded-lg">
-                        <div className="text-2xl font-bold text-green-600">
-                          {jobs.filter(job => job.status === 'completed').length}
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="bg-blue-50 p-4 rounded-lg">
+                          <div className="flex items-center">
+                            <FileImage className="h-8 w-8 text-blue-600" />
+                            <div className="ml-3">
+                              <p className="text-sm font-medium text-gray-500">Toplam İşlem</p>
+                              <p className="text-2xl font-semibold text-gray-900">{jobs.length}</p>
+                            </div>
+                          </div>
                         </div>
-                        <div className="text-sm text-green-800">Başarılı İşlem</div>
-                      </div>
-                      <div className="bg-red-50 p-4 rounded-lg">
-                        <div className="text-2xl font-bold text-red-600">
-                          {jobs.filter(job => job.status === 'failed').length}
+                        <div className="bg-green-50 p-4 rounded-lg">
+                          <div className="flex items-center">
+                            <CreditCard className="h-8 w-8 text-green-600" />
+                            <div className="ml-3">
+                              <p className="text-sm font-medium text-gray-500">Mevcut Kredi</p>
+                              <p className="text-2xl font-semibold text-gray-900">{user.credits}</p>
+                            </div>
+                          </div>
                         </div>
-                        <div className="text-sm text-red-800">Başarısız İşlem</div>
+                        <div className="bg-purple-50 p-4 rounded-lg">
+                          <div className="flex items-center">
+                            <Activity className="h-8 w-8 text-purple-600" />
+                            <div className="ml-3">
+                              <p className="text-sm font-medium text-gray-500">Başarılı İşlem</p>
+                              <p className="text-2xl font-semibold text-gray-900">
+                                {jobs.filter(job => job.status === 'completed').length}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <h4 className="text-lg font-medium text-gray-900 mb-4">Son İşlemler</h4>
+                        <div className="space-y-3">
+                          {jobs.slice(0, 5).map((job) => (
+                            <div key={job.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                              <div className="flex items-center space-x-3">
+                                <div className="flex-shrink-0">
+                                  <img
+                                    src={job.original_image_url}
+                                    alt="Job"
+                                    className="h-10 w-10 rounded-lg object-cover"
+                                  />
+                                </div>
+                                <div>
+                                  <p className="text-sm font-medium text-gray-900">
+                                    {getCategoryDisplayName(job.category_type)}
+                                  </p>
+                                  <p className="text-sm text-gray-500">{job.style}</p>
+                                </div>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                {getStatusBadge(job.status)}
+                                <span className="text-sm text-gray-500">
+                                  {formatDistanceToNow(new Date(job.created_at), {
+                                    addSuffix: true,
+                                    locale: tr
+                                  })}
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   )}
@@ -249,44 +298,41 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
                   {activeTab === 'jobs' && (
                     <div className="space-y-4">
                       {jobs.length === 0 ? (
-                        <div className="text-center py-8 text-gray-500">
-                          <FileImage className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                          <p>Henüz işlem bulunmuyor</p>
+                        <div className="text-center py-12">
+                          <FileImage className="h-12 w-12 mx-auto text-gray-300 mb-4" />
+                          <p className="text-gray-500">Henüz işlem bulunmuyor</p>
                         </div>
                       ) : (
                         jobs.map((job) => (
                           <div key={job.id} className="border border-gray-200 rounded-lg p-4">
                             <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <div className="flex items-center space-x-2 mb-2">
-                                  <span className="font-medium text-gray-900">
+                              <div className="flex items-start space-x-4">
+                                <img
+                                  src={job.original_image_url}
+                                  alt="Job"
+                                  className="h-16 w-16 rounded-lg object-cover"
+                                />
+                                <div>
+                                  <h5 className="text-sm font-medium text-gray-900">
                                     {getCategoryDisplayName(job.category_type)}
+                                  </h5>
+                                  <p className="text-sm text-gray-500 mt-1">{job.style}</p>
+                                  <p className="text-xs text-gray-400 mt-1">
+                                    {formatDate(job.created_at)}
+                                  </p>
+                                  {job.error_message && (
+                                    <p className="text-xs text-red-600 mt-1">{job.error_message}</p>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="flex flex-col items-end space-y-2">
+                                {getStatusBadge(job.status)}
+                                {job.processed_images.length > 0 && (
+                                  <span className="text-xs text-gray-500">
+                                    {job.processed_images.length} sonuç
                                   </span>
-                                  <span className="text-gray-500">•</span>
-                                  <span className="text-gray-600">{job.style}</span>
-                                  {getStatusBadge(job.status)}
-                                </div>
-                                <div className="text-sm text-gray-500">
-                                  {formatDistanceToNow(new Date(job.created_at), {
-                                    addSuffix: true,
-                                    locale: tr
-                                  })}
-                                </div>
-                                {job.error_message && (
-                                  <div className="mt-2 text-sm text-red-600 bg-red-50 p-2 rounded">
-                                    {job.error_message}
-                                  </div>
                                 )}
                               </div>
-                              {job.processed_images && job.processed_images.length > 0 && (
-                                <div className="ml-4">
-                                  <img
-                                    src={job.processed_images[0].image_url}
-                                    alt="Processed"
-                                    className="w-16 h-16 object-cover rounded"
-                                  />
-                                </div>
-                              )}
                             </div>
                           </div>
                         ))
@@ -295,26 +341,23 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
                   )}
 
                   {activeTab === 'credits' && (
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                       {creditUsage.length === 0 ? (
-                        <div className="text-center py-8 text-gray-500">
-                          <CreditCard className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                          <p>Henüz kredi kullanımı bulunmuyor</p>
+                        <div className="text-center py-12">
+                          <CreditCard className="h-12 w-12 mx-auto text-gray-300 mb-4" />
+                          <p className="text-gray-500">Henüz kredi kullanımı bulunmuyor</p>
                         </div>
                       ) : (
                         creditUsage.map((usage) => (
-                          <div key={usage.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                          <div key={usage.id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
                             <div>
-                              <div className="font-medium text-gray-900">{usage.operation_type}</div>
-                              <div className="text-sm text-gray-500">
-                                {formatDistanceToNow(new Date(usage.created_at), {
-                                  addSuffix: true,
-                                  locale: tr
-                                })}
-                              </div>
+                              <p className="text-sm font-medium text-gray-900">{usage.operation_type}</p>
+                              <p className="text-xs text-gray-500">{formatDate(usage.created_at)}</p>
                             </div>
                             <div className="text-right">
-                              <div className="font-medium text-red-600">-{usage.credits_used} kredi</div>
+                              <span className="text-sm font-medium text-red-600">
+                                -{usage.credits_used} kredi
+                              </span>
                             </div>
                           </div>
                         ))
