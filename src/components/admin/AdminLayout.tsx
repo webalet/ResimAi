@@ -225,12 +225,13 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
             >
               <Menu className="h-6 w-6" aria-hidden="true" />
             </button>
+          <h1 className="ml-4 text-lg font-semibold text-gray-900">Dashboard</h1>
         </div>
 
         {/* Page content */}
         <main className="flex-1 bg-gray-50 overflow-x-hidden">
-           <div className="w-full px-4 sm:px-6 lg:px-8 py-4">
-             <div className="max-w-7xl mx-auto">
+           <div className="w-full px-4 sm:px-6 lg:px-8 py-4 overflow-x-hidden">
+             <div className="max-w-7xl mx-auto overflow-x-hidden">
                {children}
              </div>
            </div>
