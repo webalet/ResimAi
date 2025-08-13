@@ -26,7 +26,9 @@
     "startFree": "Ücretsiz Başla",
     "tryNow": "Şimdi Dene",
     "goToDashboard": "Panele Git",
-    "startNow": "Hemen Başla"
+    "startNow": "Hemen Başla",
+    "and": "ve",
+    "or": "veya"
   },
   "navigation": {
     "home": "Ana Sayfa",
@@ -52,6 +54,11 @@
       "forgot": "Şifremi unuttum",
       "submit": "Giriş Yap",
       "noAccount": "Hesabınız yok mu?",
+    "hasAccount": "Zaten hesabınız var mı?",
+    "terms": "Kullanım Koşulları",
+    "privacy": "Gizlilik Politikası",
+    "acceptText": "kabul ediyorum",
+    "creatingAccount": "Hesap oluşturuluyor...",
       "signUp": "Kayıt olun"
     },
     "fields": {
@@ -60,7 +67,10 @@
     },
     "placeholders": {
       "email": "E-posta adresinizi girin",
-      "password": "Şifrenizi girin"
+      "password": "Şifrenizi girin",
+      "fullName": "Ad soyadınızı girin",
+      "passwordLength": "En az 6 karakter",
+      "confirmPassword": "Şifrenizi tekrar girin"
     },
     "rememberMe": "Beni hatırla",
     "forgotPassword": "Şifremi unuttum",
@@ -69,12 +79,14 @@
     "noAccount": "Hesabınız yok mu?",
     "register": {
       "title": "Kayıt Ol",
+      "subtitle": "Ücretsiz hesap oluşturun ve başlayın",
       "name": "Ad Soyad",
       "email": "E-posta",
       "password": "Şifre",
       "confirmPassword": "Şifre Tekrar",
       "terms": "Kullanım koşullarını kabul ediyorum",
       "submit": "Kayıt Ol",
+      "button": "Kayıt Ol",
       "hasAccount": "Zaten hesabınız var mı?",
       "signIn": "Giriş yapın",
       "link": "Kayıt olun"
