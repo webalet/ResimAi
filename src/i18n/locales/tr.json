@@ -79,6 +79,10 @@
     "loggingIn": "Giriş yapılıyor...",
     "retryingShort": "Tekrar deneniyor...",
     "noAccount": "Hesabınız yok mu?",
+    "hasAccount": "Zaten hesabınız var mı?",
+    "login": {
+      "link": "Giriş yapın"
+    },
     "register": {
       "title": "Kayıt Ol",
       "subtitle": "Ücretsiz hesap oluşturun ve başlayın",

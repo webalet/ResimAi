@@ -75,6 +75,10 @@
     "loggingIn": "Logging in...",
     "retryingShort": "Retrying...",
     "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "login": {
+      "link": "Sign in"
+    },
     "register": {
       "title": "Register",
       "subtitle": "Create a free account and get started",
