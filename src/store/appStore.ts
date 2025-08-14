@@ -30,7 +30,7 @@ interface AppState {
   
   loadUserJobs: () => Promise<void>;
   addImageJob: (job: ImageJob) => void;
-  updateJobStatus: (jobId: string, status: string, processedImages?: any[]) => void;
+  updateImageJob: (jobId: string, updates: Partial<ImageJob>) => void;
   
   loadUserCredits: () => Promise<void>;
   
@@ -39,7 +39,7 @@ interface AppState {
   clearError: () => void;
 }
 
-export const useAppStore = create<AppState>((set, get) => ({
+export const useAppStore = create<AppState>((set, _get) => ({
   // Initial state
   categories: [],
   selectedCategory: null,
@@ -116,25 +116,25 @@ export const useAppStore = create<AppState>((set, get) => ({
     }));
   },
   
-  updateJobStatus: (jobId: string, status: string, processedImages?: any[]) => {
+  updateImageJob: (jobId: string, updates: Partial<ImageJob>) => {
     set((state) => ({
-      imageJobs: state.imageJobs.map(job => 
-        job.id === jobId 
-          ? { 
-              ...job, 
-              status: status as any,
-              processed_images: processedImages || job.processed_images,
+      imageJobs: state.imageJobs.map(job =>
+        job.id === jobId
+          ? {
+              ...job,
+              ...updates,
+              processed_images: updates.processed_images ?? job.processed_images ?? [],
               updated_at: new Date().toISOString()
-            }
+            } as ImageJob
           : job
       ),
-      currentJob: state.currentJob?.id === jobId 
-        ? { 
-            ...state.currentJob, 
-            status: status as any,
-            processed_images: processedImages || state.currentJob.processed_images,
+      currentJob: state.currentJob?.id === jobId
+        ? {
+            ...state.currentJob,
+            ...updates,
+            processed_images: updates.processed_images ?? state.currentJob.processed_images ?? [],
             updated_at: new Date().toISOString()
-          }
+          } as ImageJob
         : state.currentJob
     }));
   },

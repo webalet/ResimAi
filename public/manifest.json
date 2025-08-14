@@ -1,7 +1,7 @@
 {
-  "name": "ResimAi Admin Panel",
-  "short_name": "ResimAi Admin",
-  "description": "ResimAi yönetim paneli - AI görüntü işleme platformu",
+  "name": "Stylica.ai Admin Panel",
+  "short_name": "Stylica.ai Admin",
+  "description": "Stylica.ai yönetim paneli - AI görüntü işleme platformu",
   "start_url": "/admin",
   "display": "standalone",
   "background_color": "#f9fafb",

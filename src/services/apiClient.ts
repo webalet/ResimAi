@@ -4,8 +4,8 @@ import { toast } from 'sonner';
 // Environment'a göre API URL'ini belirle
 const getApiBaseUrl = () => {
   // Önce environment variable'ı kontrol et
-  if (import.meta.env.VITE_API_URL) {
-    return import.meta.env.VITE_API_URL;
+  if (import.meta.env['VITE_API_URL']) {
+    return import.meta.env['VITE_API_URL'];
   }
   
   // Development mode kontrolü

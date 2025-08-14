@@ -154,7 +154,7 @@ const Login: React.FC = () => {
                     setEmail(e.target.value);
                     // Clear errors when user starts typing
                     if (errors.email || errors.general) {
-                      setErrors(prev => ({ ...prev, email: undefined, general: undefined }));
+                      setErrors(prev => ({ ...prev, email: '', general: '' }));
                     }
                   }}
                   className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ease-in-out focus:scale-[1.02] focus:shadow-lg"
@@ -182,7 +182,7 @@ const Login: React.FC = () => {
                     setPassword(e.target.value);
                     // Clear errors when user starts typing
                     if (errors.password || errors.general) {
-                      setErrors(prev => ({ ...prev, password: undefined, general: undefined }));
+                      setErrors(prev => ({ ...prev, password: '', general: '' }));
                     }
                   }}
                   className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ease-in-out focus:scale-[1.02] focus:shadow-lg"

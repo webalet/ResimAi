@@ -1,4 +1,4 @@
-import { User, LoginRequest, RegisterRequest, AuthResponse } from '../types/auth';
+import { User, AuthResponse } from '../types/auth';
 import { apiClient } from './apiClient';
 
 class AuthService {

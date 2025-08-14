@@ -1,66 +1,67 @@
-import { defineConfig, loadEnv } from 'vite'
+import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import tsconfigPaths from "vite-tsconfig-paths";
+import path from 'path'
 
-// https://vite.dev/config/
-export default defineConfig(({ command, mode }) => {
-  // Load env file based on `mode` in the current working directory.
-  const env = loadEnv(mode, process.cwd(), '')
-  
-  // Determine API URL based on environment
-  const getApiUrl = () => {
-    if (env.VITE_API_URL) {
-      return env.VITE_API_URL;
-    }
-    
-    // Default URLs based on mode
-    if (mode === 'development') {
-      return 'http://64.226.75.76';
-    } else if (mode === 'production') {
-      // In production, use the environment variable or fallback to server IP
-      return env.VITE_API_URL || 'http://64.226.75.76:3001';
-    }
-    
-    return 'http://64.226.75.76';
-  };
-  
-  const apiUrl = getApiUrl();
-  
-  return {
-  plugins: [
-    react({
-      babel: {
-        plugins: [
-          'react-dev-locator',
-        ],
-      },
-    }),
- 
-    tsconfigPaths(),
-  ],
-  define: {
-    __VITE_API_URL__: JSON.stringify(apiUrl)
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
   },
   server: {
-    host: '0.0.0.0', // Allow external connections
-    proxy: {
-      '/api': {
-        target: 'http://64.226.75.76:3001', // Server IP target
-        changeOrigin: true,
-        secure: false,
-        configure: (proxy, _options) => {
-          proxy.on('error', (err, _req, _res) => {
-            console.log('proxy error', err);
-          });
-          proxy.on('proxyReq', (proxyReq, req, _res) => {
-            console.log('Sending Request to the Target:', req.method, req.url);
-          });
-          proxy.on('proxyRes', (proxyRes, req, _res) => {
-            console.log('Received Response from the Target:', proxyRes.statusCode, req.url);
-          });
+    port: 5173,
+    host: true
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: false,
+    minify: 'esbuild',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Core React libraries
+          'react-vendor': ['react', 'react-dom'],
+          // Routing
+          'router': ['react-router-dom'],
+          // UI and animations
+          'ui-vendor': ['framer-motion', 'lucide-react'],
+          // i18n
+          'i18n': ['react-i18next', 'i18next'],
+          // State management
+          'state': ['zustand']
         },
+        // Optimize chunk names
+        chunkFileNames: 'assets/js/[name]-[hash].js',
+        entryFileNames: 'assets/js/[name]-[hash].js',
+        assetFileNames: (assetInfo) => {
+          const info = assetInfo.name?.split('.') || [];
+          const ext = info[info.length - 1];
+          if (/\.(png|jpe?g|svg|gif|tiff|bmp|ico)$/i.test(assetInfo.name || '')) {
+            return `assets/images/[name]-[hash].${ext}`;
+          }
+          if (/\.(css)$/i.test(assetInfo.name || '')) {
+            return `assets/css/[name]-[hash].${ext}`;
+          }
+          return `assets/[ext]/[name]-[hash].${ext}`;
+        }
       }
-    }
-  }
+    },
+    // Optimize chunk size
+    chunkSizeWarningLimit: 1000,
+    // Enable CSS code splitting
+    cssCodeSplit: true
+  },
+  // Optimize dependencies
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      'react-router-dom',
+      'framer-motion',
+      'lucide-react',
+      'zustand'
+    ]
   }
 })

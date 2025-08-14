@@ -12,6 +12,7 @@ import {
   Shield
 } from 'lucide-react';
 import { toast } from 'sonner';
+import Logo from '../Logo';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -53,9 +54,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           </div>
           <div className="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
             <div className="flex-shrink-0 flex items-center px-4">
-              <div className="h-8 w-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <Shield className="h-5 w-5 text-white" />
-              </div>
+              <Logo size="md" showText={false} />
               <span className="ml-2 text-xl font-bold text-gray-900">Admin Panel</span>
             </div>
             <nav className="mt-5 px-2 space-y-1">
@@ -97,9 +96,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
         <div className="flex-1 flex flex-col min-h-0 border-r border-gray-200 bg-white">
           <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
             <div className="flex items-center flex-shrink-0 px-4">
-              <div className="h-8 w-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <Shield className="h-5 w-5 text-white" />
-              </div>
+              <Logo size="md" showText={false} />
               <span className="ml-2 text-xl font-bold text-gray-900">Admin Panel</span>
             </div>
             <nav className="mt-5 flex-1 px-2 space-y-1">

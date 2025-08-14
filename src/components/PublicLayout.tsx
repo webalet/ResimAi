@@ -4,6 +4,7 @@ import { Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useAuth } from '../contexts/AuthContext';
+import Logo from './Logo';
 
 interface PublicLayoutProps {
   children: React.ReactNode;
@@ -24,12 +25,7 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <Link to={`/${currentLang}`} className="flex items-center">
-              <div className="h-8 w-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
-                <Sparkles className="h-5 w-5 text-white" />
-              </div>
-              <span className="ml-2 text-xl font-bold text-gray-900">ResimAI</span>
-            </Link>
+            <Logo linkTo={`/${currentLang}`} size="md" showText={true} />
 
             {/* Navigation */}
             <nav className="hidden md:flex items-center space-x-8 ml-16">
@@ -108,11 +104,8 @@ const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             {/* Logo and description */}
             <div className="col-span-1 md:col-span-2">
-              <div className="flex items-center mb-4">
-                <div className="h-8 w-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
-                  <Sparkles className="h-5 w-5 text-white" />
-                </div>
-                <span className="ml-2 text-xl font-bold">ResimAI</span>
+              <div className="mb-4">
+                <Logo size="md" showText={true} />
               </div>
               <p className="text-gray-400 mb-4">
                 {t('home.footer.description')}

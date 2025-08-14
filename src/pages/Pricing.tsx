@@ -44,7 +44,7 @@ const Pricing: React.FC = () => {
   const plans = [
     {
       name: t('pricing.packages.basic.name'),
-      price: (isEnglish ? pricePackages[0].price_usd : pricePackages[0].price_try).toString(),
+      price: (isEnglish ? pricePackages[0]?.price_usd : pricePackages[0]?.price_try)?.toString() ?? '0',
       period: t('pricing.credits'),
       description: t('pricing.packages.basic.description'),
       features: [
@@ -56,11 +56,11 @@ const Pricing: React.FC = () => {
       ],
       buttonText: t('common.startFree'),
       popular: false,
-      credits: pricePackages[0].credits
+      credits: pricePackages[0]?.credits ?? 0
     },
     {
       name: t('pricing.packages.standard.name'),
-      price: (isEnglish ? pricePackages[1].price_usd : pricePackages[1].price_try).toString(),
+      price: (isEnglish ? pricePackages[1]?.price_usd : pricePackages[1]?.price_try)?.toString() ?? '0',
       period: t('pricing.credits'),
       description: t('pricing.packages.standard.description'),
       features: [
@@ -72,11 +72,11 @@ const Pricing: React.FC = () => {
       ],
       buttonText: t('pricing.selectPlan'),
       popular: false,
-      credits: pricePackages[1].credits
+      credits: pricePackages[1]?.credits ?? 0
     },
     {
       name: t('pricing.packages.premium.name'),
-      price: (isEnglish ? pricePackages[2].price_usd : pricePackages[2].price_try).toString(),
+      price: (isEnglish ? pricePackages[2]?.price_usd : pricePackages[2]?.price_try)?.toString() ?? '0',
       period: t('pricing.credits'),
       description: t('pricing.packages.premium.description'),
       features: [
@@ -88,11 +88,11 @@ const Pricing: React.FC = () => {
       ],
       buttonText: t('pricing.selectPlan'),
       popular: true,
-      credits: pricePackages[2].credits
+      credits: pricePackages[2]?.credits ?? 0
     },
     {
       name: t('pricing.packages.pro.name'),
-      price: (isEnglish ? pricePackages[3].price_usd : pricePackages[3].price_try).toString(),
+      price: (isEnglish ? pricePackages[3]?.price_usd : pricePackages[3]?.price_try)?.toString() ?? '0',
       period: t('pricing.credits'),
       description: t('pricing.packages.pro.description'),
       features: [
@@ -105,11 +105,11 @@ const Pricing: React.FC = () => {
       ],
       buttonText: t('pricing.selectPlan'),
       popular: false,
-      credits: pricePackages[3].credits
+      credits: pricePackages[3]?.credits ?? 0
     },
     {
       name: t('pricing.packages.business.name'),
-      price: (isEnglish ? pricePackages[4].price_usd : pricePackages[4].price_try).toString(),
+      price: (isEnglish ? pricePackages[4]?.price_usd : pricePackages[4]?.price_try)?.toString() ?? '0',
       period: t('pricing.credits'),
       description: t('pricing.packages.business.description'),
       features: [
@@ -122,7 +122,7 @@ const Pricing: React.FC = () => {
       ],
       buttonText: t('pricing.selectPlan'),
       popular: false,
-      credits: pricePackages[4].credits
+      credits: pricePackages[4]?.credits ?? 0
     }
   ];
 
