@@ -39,7 +39,7 @@ import { auth, optionalAuth } from './middleware/auth.js';
 import { adminLogin } from './middleware/adminAuth.js';
 
 const app = express();
-const PORT = parseInt(process.env.PORT || '80', 10);
+const PORT = parseInt(process.env.PORT || '3001', 10);
 
 // Security middleware
 app.use(helmet({
