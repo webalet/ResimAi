@@ -50,6 +50,9 @@ const Categories: React.FC = () => {
 
   // Helper function to get style name based on current language
   const getStyleName = (category: Category, styleIndex: number) => {
+    if (!category.styles || !category.styles[styleIndex]) {
+      return '';
+    }
     if (i18n.language === 'en' && category.styles_en && category.styles_en[styleIndex]) {
       return category.styles_en[styleIndex];
     }
@@ -93,7 +96,7 @@ const Categories: React.FC = () => {
     setUploadState(prev => ({
       ...prev,
       selectedCategory: category,
-      selectedStyle: category.styles[0] || ''
+      selectedStyle: (category.styles && category.styles[0]) || ''
     }));
   };
 
@@ -302,7 +305,7 @@ const Categories: React.FC = () => {
             <div className="bg-white rounded-xl shadow-sm border p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('categories.styleSelection')}</h3>
               <div className="grid grid-cols-2 gap-3">
-                {uploadState.selectedCategory.styles.map((style, styleIndex) => (
+                {(uploadState.selectedCategory.styles || []).map((style, styleIndex) => (
                   <button
                     key={style}
                     onClick={() => setUploadState(prev => ({ ...prev, selectedStyle: style }))}
@@ -468,7 +471,7 @@ const Categories: React.FC = () => {
                   <span className="text-gray-600">{t('categories.style')}</span>
                   <span className="font-medium">
                     {uploadState.selectedStyle ? 
-                      getStyleName(uploadState.selectedCategory, uploadState.selectedCategory.styles.indexOf(uploadState.selectedStyle)) 
+                      getStyleName(uploadState.selectedCategory, (uploadState.selectedCategory.styles || []).indexOf(uploadState.selectedStyle)) 
                       : t('categories.notSelected')
                     }
                   </span>
@@ -531,7 +534,7 @@ const Categories: React.FC = () => {
                   {getCategoryDisplayName(category)}
                 </h3>
                 <div className="flex flex-wrap gap-1">
-                  {category.styles.slice(0, 3).map((style, index) => (
+                  {(category.styles || []).slice(0, 3).map((style, index) => (
                     <span
                       key={index}
                       className="px-2 py-1 bg-white/20 backdrop-blur-sm rounded text-xs text-white"
@@ -549,7 +552,7 @@ const Categories: React.FC = () => {
               <div className="mb-4">
                 <p className="text-sm font-medium text-gray-700 mb-2">{t('categories.availableStyles')}:</p>
                 <div className="flex flex-wrap gap-2">
-                  {category.styles.map((style, index) => (
+                  {(category.styles || []).map((style, index) => (
                     <span
                       key={index}
                       className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
