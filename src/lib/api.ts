@@ -10,11 +10,11 @@ import {
   SubscriptionCreateResponse
 } from '../../shared/types';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:5173';
+const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 
 // Create axios instance
 const api = axios.create({
-  baseURL: `${API_BASE_URL}/api`,
+  baseURL: '/api',
   headers: {
     'Content-Type': 'application/json',
   },
