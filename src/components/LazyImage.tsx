@@ -102,7 +102,6 @@ const LazyImage: React.FC<LazyImageProps> = ({
           sizes={sizes}
           loading={loading}
           decoding={decoding}
-          fetchpriority={fetchPriority}
           onLoad={handleLoad}
           onError={handleError}
           className={cn(
