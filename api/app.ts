@@ -23,7 +23,12 @@ const app: express.Application = express();
 // CORS configuration
 app.use(cors({
   origin: [
-    'http://64.226.75.76:5173'
+    'http://64.226.75.76:5173',
+    'http://64.226.75.76:4173',
+    'http://64.226.75.76:3000',
+    'http://64.226.75.76:5174',
+    'http://64.226.75.76:3001',
+    'http://64.226.75.76'
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
