@@ -16,9 +16,11 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
         display_name_en,
         type,
         description,
+        description_en,
         image_url,
         is_active,
         styles,
+        styles_en,
         created_at
       `)
       .eq('is_active', true)
@@ -61,9 +63,11 @@ router.get('/:id', async (req: Request, res: Response): Promise<void> => {
         display_name_en,
         type,
         description,
+        description_en,
         image_url,
         is_active,
         styles,
+        styles_en,
         created_at
       `)
       .eq('id', id)
@@ -106,9 +110,11 @@ router.get('/type/:type', async (req: Request, res: Response): Promise<void> => 
         display_name_en,
         type,
         description,
+        description_en,
         image_url,
         is_active,
         styles,
+        styles_en,
         created_at
       `)
       .eq('type', type)
@@ -142,7 +148,7 @@ router.get('/type/:type', async (req: Request, res: Response): Promise<void> => 
 // Create category
 router.post('/', auth, async (req: Request, res: Response): Promise<void> => {
   try {
-    const { name, display_name_tr, display_name_en, type, description, image_url, styles } = req.body;
+    const { name, display_name_tr, display_name_en, type, description, description_en, image_url, styles, styles_en } = req.body;
 
     if (!name || !type || !display_name_tr || !display_name_en) {
       res.status(400).json({
@@ -175,8 +181,10 @@ router.post('/', auth, async (req: Request, res: Response): Promise<void> => {
         display_name_en,
         type,
         description,
+        description_en,
         image_url,
         styles: styles || [],
+        styles_en: styles_en || [],
         is_active: true
       })
       .select()
@@ -210,7 +218,7 @@ router.post('/', auth, async (req: Request, res: Response): Promise<void> => {
 router.put('/:id', auth, async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const { name, display_name_tr, display_name_en, type, description, image_url, styles, is_active } = req.body;
+    const { name, display_name_tr, display_name_en, type, description, description_en, image_url, styles, styles_en, is_active } = req.body;
 
     // Check if category exists
     const { data: existingCategory } = await supabase
@@ -251,8 +259,10 @@ router.put('/:id', auth, async (req: Request, res: Response): Promise<void> => {
     if (display_name_en !== undefined) updateData.display_name_en = display_name_en;
     if (type !== undefined) updateData.type = type;
     if (description !== undefined) updateData.description = description;
+    if (description_en !== undefined) updateData.description_en = description_en;
     if (image_url !== undefined) updateData.image_url = image_url;
     if (styles !== undefined) updateData.styles = styles;
+    if (styles_en !== undefined) updateData.styles_en = styles_en;
     if (is_active !== undefined) updateData.is_active = is_active;
 
     const { data: category, error } = await supabase

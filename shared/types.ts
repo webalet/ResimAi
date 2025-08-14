@@ -18,8 +18,10 @@ export interface Category {
   display_name_en: string;
   type: string;
   description: string;
+  description_en: string;
   image_url: string;
   styles: string[];
+  styles_en: string[];
   is_active: boolean;
   created_at: string;
   updated_at: string;

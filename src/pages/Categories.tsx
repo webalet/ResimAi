@@ -43,6 +43,19 @@ const Categories: React.FC = () => {
     return i18n.language === 'en' ? (category.display_name_en || category.display_name_tr) : category.display_name_tr;
   };
 
+  // Helper function to get category description based on current language
+  const getCategoryDescription = (category: Category) => {
+    return i18n.language === 'en' ? (category.description_en || category.description) : category.description;
+  };
+
+  // Helper function to get style name based on current language
+  const getStyleName = (category: Category, styleIndex: number) => {
+    if (i18n.language === 'en' && category.styles_en && category.styles_en[styleIndex]) {
+      return category.styles_en[styleIndex];
+    }
+    return category.styles[styleIndex];
+  };
+
   useEffect(() => {
     loadCategories();
   }, []);
@@ -59,8 +72,10 @@ const Categories: React.FC = () => {
             display_name_en: 'Corporate Photography',
             type: 'Corporate',
             description: 'Profesyonel iş dünyası için kurumsal fotoğraflar',
+            description_en: 'Professional corporate photography for business world',
             image_url: '/images/ornek.jpg',
             styles: ['Klasik', 'Modern', 'Resmi'],
+            styles_en: ['Classic', 'Modern', 'Formal'],
             is_active: true,
             created_at: '2024-01-01T00:00:00Z',
             updated_at: '2024-01-01T00:00:00Z'
@@ -72,8 +87,10 @@ const Categories: React.FC = () => {
             display_name_en: 'Creative Portrait',
             type: 'Creative',
             description: 'Sanatsal ve yaratıcı portre fotoğrafları',
+            description_en: 'Artistic and creative portrait photography',
             image_url: '/images/ornek.jpg',
             styles: ['Sanatsal', 'Renkli', 'Minimalist'],
+            styles_en: ['Artistic', 'Colorful', 'Minimalist'],
             is_active: true,
             created_at: '2024-01-01T00:00:00Z',
             updated_at: '2024-01-01T00:00:00Z'
@@ -85,8 +102,10 @@ const Categories: React.FC = () => {
             display_name_en: 'Avatar Creator',
             type: 'Avatar',
             description: 'Dijital avatar ve karakter fotoğrafları',
+            description_en: 'Digital avatar and character photography',
             image_url: '/images/ornek.jpg',
             styles: ['Çizgi Film', 'Realistik', 'Fantastik'],
+            styles_en: ['Cartoon Film', 'Realistic', 'Fantasy'],
             is_active: true,
             created_at: '2024-01-01T00:00:00Z',
             updated_at: '2024-01-01T00:00:00Z'
@@ -98,8 +117,10 @@ const Categories: React.FC = () => {
             display_name_en: 'Outfit Change',
             type: 'Outfit',
             description: 'AI ile kıyafet değiştirme ve stil önerileri',
+            description_en: 'AI-powered outfit change and style suggestions',
             image_url: '/images/ornek.jpg',
             styles: ['Casual', 'Formal', 'Spor'],
+            styles_en: ['Casual', 'Formal', 'Sport'],
             is_active: true,
             created_at: '2024-01-01T00:00:00Z',
             updated_at: '2024-01-01T00:00:00Z'
@@ -111,8 +132,10 @@ const Categories: React.FC = () => {
             display_name_en: 'Background Change',
             type: 'Background',
             description: 'Profesyonel arka plan değiştirme hizmeti',
+            description_en: 'Professional background change service',
             image_url: '/images/ornek.jpg',
             styles: ['Ofis', 'Doğa', 'Stüdyo'],
+            styles_en: ['Office', 'Nature', 'Studio'],
             is_active: true,
             created_at: '2024-01-01T00:00:00Z',
             updated_at: '2024-01-01T00:00:00Z'
@@ -124,8 +147,10 @@ const Categories: React.FC = () => {
             display_name_en: 'Skin Enhancement',
             type: 'Skincare',
             description: 'AI destekli cilt düzeltme ve güzelleştirme',
+            description_en: 'AI-powered skin correction and enhancement',
             image_url: '/images/ornek.jpg',
             styles: ['Doğal', 'Pürüzsüz', 'Parlak'],
+            styles_en: ['Natural', 'Smooth', 'Glowing'],
             is_active: true,
             created_at: '2024-01-01T00:00:00Z',
             updated_at: '2024-01-01T00:00:00Z'
@@ -339,9 +364,9 @@ const Categories: React.FC = () => {
           </button>
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900">
-              {uploadState.selectedCategory.display_name_tr}
+              {getCategoryDisplayName(uploadState.selectedCategory)}
             </h1>
-            <p className="text-gray-600">{uploadState.selectedCategory.description}</p>
+            <p className="text-gray-600">{getCategoryDescription(uploadState.selectedCategory)}</p>
           </div>
           <div></div>
         </div>
@@ -353,7 +378,7 @@ const Categories: React.FC = () => {
             <div className="bg-white rounded-xl shadow-sm border p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('categories.styleSelection')}</h3>
               <div className="grid grid-cols-2 gap-3">
-                {uploadState.selectedCategory.styles.map((style) => (
+                {uploadState.selectedCategory.styles.map((style, styleIndex) => (
                   <button
                     key={style}
                     onClick={() => setUploadState(prev => ({ ...prev, selectedStyle: style }))}
@@ -363,7 +388,7 @@ const Categories: React.FC = () => {
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
-                    {style}
+                    {getStyleName(uploadState.selectedCategory, styleIndex)}
                   </button>
                 ))}
               </div>
@@ -517,7 +542,12 @@ const Categories: React.FC = () => {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">{t('categories.style')}</span>
-                  <span className="font-medium">{uploadState.selectedStyle || t('categories.notSelected')}</span>
+                  <span className="font-medium">
+                    {uploadState.selectedStyle ? 
+                      getStyleName(uploadState.selectedCategory, uploadState.selectedCategory.styles.indexOf(uploadState.selectedStyle)) 
+                      : t('categories.notSelected')
+                    }
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">{t('categories.method')}</span>
@@ -582,7 +612,7 @@ const Categories: React.FC = () => {
                       key={index}
                       className="px-2 py-1 bg-white/20 backdrop-blur-sm rounded text-xs text-white"
                     >
-                      {style}
+                      {getStyleName(category, index)}
                     </span>
                   ))}
                 </div>
@@ -590,7 +620,7 @@ const Categories: React.FC = () => {
             </div>
             
             <div className="p-6">
-              <p className="text-gray-600 mb-4">{category.description}</p>
+              <p className="text-gray-600 mb-4">{getCategoryDescription(category)}</p>
               
               <div className="mb-4">
                 <p className="text-sm font-medium text-gray-700 mb-2">{t('categories.availableStyles')}:</p>
@@ -600,7 +630,7 @@ const Categories: React.FC = () => {
                       key={index}
                       className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
                     >
-                      {style}
+                      {getStyleName(category, index)}
                     </span>
                   ))}
                 </div>

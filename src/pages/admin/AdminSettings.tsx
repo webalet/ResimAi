@@ -771,7 +771,9 @@ const AdminSettings = () => {
       display_name_en: 'New Category',
       type: 'New',
       description: 'Yeni kategori açıklaması',
+      description_en: 'New category description',
       styles: ['Yeni Stil'],
+      styles_en: ['New Style'],
       image_url: '/images/ornek.jpg',
       is_active: true,
       created_at: new Date().toISOString(),
@@ -871,15 +873,35 @@ const AdminSettings = () => {
     ));
   };
 
+  const updateCategoryDescription = (index, newDescription) => {
+    setCategories(prev => prev.map((cat, i) => 
+      i === index ? { ...cat, description: newDescription } : cat
+    ));
+  };
+
+  const updateCategoryDescriptionEn = (index, newDescription) => {
+    setCategories(prev => prev.map((cat, i) => 
+      i === index ? { ...cat, description_en: newDescription } : cat
+    ));
+  };
+
   const addStyle = (categoryIndex) => {
     setCategories(prev => prev.map((cat, i) => 
-      i === categoryIndex ? { ...cat, styles: [...cat.styles, 'Yeni Stil'] } : cat
+      i === categoryIndex ? { 
+        ...cat, 
+        styles: [...cat.styles, 'Yeni Stil'],
+        styles_en: [...(cat.styles_en || []), 'New Style']
+      } : cat
     ));
   };
 
   const removeStyle = (categoryIndex, styleIndex) => {
     setCategories(prev => prev.map((cat, i) => 
-      i === categoryIndex ? { ...cat, styles: cat.styles.filter((_, si) => si !== styleIndex) } : cat
+      i === categoryIndex ? { 
+        ...cat, 
+        styles: cat.styles.filter((_, si) => si !== styleIndex),
+        styles_en: (cat.styles_en || []).filter((_, si) => si !== styleIndex)
+      } : cat
     ));
   };
 
@@ -888,6 +910,15 @@ const AdminSettings = () => {
       i === categoryIndex ? {
         ...cat,
         styles: cat.styles.map((style, si) => si === styleIndex ? newStyle : style)
+      } : cat
+    ));
+  };
+
+  const updateStyleEn = (categoryIndex, styleIndex, newStyle) => {
+    setCategories(prev => prev.map((cat, i) => 
+      i === categoryIndex ? {
+        ...cat,
+        styles_en: (cat.styles_en || []).map((style, si) => si === styleIndex ? newStyle : style)
       } : cat
     ));
   };
@@ -1413,11 +1444,32 @@ const AdminSettings = () => {
                             <p className="text-red-500 text-xs mt-1">{validationErrors[`category_${categoryIndex}_display_name_en`]}</p>
                           )}
                         </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-700 mb-1">Türkçe Açıklama</label>
+                          <textarea
+                            value={category.description || ''}
+                            onChange={(e) => updateCategoryDescription(categoryIndex, e.target.value)}
+                            className="w-full text-sm text-gray-900 bg-white border rounded px-2 py-1 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            placeholder="Türkçe kategori açıklaması"
+                            rows={2}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-700 mb-1">İngilizce Açıklama</label>
+                          <textarea
+                            value={category.description_en || ''}
+                            onChange={(e) => updateCategoryDescriptionEn(categoryIndex, e.target.value)}
+                            className="w-full text-sm text-gray-900 bg-white border rounded px-2 py-1 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            placeholder="English category description"
+                            rows={2}
+                          />
+                        </div>
                       </div>
                     ) : (
                       <div className="flex-1">
                         <h3 className="font-bold text-lg text-gray-900">{category.display_name_tr || category.name}</h3>
                         <p className="text-sm text-gray-600">{category.display_name_en}</p>
+                        <p className="text-xs text-gray-500 mt-1">{category.description}</p>
                       </div>
                     )}
                     {editModes.categories && (
@@ -1434,23 +1486,44 @@ const AdminSettings = () => {
                       <div key={styleIndex} className="bg-white border border-gray-200 rounded-lg p-4">
                         <div className="flex items-center justify-between mb-2">
                           {editModes.categories ? (
-                            <div className="flex-1">
-                              <input
-                                type="text"
-                                value={style}
-                                onChange={(e) => updateStyle(categoryIndex, styleIndex, e.target.value)}
-                                className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-50 border border-gray-300 text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-                                  validationErrors[`category_${categoryIndex}_style_${styleIndex}`] ? 'border-red-500' : ''
-                                }`}
-                              />
-                              {validationErrors[`category_${categoryIndex}_style_${styleIndex}`] && (
-                                <p className="text-red-500 text-xs mt-1">{validationErrors[`category_${categoryIndex}_style_${styleIndex}`]}</p>
-                              )}
+                            <div className="flex-1 space-y-2">
+                              <div>
+                                <label className="block text-xs font-medium text-gray-700 mb-1">Türkçe Stil</label>
+                                <input
+                                  type="text"
+                                  value={style}
+                                  onChange={(e) => updateStyle(categoryIndex, styleIndex, e.target.value)}
+                                  className={`w-full px-3 py-1 rounded text-sm font-medium bg-gray-50 border border-gray-300 text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+                                    validationErrors[`category_${categoryIndex}_style_${styleIndex}`] ? 'border-red-500' : ''
+                                  }`}
+                                  placeholder="Türkçe stil adı"
+                                />
+                                {validationErrors[`category_${categoryIndex}_style_${styleIndex}`] && (
+                                  <p className="text-red-500 text-xs mt-1">{validationErrors[`category_${categoryIndex}_style_${styleIndex}`]}</p>
+                                )}
+                              </div>
+                              <div>
+                                <label className="block text-xs font-medium text-gray-700 mb-1">İngilizce Stil</label>
+                                <input
+                                  type="text"
+                                  value={(category.styles_en && category.styles_en[styleIndex]) || ''}
+                                  onChange={(e) => updateStyleEn(categoryIndex, styleIndex, e.target.value)}
+                                  className="w-full px-3 py-1 rounded text-sm font-medium bg-gray-50 border border-gray-300 text-gray-700 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                  placeholder="English style name"
+                                />
+                              </div>
                             </div>
                           ) : (
-                            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                              {style}
-                            </span>
+                            <div className="flex-1">
+                              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                {style}
+                              </span>
+                              {category.styles_en && category.styles_en[styleIndex] && (
+                                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800 ml-2">
+                                  {category.styles_en[styleIndex]}
+                                </span>
+                              )}
+                            </div>
                           )}
                           {editModes.categories && (
                             <button
