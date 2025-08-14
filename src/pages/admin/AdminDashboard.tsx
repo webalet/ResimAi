@@ -30,7 +30,7 @@ const AdminDashboard: React.FC = () => {
         throw new Error('Admin token bulunamadı');
       }
 
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:5173';
       const response = await fetch(`${API_BASE_URL}/api/admin/stats`, {
         headers: {
           'Authorization': `Bearer ${token}`,

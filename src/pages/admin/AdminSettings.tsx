@@ -100,7 +100,7 @@ const AdminSettings = () => {
         return;
       }
       
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:5173';
       console.log('Loading categories and prompts from:', `${API_BASE_URL}/api/admin/admin-settings`);
       
       const response = await fetch(`${API_BASE_URL}/api/admin/admin-settings`, {
@@ -179,7 +179,7 @@ const AdminSettings = () => {
         return;
       }
       
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:5173';
       const response = await fetch(`${API_BASE_URL}/api/admin/admin-settings`, {
         method: 'GET',
         headers: {
@@ -211,7 +211,7 @@ const AdminSettings = () => {
           supabase: data.data.supabase || {},
           n8n: data.data.n8n || {},
           jwt: data.data.jwt || {},
-          server: data.data.server || { port: '3001', url: 'http://64.226.75.76:3001' }
+          server: data.data.server || { port: '5173', url: 'http://64.226.75.76:5173' }
         };
         setSystemConfig(systemConfig);
         
@@ -474,7 +474,7 @@ const AdminSettings = () => {
       }
       
       // Get current settings first
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:5173';
       const currentResponse = await fetch(`${API_BASE_URL}/api/admin/admin-settings`, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -565,7 +565,7 @@ const AdminSettings = () => {
       }
       
       // Get current settings first
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:5173';
       const currentResponse = await fetch(`${API_BASE_URL}/api/admin/admin-settings`, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -649,7 +649,7 @@ const AdminSettings = () => {
         return;
       }
       
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:5173';
       const response = await fetch(`${API_BASE_URL}/api/admin/settings/prompts`, {
         method: 'PUT',
         headers: {
@@ -720,7 +720,7 @@ const AdminSettings = () => {
       formData.append('image', file);
       formData.append('type', 'category');
 
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:3001';
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:5173';
       const response = await fetch(`${API_BASE_URL}/api/admin/upload-image`, {
         method: 'POST',
         headers: {
