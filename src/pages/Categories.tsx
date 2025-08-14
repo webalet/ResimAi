@@ -62,6 +62,7 @@ const Categories: React.FC = () => {
 
   const loadCategories = async () => {
     try {
+      console.log('🔄 Loading categories from API...');
       const response = await fetch('/api/categories', {
         method: 'GET',
         headers: {
@@ -74,10 +75,15 @@ const Categories: React.FC = () => {
       }
 
       const data = await response.json();
-      setCategories(data.categories || []);
+      console.log('📦 API Response:', data);
+      console.log('📊 Categories data:', data.data);
+      
+      setCategories(data.data || []);
       setLoading(false);
+      
+      console.log('✅ Categories loaded successfully:', data.data?.length || 0, 'categories');
     } catch (error) {
-      console.error('Categories loading failed:', error);
+      console.error('❌ Categories loading failed:', error);
       toast.error(t('categories.loadError'));
       setLoading(false);
     }
