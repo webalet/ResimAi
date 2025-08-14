@@ -8,7 +8,6 @@ import ScrollToTop, { SectionNavigation } from '../components/ScrollToTop';
 import { FeatureCard, TestimonialCard } from '../components/Card';
 import Button, { RippleButton } from '../components/Button';
 import ImageComparison from '../components/ImageComparison';
-import Lightbox from '../components/Lightbox';
 import TestimonialCarousel from '../components/TestimonialCarousel';
 
 const Home: React.FC = () => {
@@ -124,98 +123,75 @@ const Home: React.FC = () => {
     }
   ];
 
-  // Lightbox state
-  const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [lightboxIndex, setLightboxIndex] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState('all');
 
   // Example images data
   const exampleImages = [
     {
       id: 1,
-      category: 'portrait',
-      beforeImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20photo%20of%20a%20person%20low%20quality%20blurry%20dark&image_size=square',
-      afterImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20portrait%20photo%20high%20quality%20sharp%20bright%20enhanced&image_size=square',
-      title: t('home.examples.portraitEnhancement.title'),
-      description: t('home.examples.portraitEnhancement.description')
+      category: 'corporate',
+      beforeImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=corporate%20portrait%20poor%20lighting%20unprofessional%20background&image_size=portrait_4_3',
+      afterImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20corporate%20portrait%20perfect%20lighting%20clean%20background&image_size=portrait_4_3',
+      title: t('home.examples.corporate.title'),
+      description: t('home.examples.corporate.description')
     },
     {
       id: 2,
-      category: 'landscape',
-      beforeImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=landscape%20photo%20dull%20colors%20low%20contrast%20foggy&image_size=landscape_16_9',
-      afterImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=vibrant%20landscape%20photo%20high%20contrast%20clear%20sky%20enhanced%20colors&image_size=landscape_16_9',
-      title: t('home.examples.landscapeRestoration.title'),
-      description: t('home.examples.landscapeRestoration.description')
+      category: 'creative',
+      beforeImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20photo%20plain%20boring%20no%20artistic%20elements&image_size=square',
+      afterImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=creative%20artistic%20portrait%20vibrant%20colors%20artistic%20effects&image_size=square',
+      title: t('home.examples.creative.title'),
+      description: t('home.examples.creative.description')
     },
     {
       id: 3,
-      category: 'product',
-      beforeImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=product%20photo%20poor%20lighting%20shadows%20low%20quality&image_size=square',
-      afterImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20product%20photo%20perfect%20lighting%20no%20shadows%20high%20quality&image_size=square',
-      title: t('home.examples.productPhotography.title'),
-      description: t('home.examples.productPhotography.description')
+      category: 'avatar',
+      beforeImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=regular%20photo%20realistic%20human%20face&image_size=square',
+      afterImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=digital%20avatar%20stylized%20character%20modern%20design&image_size=square',
+      title: t('home.examples.avatar.title'),
+      description: t('home.examples.avatar.description')
     },
     {
       id: 4,
-      category: 'vintage',
-      beforeImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=old%20vintage%20photo%20faded%20scratched%20damaged&image_size=portrait_4_3',
-      afterImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=restored%20vintage%20photo%20clear%20colors%20no%20damage%20enhanced&image_size=portrait_4_3',
-      title: t('home.examples.vintageRestoration.title'),
-      description: t('home.examples.vintageRestoration.description')
+      category: 'outfit',
+      beforeImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=person%20wearing%20casual%20clothes%20simple%20outfit&image_size=portrait_4_3',
+      afterImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=person%20wearing%20elegant%20formal%20outfit%20stylish%20clothes&image_size=portrait_4_3',
+      title: t('home.examples.outfit.title'),
+      description: t('home.examples.outfit.description')
     },
     {
       id: 5,
-      category: 'portrait',
-      beforeImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=selfie%20photo%20poor%20lighting%20grainy%20low%20resolution&image_size=square',
-      afterImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=enhanced%20selfie%20perfect%20lighting%20smooth%20skin%20high%20resolution&image_size=square',
-      title: t('home.examples.selfieEnhancement.title'),
-      description: t('home.examples.selfieEnhancement.description')
+      category: 'background',
+      beforeImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20with%20messy%20cluttered%20background&image_size=portrait_4_3',
+      afterImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20with%20clean%20professional%20studio%20background&image_size=portrait_4_3',
+      title: t('home.examples.background.title'),
+      description: t('home.examples.background.description')
     },
     {
       id: 6,
-      category: 'landscape',
-      beforeImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=night%20photo%20very%20dark%20noisy%20underexposed&image_size=landscape_16_9',
-      afterImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=enhanced%20night%20photo%20clear%20details%20reduced%20noise%20perfect%20exposure&image_size=landscape_16_9',
-      title: t('home.examples.nightPhotography.title'),
-      description: t('home.examples.nightPhotography.description')
+      category: 'skincare',
+      beforeImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20with%20skin%20imperfections%20blemishes%20rough%20skin&image_size=square',
+      afterImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20with%20smooth%20flawless%20skin%20natural%20beauty&image_size=square',
+      title: t('home.examples.skincare.title'),
+      description: t('home.examples.skincare.description')
     }
   ];
 
   const categories = [
     { id: 'all', label: t('home.categories.all') },
-    { id: 'portrait', label: t('home.categories.portraits') },
-    { id: 'landscape', label: t('home.categories.landscapes') },
-    { id: 'product', label: t('home.categories.products') },
-    { id: 'vintage', label: t('home.categories.vintage') }
+    { id: 'corporate', label: t('home.categories.corporate') },
+    { id: 'creative', label: t('home.categories.creative') },
+    { id: 'avatar', label: t('home.categories.avatar') },
+    { id: 'outfit', label: t('home.categories.outfit') },
+    { id: 'background', label: t('home.categories.background') },
+    { id: 'skincare', label: t('home.categories.skincare') }
   ];
 
   const filteredImages = selectedCategory === 'all' 
     ? exampleImages 
     : exampleImages.filter(img => img.category === selectedCategory);
 
-  const lightboxImages = filteredImages.map(img => ({
-    src: img.afterImage,
-    alt: img.title,
-    title: img.title,
-    description: img.description
-  }));
 
-  const openLightbox = (index: number) => {
-    setLightboxIndex(index);
-    setLightboxOpen(true);
-  };
-
-  const closeLightbox = () => {
-    setLightboxOpen(false);
-  };
-
-  const nextImage = () => {
-    setLightboxIndex((prev) => (prev + 1) % lightboxImages.length);
-  };
-
-  const previousImage = () => {
-    setLightboxIndex((prev) => (prev - 1 + lightboxImages.length) % lightboxImages.length);
-  };
 
   // Section navigation data
   const sections = [
@@ -457,8 +433,7 @@ const Home: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1, duration: 0.5 }}
-                className="group cursor-pointer"
-                onClick={() => openLightbox(index)}
+                className="group"
               >
                 <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
                   <ImageComparison
@@ -475,10 +450,13 @@ const Home: React.FC = () => {
                     <p className="text-gray-600 text-sm leading-relaxed">
                       {image.description}
                     </p>
-                    <div className="mt-4 flex items-center text-primary-600 text-sm font-medium">
+                    <Link
+                      to={user ? `/${currentLang}/dashboard` : `/${currentLang}/register`}
+                      className="mt-4 inline-flex items-center text-primary-600 text-sm font-medium hover:text-primary-700 transition-colors"
+                    >
                       <span>{t('home.buttons.viewDetails')}</span>
                       <ArrowRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
-                    </div>
+                    </Link>
                   </div>
                 </div>
               </motion.div>
@@ -616,15 +594,7 @@ const Home: React.FC = () => {
         </div>
       </section>
       
-      {/* Lightbox */}
-      <Lightbox
-        isOpen={lightboxOpen}
-        onClose={closeLightbox}
-        images={lightboxImages}
-        currentIndex={lightboxIndex}
-        onPrevious={previousImage}
-        onNext={nextImage}
-      />
+
     </div>
   );
 };

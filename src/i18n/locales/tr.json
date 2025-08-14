@@ -130,43 +130,31 @@
     "examples": {
       "title": "Örnek Çalışmalar",
       "subtitle": "AI ile dönüştürülmüş gerçek örnekleri keşfedin",
-      "corporate": {
-        "title": "Yaratıcı Portre"
-      },
-      "outfit": {
-        "title": "Avatar Oluşturucu"
-      },
-      "background": {
-        "title": "Arkaplan Değiştirici"
-      },
-      "skin": {
-        "title": "Cilt Düzeltici"
-      },
       "original": "Orijinal",
       "aiProcessed": "AI İşlenmiş",
-      "portraitEnhancement": {
-        "title": "Portre İyileştirme",
-        "description": "Gelişmiş aydınlatma ve netlik ile profesyonel portre"
+      "corporate": {
+        "title": "Kurumsal Fotoğraf",
+        "description": "Profesyonel iş dünyası için kurumsal portre fotoğrafları"
       },
-      "landscapeRestoration": {
-        "title": "Manzara Restorasyonu",
-        "description": "Çarpıcı manzaralar için canlı renkler ve gelişmiş kontrast"
+      "creative": {
+        "title": "Yaratıcı Portre",
+        "description": "Sanatsal ve yaratıcı portre fotoğrafları"
       },
-      "productPhotography": {
-        "title": "Ürün Fotoğrafçılığı",
-        "description": "Mükemmel aydınlatma ile profesyonel ürün çekimleri"
+      "avatar": {
+        "title": "Avatar Oluşturucu",
+        "description": "Dijital avatar ve karakter fotoğrafları"
       },
-      "vintageRestoration": {
-        "title": "Vintage Restorasyon",
-        "description": "AI restorasyonu ile eski anıları hayata döndürme"
+      "outfit": {
+        "title": "Elbise Değişimi",
+        "description": "AI ile kıyafet değiştirme ve stil önerileri"
       },
-      "selfieEnhancement": {
-        "title": "Selfie İyileştirme",
-        "description": "Günlük selfielerinizi profesyonel kalitede fotoğraflara dönüştürün"
+      "background": {
+        "title": "Arkaplan Değiştirme",
+        "description": "Profesyonel arka plan değiştirme hizmeti"
       },
-      "nightPhotography": {
-        "title": "Gece Fotoğrafçılığı",
-        "description": "AI destekli gürültü azaltma ile düşük ışık fotoğraflarını iyileştirin"
+      "skincare": {
+        "title": "Cilt Düzeltme",
+        "description": "AI destekli cilt düzeltme ve güzelleştirme"
       }
     },
     "features": {
@@ -225,10 +213,12 @@
     },
     "categories": {
       "all": "Tüm Kategoriler",
-      "portraits": "Portreler",
-      "landscapes": "Manzaralar",
-      "products": "Ürünler",
-      "vintage": "Vintage"
+      "corporate": "Kurumsal Fotoğraf",
+      "creative": "Yaratıcı Portre",
+      "avatar": "Avatar Oluşturucu",
+      "outfit": "Elbise Değişimi",
+      "background": "Arkaplan Değiştirme",
+      "skincare": "Cilt Düzeltme"
     },
     "buttons": {
       "getStartedFree": "Ücretsiz Başla",

@@ -126,43 +126,31 @@
     "examples": {
       "title": "Example Works",
       "subtitle": "Discover real examples transformed with AI",
-      "corporate": {
-        "title": "Creative Portrait"
-      },
-      "outfit": {
-        "title": "Avatar Creator"
-      },
-      "background": {
-        "title": "Background Changer"
-      },
-      "skin": {
-        "title": "Skin Corrector"
-      },
       "original": "Original",
       "aiProcessed": "AI Processed",
-      "portraitEnhancement": {
-        "title": "Portrait Enhancement",
-        "description": "Professional portrait with enhanced lighting and clarity"
+      "corporate": {
+        "title": "Corporate Photography",
+        "description": "Professional corporate portrait photos for business world"
       },
-      "landscapeRestoration": {
-        "title": "Landscape Restoration",
-        "description": "Vibrant colors and enhanced contrast for stunning landscapes"
+      "creative": {
+        "title": "Creative Portrait",
+        "description": "Artistic and creative portrait photography"
       },
-      "productPhotography": {
-        "title": "Product Photography",
-        "description": "Professional product shots with perfect lighting"
+      "avatar": {
+        "title": "Avatar Creator",
+        "description": "Digital avatar and character photography"
       },
-      "vintageRestoration": {
-        "title": "Vintage Restoration",
-        "description": "Bringing old memories back to life with AI restoration"
+      "outfit": {
+        "title": "Outfit Change",
+        "description": "AI-powered clothing change and style suggestions"
       },
-      "selfieEnhancement": {
-        "title": "Selfie Enhancement",
-        "description": "Transform casual selfies into professional-quality photos"
+      "background": {
+        "title": "Background Change",
+        "description": "Professional background replacement service"
       },
-      "nightPhotography": {
-        "title": "Night Photography",
-        "description": "Enhance low-light photos with AI-powered noise reduction"
+      "skincare": {
+        "title": "Skin Correction",
+        "description": "AI-powered skin correction and beautification"
       }
     },
     "features": {
@@ -221,10 +209,12 @@
     },
     "categories": {
       "all": "All Categories",
-      "portraits": "Portraits",
-      "landscapes": "Landscapes",
-      "products": "Products",
-      "vintage": "Vintage"
+      "corporate": "Corporate Photography",
+      "creative": "Creative Portrait",
+      "avatar": "Avatar Creator",
+      "outfit": "Outfit Change",
+      "background": "Background Change",
+      "skincare": "Skin Correction"
     },
     "buttons": {
       "getStartedFree": "Get Started Free",

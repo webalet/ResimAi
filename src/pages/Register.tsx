@@ -1,6 +1,7 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, User, UserPlus } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
@@ -24,6 +25,11 @@ const Register: React.FC = () => {
   const submitTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastSubmitTimeRef = useRef<number>(0);
   const { t } = useTranslation();
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -147,18 +153,38 @@ const Register: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
+      <motion.div 
+        className="max-w-md w-full space-y-8"
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+      >
+        <motion.div 
+          className="text-center"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
           <Link to="/" className="inline-block">
-            <div className="mx-auto h-12 w-12 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl flex items-center justify-center mb-4 hover:scale-105 transition-transform cursor-pointer">
+            <motion.div 
+              className="mx-auto h-12 w-12 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl flex items-center justify-center mb-4 cursor-pointer"
+              whileHover={{ scale: 1.1, rotate: 5 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
               <UserPlus className="h-6 w-6 text-white" />
-            </div>
+            </motion.div>
           </Link>
           <h2 className="text-3xl font-bold text-gray-900 mb-2">{t('auth.register.title')}</h2>
           <p className="text-gray-600">{t('auth.register.subtitle')}</p>
-        </div>
+        </motion.div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <motion.div 
+          className="bg-white rounded-2xl shadow-xl p-8"
+          initial={{ opacity: 0, y: 30, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.7, delay: 0.3, ease: "easeOut" }}
+          whileHover={{ y: -5, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)" }}
+        >
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
@@ -168,7 +194,7 @@ const Register: React.FC = () => {
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <User className="h-5 w-5 text-gray-400" />
                 </div>
-                <input
+                <motion.input
                   id="name"
                   name="name"
                   type="text"
@@ -176,8 +202,11 @@ const Register: React.FC = () => {
                   required
                   value={formData.name}
                   onChange={handleChange}
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
+                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ease-in-out"
                   placeholder={t('auth.placeholders.fullName')}
+                  whileHover={{ scale: 1.02, boxShadow: "0 4px 12px rgba(147, 51, 234, 0.15)" }}
+                  whileFocus={{ scale: 1.02, boxShadow: "0 4px 20px rgba(147, 51, 234, 0.25)" }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 />
               </div>
             </div>
@@ -190,7 +219,7 @@ const Register: React.FC = () => {
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Mail className="h-5 w-5 text-gray-400" />
                 </div>
-                <input
+                <motion.input
                   id="email"
                   name="email"
                   type="email"
@@ -198,8 +227,11 @@ const Register: React.FC = () => {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
+                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ease-in-out"
                   placeholder={t('auth.placeholders.email')}
+                  whileHover={{ scale: 1.02, boxShadow: "0 4px 12px rgba(147, 51, 234, 0.15)" }}
+                  whileFocus={{ scale: 1.02, boxShadow: "0 4px 20px rgba(147, 51, 234, 0.25)" }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 />
               </div>
             </div>
@@ -212,7 +244,7 @@ const Register: React.FC = () => {
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Lock className="h-5 w-5 text-gray-400" />
                 </div>
-                <input
+                <motion.input
                   id="password"
                   name="password"
                   type={showPassword ? 'text' : 'password'}
@@ -220,8 +252,11 @@ const Register: React.FC = () => {
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
+                  className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ease-in-out"
                   placeholder={t('auth.placeholders.passwordLength')}
+                  whileHover={{ scale: 1.02, boxShadow: "0 4px 12px rgba(147, 51, 234, 0.15)" }}
+                  whileFocus={{ scale: 1.02, boxShadow: "0 4px 20px rgba(147, 51, 234, 0.25)" }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 />
                 <button
                   type="button"
@@ -245,7 +280,7 @@ const Register: React.FC = () => {
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <Lock className="h-5 w-5 text-gray-400" />
                 </div>
-                <input
+                <motion.input
                   id="confirmPassword"
                   name="confirmPassword"
                   type={showConfirmPassword ? 'text' : 'password'}
@@ -253,8 +288,11 @@ const Register: React.FC = () => {
                   required
                   value={formData.confirmPassword}
                   onChange={handleChange}
-                  className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-colors"
+                  className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 ease-in-out"
                   placeholder={t('auth.placeholders.confirmPassword')}
+                  whileHover={{ scale: 1.02, boxShadow: "0 4px 12px rgba(147, 51, 234, 0.15)" }}
+                  whileFocus={{ scale: 1.02, boxShadow: "0 4px 20px rgba(147, 51, 234, 0.25)" }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 />
                 <button
                   type="button"
@@ -302,10 +340,17 @@ const Register: React.FC = () => {
               </div>
             )}
 
-            <button
+            <motion.button
               type="submit"
               disabled={isLoading}
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              whileHover={!isLoading ? { 
+                scale: 1.02, 
+                boxShadow: "0 10px 25px rgba(147, 51, 234, 0.4)",
+                background: "linear-gradient(to right, #7c3aed, #2563eb)"
+              } : {}}
+              whileTap={!isLoading ? { scale: 0.98 } : {}}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
             >
               {isLoading ? (
                 <div className="flex items-center">
@@ -315,7 +360,7 @@ const Register: React.FC = () => {
               ) : (
                 t('auth.register.button')
               )}
-            </button>
+            </motion.button>
           </form>
 
           <div className="mt-6">
@@ -340,8 +385,8 @@ const Register: React.FC = () => {
               </p>
             </div>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 };
