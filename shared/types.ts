@@ -15,6 +15,7 @@ export interface Category {
   id: string;
   name: string;
   display_name_tr: string;
+  display_name_en: string;
   type: string;
   description: string;
   image_url: string;

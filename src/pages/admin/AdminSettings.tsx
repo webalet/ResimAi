@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Settings, Key, Database, Webhook, Code, Edit2, Save, X, Plus, Trash2, ChevronDown, ChevronUp, Upload, Image } from 'lucide-react';
 import { toast } from 'sonner';
+import { Category } from '../../../shared/types';
 
 type ValidationErrors = Record<string, string>;
 
@@ -49,36 +50,84 @@ const AdminSettings = () => {
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
 
   // State for editable categories
-  const [categories, setCategories] = useState([
+  const [categories, setCategories] = useState<Category[]>([
     {
+      id: '1',
       name: 'Corporate',
+      display_name_tr: 'Kurumsal Fotoğraf',
+      display_name_en: 'Corporate Photography',
+      type: 'Corporate',
+      description: 'Profesyonel iş dünyası için kurumsal fotoğraflar',
       styles: ['Professional', 'Business Casual', 'Executive', 'Formal Meeting'],
-      image_url: '/images/ornek.jpg'
+      image_url: '/images/ornek.jpg',
+      is_active: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     },
     {
-      name: 'Creative', 
+      id: '2',
+      name: 'Creative',
+      display_name_tr: 'Yaratıcı Portre',
+      display_name_en: 'Creative Portrait',
+      type: 'Creative',
+      description: 'Sanatsal ve yaratıcı portre fotoğrafları',
       styles: ['Artistic', 'Bohemian', 'Vintage', 'Modern Art'],
-      image_url: '/images/ornek.jpg'
+      image_url: '/images/ornek.jpg',
+      is_active: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     },
     {
+      id: '3',
       name: 'Avatar',
+      display_name_tr: 'Avatar Oluşturucu',
+      display_name_en: 'Avatar Creator',
+      type: 'Avatar',
+      description: 'Dijital avatar ve karakter fotoğrafları',
       styles: ['Cartoon', 'Realistic', 'Anime', 'Fantasy'],
-      image_url: '/images/ornek.jpg'
+      image_url: '/images/ornek.jpg',
+      is_active: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     },
     {
+      id: '4',
       name: 'Outfit',
+      display_name_tr: 'Elbise Değişimi',
+      display_name_en: 'Outfit Change',
+      type: 'Outfit',
+      description: 'AI ile kıyafet değiştirme ve stil önerileri',
       styles: ['Casual', 'Formal', 'Sporty', 'Trendy'],
-      image_url: '/images/ornek.jpg'
+      image_url: '/images/ornek.jpg',
+      is_active: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     },
     {
+      id: '5',
       name: 'Background',
+      display_name_tr: 'Arkaplan Değiştirme',
+      display_name_en: 'Background Change',
+      type: 'Background',
+      description: 'Profesyonel arka plan değiştirme hizmeti',
       styles: ['Office', 'Studio', 'Nature', 'Abstract'],
-      image_url: '/images/ornek.jpg'
+      image_url: '/images/ornek.jpg',
+      is_active: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     },
     {
+      id: '6',
       name: 'Skincare',
+      display_name_tr: 'Cilt Düzeltme',
+      display_name_en: 'Skin Enhancement',
+      type: 'Skincare',
+      description: 'AI destekli cilt düzeltme ve güzelleştirme',
       styles: ['Natural', 'Glowing', 'Professional', 'Fresh'],
-      image_url: '/images/ornek.jpg'
+      image_url: '/images/ornek.jpg',
+      is_active: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     }
   ]);
 
@@ -130,7 +179,21 @@ const AdminSettings = () => {
       
       const data = result.data;
       if (data.categories) {
-        setCategories(data.categories);
+        // Convert old format categories to new format if needed
+        const formattedCategories = data.categories.map((cat: any, index: number) => ({
+          id: cat.id || (index + 1).toString(),
+          name: cat.name,
+          display_name_tr: cat.display_name_tr || cat.name,
+          display_name_en: cat.display_name_en || cat.name,
+          type: cat.type || cat.name,
+          description: cat.description || '',
+          image_url: cat.image_url,
+          styles: cat.styles,
+          is_active: cat.is_active !== undefined ? cat.is_active : true,
+          created_at: cat.created_at || new Date().toISOString(),
+          updated_at: cat.updated_at || new Date().toISOString()
+        }));
+        setCategories(formattedCategories);
       }
       if (data.aiPrompts) {
         setAiPrompts(data.aiPrompts);
@@ -217,7 +280,21 @@ const AdminSettings = () => {
         
         // Update categories
         if (data.data.categories) {
-          setCategories(data.data.categories);
+          // Convert old format categories to new format if needed
+          const formattedCategories = data.data.categories.map((cat: any, index: number) => ({
+            id: cat.id || (index + 1).toString(),
+            name: cat.name,
+            display_name_tr: cat.display_name_tr || cat.name,
+            display_name_en: cat.display_name_en || cat.name,
+            type: cat.type || cat.name,
+            description: cat.description || '',
+            image_url: cat.image_url,
+            styles: cat.styles,
+            is_active: cat.is_active !== undefined ? cat.is_active : true,
+            created_at: cat.created_at || new Date().toISOString(),
+            updated_at: cat.updated_at || new Date().toISOString()
+          }));
+          setCategories(formattedCategories);
         }
         
         // Update AI prompts
@@ -687,10 +764,18 @@ const AdminSettings = () => {
   };
 
   const addCategory = () => {
-    const newCategory = {
+    const newCategory: Category = {
+      id: Date.now().toString(),
       name: 'Yeni Kategori',
+      display_name_tr: 'Yeni Kategori',
+      display_name_en: 'New Category',
+      type: 'New',
+      description: 'Yeni kategori açıklaması',
       styles: ['Yeni Stil'],
-      image_url: '/images/ornek.jpg'
+      image_url: '/images/ornek.jpg',
+      is_active: true,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     };
     setCategories(prev => [...prev, newCategory]);
   };
@@ -771,6 +856,18 @@ const AdminSettings = () => {
   const updateCategoryName = (index, newName) => {
     setCategories(prev => prev.map((cat, i) => 
       i === index ? { ...cat, name: newName } : cat
+    ));
+  };
+
+  const updateCategoryDisplayNameTr = (index, newDisplayName) => {
+    setCategories(prev => prev.map((cat, i) => 
+      i === index ? { ...cat, display_name_tr: newDisplayName } : cat
+    ));
+  };
+
+  const updateCategoryDisplayNameEn = (index, newDisplayName) => {
+    setCategories(prev => prev.map((cat, i) => 
+      i === index ? { ...cat, display_name_en: newDisplayName } : cat
     ));
   };
 
@@ -1271,26 +1368,62 @@ const AdminSettings = () => {
                   
                   <div className="flex items-center justify-between mb-3">
                     {editModes.categories ? (
-                      <div className="flex-1">
-                        <input
-                          type="text"
-                          value={category.name}
-                          onChange={(e) => updateCategoryName(categoryIndex, e.target.value)}
-                          className={`font-bold text-lg text-gray-900 bg-white border rounded px-2 py-1 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-                            validationErrors[`category_${categoryIndex}_name`] ? 'border-red-500' : ''
-                          }`}
-                        />
-                        {validationErrors[`category_${categoryIndex}_name`] && (
-                          <p className="text-red-500 text-xs mt-1">{validationErrors[`category_${categoryIndex}_name`]}</p>
-                        )}
+                      <div className="flex-1 space-y-2">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-700 mb-1">Kategori Adı (ID)</label>
+                          <input
+                            type="text"
+                            value={category.name}
+                            onChange={(e) => updateCategoryName(categoryIndex, e.target.value)}
+                            className={`w-full font-bold text-lg text-gray-900 bg-white border rounded px-2 py-1 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+                              validationErrors[`category_${categoryIndex}_name`] ? 'border-red-500' : ''
+                            }`}
+                          />
+                          {validationErrors[`category_${categoryIndex}_name`] && (
+                            <p className="text-red-500 text-xs mt-1">{validationErrors[`category_${categoryIndex}_name`]}</p>
+                          )}
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-700 mb-1">Türkçe Görünen Ad</label>
+                          <input
+                            type="text"
+                            value={category.display_name_tr || ''}
+                            onChange={(e) => updateCategoryDisplayNameTr(categoryIndex, e.target.value)}
+                            className={`w-full text-sm text-gray-900 bg-white border rounded px-2 py-1 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+                              validationErrors[`category_${categoryIndex}_display_name_tr`] ? 'border-red-500' : ''
+                            }`}
+                            placeholder="Türkçe kategori adı"
+                          />
+                          {validationErrors[`category_${categoryIndex}_display_name_tr`] && (
+                            <p className="text-red-500 text-xs mt-1">{validationErrors[`category_${categoryIndex}_display_name_tr`]}</p>
+                          )}
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-700 mb-1">İngilizce Görünen Ad</label>
+                          <input
+                            type="text"
+                            value={category.display_name_en || ''}
+                            onChange={(e) => updateCategoryDisplayNameEn(categoryIndex, e.target.value)}
+                            className={`w-full text-sm text-gray-900 bg-white border rounded px-2 py-1 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+                              validationErrors[`category_${categoryIndex}_display_name_en`] ? 'border-red-500' : ''
+                            }`}
+                            placeholder="English category name"
+                          />
+                          {validationErrors[`category_${categoryIndex}_display_name_en`] && (
+                            <p className="text-red-500 text-xs mt-1">{validationErrors[`category_${categoryIndex}_display_name_en`]}</p>
+                          )}
+                        </div>
                       </div>
                     ) : (
-                      <h3 className="font-bold text-lg text-gray-900">{category.name}</h3>
+                      <div className="flex-1">
+                        <h3 className="font-bold text-lg text-gray-900">{category.display_name_tr || category.name}</h3>
+                        <p className="text-sm text-gray-600">{category.display_name_en}</p>
+                      </div>
                     )}
                     {editModes.categories && (
                       <button
                         onClick={() => removeCategory(categoryIndex)}
-                        className="text-red-600 hover:text-red-800 p-1"
+                        className="text-red-600 hover:text-red-800 p-1 ml-2"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>

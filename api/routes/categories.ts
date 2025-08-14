@@ -12,6 +12,8 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
       .select(`
         id,
         name,
+        display_name_tr,
+        display_name_en,
         type,
         description,
         image_url,
@@ -55,6 +57,8 @@ router.get('/:id', async (req: Request, res: Response): Promise<void> => {
       .select(`
         id,
         name,
+        display_name_tr,
+        display_name_en,
         type,
         description,
         image_url,
@@ -98,6 +102,8 @@ router.get('/type/:type', async (req: Request, res: Response): Promise<void> => 
       .select(`
         id,
         name,
+        display_name_tr,
+        display_name_en,
         type,
         description,
         image_url,
@@ -136,12 +142,12 @@ router.get('/type/:type', async (req: Request, res: Response): Promise<void> => 
 // Create category
 router.post('/', auth, async (req: Request, res: Response): Promise<void> => {
   try {
-    const { name, type, description, image_url, styles } = req.body;
+    const { name, display_name_tr, display_name_en, type, description, image_url, styles } = req.body;
 
-    if (!name || !type) {
+    if (!name || !type || !display_name_tr || !display_name_en) {
       res.status(400).json({
         success: false,
-        message: 'Kategori adı ve tipi gereklidir'
+        message: 'Kategori adı, Türkçe ve İngilizce görünen adlar ve tipi gereklidir'
       });
       return;
     }
@@ -165,6 +171,8 @@ router.post('/', auth, async (req: Request, res: Response): Promise<void> => {
       .from('categories')
       .insert({
         name,
+        display_name_tr,
+        display_name_en,
         type,
         description,
         image_url,
@@ -202,7 +210,7 @@ router.post('/', auth, async (req: Request, res: Response): Promise<void> => {
 router.put('/:id', auth, async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const { name, type, description, image_url, styles, is_active } = req.body;
+    const { name, display_name_tr, display_name_en, type, description, image_url, styles, is_active } = req.body;
 
     // Check if category exists
     const { data: existingCategory } = await supabase
@@ -239,6 +247,8 @@ router.put('/:id', auth, async (req: Request, res: Response): Promise<void> => {
 
     const updateData: any = {};
     if (name !== undefined) updateData.name = name;
+    if (display_name_tr !== undefined) updateData.display_name_tr = display_name_tr;
+    if (display_name_en !== undefined) updateData.display_name_en = display_name_en;
     if (type !== undefined) updateData.type = type;
     if (description !== undefined) updateData.description = description;
     if (image_url !== undefined) updateData.image_url = image_url;

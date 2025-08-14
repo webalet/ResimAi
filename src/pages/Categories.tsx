@@ -36,7 +36,12 @@ const Categories: React.FC = () => {
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { user } = useAuth();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+  // Helper function to get category display name based on current language
+  const getCategoryDisplayName = (category: Category) => {
+    return i18n.language === 'en' ? (category.display_name_en || category.display_name_tr) : category.display_name_tr;
+  };
 
   useEffect(() => {
     loadCategories();
@@ -51,6 +56,7 @@ const Categories: React.FC = () => {
             id: '1',
             name: 'Corporate',
             display_name_tr: 'Kurumsal Fotoğraf',
+            display_name_en: 'Corporate Photography',
             type: 'Corporate',
             description: 'Profesyonel iş dünyası için kurumsal fotoğraflar',
             image_url: '/images/ornek.jpg',
@@ -63,6 +69,7 @@ const Categories: React.FC = () => {
             id: '2',
             name: 'Creative',
             display_name_tr: 'Yaratıcı Portre',
+            display_name_en: 'Creative Portrait',
             type: 'Creative',
             description: 'Sanatsal ve yaratıcı portre fotoğrafları',
             image_url: '/images/ornek.jpg',
@@ -75,6 +82,7 @@ const Categories: React.FC = () => {
             id: '3',
             name: 'Avatar',
             display_name_tr: 'Avatar Oluşturucu',
+            display_name_en: 'Avatar Creator',
             type: 'Avatar',
             description: 'Dijital avatar ve karakter fotoğrafları',
             image_url: '/images/ornek.jpg',
@@ -87,6 +95,7 @@ const Categories: React.FC = () => {
             id: '4',
             name: 'Outfit',
             display_name_tr: 'Elbise Değişimi',
+            display_name_en: 'Outfit Change',
             type: 'Outfit',
             description: 'AI ile kıyafet değiştirme ve stil önerileri',
             image_url: '/images/ornek.jpg',
@@ -99,6 +108,7 @@ const Categories: React.FC = () => {
             id: '5',
             name: 'Background',
             display_name_tr: 'Arkaplan Değiştirme',
+            display_name_en: 'Background Change',
             type: 'Background',
             description: 'Profesyonel arka plan değiştirme hizmeti',
             image_url: '/images/ornek.jpg',
@@ -111,6 +121,7 @@ const Categories: React.FC = () => {
             id: '6',
             name: 'Skincare',
             display_name_tr: 'Cilt Düzeltme',
+            display_name_en: 'Skin Enhancement',
             type: 'Skincare',
             description: 'AI destekli cilt düzeltme ve güzelleştirme',
             image_url: '/images/ornek.jpg',
@@ -502,7 +513,7 @@ const Categories: React.FC = () => {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">{t('categories.category')}</span>
-                  <span className="font-medium">{uploadState.selectedCategory.display_name_tr}</span>
+                  <span className="font-medium">{getCategoryDisplayName(uploadState.selectedCategory)}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">{t('categories.style')}</span>
@@ -557,13 +568,13 @@ const Categories: React.FC = () => {
             <div className="aspect-square relative overflow-hidden">
               <img
                 src={category.image_url}
-                alt={category.display_name_tr}
+                alt={getCategoryDisplayName(category)}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
               <div className="absolute bottom-4 left-4 right-4">
                 <h3 className="text-xl font-bold text-white mb-1">
-                  {category.display_name_tr}
+                  {getCategoryDisplayName(category)}
                 </h3>
                 <div className="flex flex-wrap gap-1">
                   {category.styles.slice(0, 3).map((style, index) => (
