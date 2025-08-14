@@ -62,102 +62,20 @@ const Categories: React.FC = () => {
 
   const loadCategories = async () => {
     try {
-      // Mock data for now - will be replaced with API call
-      setTimeout(() => {
-        setCategories([
-          {
-            id: '1',
-            name: 'Corporate',
-            display_name_tr: 'Kurumsal Fotoğraf',
-            display_name_en: 'Corporate Photography',
-            type: 'Corporate',
-            description: 'Profesyonel iş dünyası için kurumsal fotoğraflar',
-            description_en: 'Professional corporate photography for business world',
-            image_url: '/images/ornek.jpg',
-            styles: ['Klasik', 'Modern', 'Resmi'],
-            styles_en: ['Classic', 'Modern', 'Formal'],
-            is_active: true,
-            created_at: '2024-01-01T00:00:00Z',
-            updated_at: '2024-01-01T00:00:00Z'
-          },
-          {
-            id: '2',
-            name: 'Creative',
-            display_name_tr: 'Yaratıcı Portre',
-            display_name_en: 'Creative Portrait',
-            type: 'Creative',
-            description: 'Sanatsal ve yaratıcı portre fotoğrafları',
-            description_en: 'Artistic and creative portrait photography',
-            image_url: '/images/ornek.jpg',
-            styles: ['Sanatsal', 'Renkli', 'Minimalist'],
-            styles_en: ['Artistic', 'Colorful', 'Minimalist'],
-            is_active: true,
-            created_at: '2024-01-01T00:00:00Z',
-            updated_at: '2024-01-01T00:00:00Z'
-          },
-          {
-            id: '3',
-            name: 'Avatar',
-            display_name_tr: 'Avatar Oluşturucu',
-            display_name_en: 'Avatar Creator',
-            type: 'Avatar',
-            description: 'Dijital avatar ve karakter fotoğrafları',
-            description_en: 'Digital avatar and character photography',
-            image_url: '/images/ornek.jpg',
-            styles: ['Çizgi Film', 'Realistik', 'Fantastik'],
-            styles_en: ['Cartoon Film', 'Realistic', 'Fantasy'],
-            is_active: true,
-            created_at: '2024-01-01T00:00:00Z',
-            updated_at: '2024-01-01T00:00:00Z'
-          },
-          {
-            id: '4',
-            name: 'Outfit',
-            display_name_tr: 'Elbise Değişimi',
-            display_name_en: 'Outfit Change',
-            type: 'Outfit',
-            description: 'AI ile kıyafet değiştirme ve stil önerileri',
-            description_en: 'AI-powered outfit change and style suggestions',
-            image_url: '/images/ornek.jpg',
-            styles: ['Casual', 'Formal', 'Spor'],
-            styles_en: ['Casual', 'Formal', 'Sport'],
-            is_active: true,
-            created_at: '2024-01-01T00:00:00Z',
-            updated_at: '2024-01-01T00:00:00Z'
-          },
-          {
-            id: '5',
-            name: 'Background',
-            display_name_tr: 'Arkaplan Değiştirme',
-            display_name_en: 'Background Change',
-            type: 'Background',
-            description: 'Profesyonel arka plan değiştirme hizmeti',
-            description_en: 'Professional background change service',
-            image_url: '/images/ornek.jpg',
-            styles: ['Ofis', 'Doğa', 'Stüdyo'],
-            styles_en: ['Office', 'Nature', 'Studio'],
-            is_active: true,
-            created_at: '2024-01-01T00:00:00Z',
-            updated_at: '2024-01-01T00:00:00Z'
-          },
-          {
-            id: '6',
-            name: 'Skincare',
-            display_name_tr: 'Cilt Düzeltme',
-            display_name_en: 'Skin Enhancement',
-            type: 'Skincare',
-            description: 'AI destekli cilt düzeltme ve güzelleştirme',
-            description_en: 'AI-powered skin correction and enhancement',
-            image_url: '/images/ornek.jpg',
-            styles: ['Doğal', 'Pürüzsüz', 'Parlak'],
-            styles_en: ['Natural', 'Smooth', 'Glowing'],
-            is_active: true,
-            created_at: '2024-01-01T00:00:00Z',
-            updated_at: '2024-01-01T00:00:00Z'
-          }
-        ]);
-        setLoading(false);
-      }, 1000);
+      const response = await fetch('/api/categories', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setCategories(data.categories || []);
+      setLoading(false);
     } catch (error) {
       console.error('Categories loading failed:', error);
       toast.error(t('categories.loadError'));
