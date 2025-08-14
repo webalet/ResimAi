@@ -24,7 +24,7 @@ module.exports = {
     {
       name: 'resim-ai-frontend',
       script: 'npx',
-      args: 'serve -s dist -l 5173',
+      args: 'serve -s dist -l 4173',
       instances: 1,
       autorestart: true,
       watch: false,
