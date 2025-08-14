@@ -24,7 +24,9 @@
     "goToDashboard": "Go to Dashboard",
     "startNow": "Start Now",
     "and": "and",
-    "or": "or"
+    "or": "or",
+    "before": "Before",
+    "after": "After"
   },
   "navigation": {
     "home": "Home",
@@ -137,7 +139,31 @@
         "title": "Skin Corrector"
       },
       "original": "Original",
-      "aiProcessed": "AI Processed"
+      "aiProcessed": "AI Processed",
+      "portraitEnhancement": {
+        "title": "Portrait Enhancement",
+        "description": "Professional portrait with enhanced lighting and clarity"
+      },
+      "landscapeRestoration": {
+        "title": "Landscape Restoration",
+        "description": "Vibrant colors and enhanced contrast for stunning landscapes"
+      },
+      "productPhotography": {
+        "title": "Product Photography",
+        "description": "Professional product shots with perfect lighting"
+      },
+      "vintageRestoration": {
+        "title": "Vintage Restoration",
+        "description": "Bringing old memories back to life with AI restoration"
+      },
+      "selfieEnhancement": {
+        "title": "Selfie Enhancement",
+        "description": "Transform casual selfies into professional-quality photos"
+      },
+      "nightPhotography": {
+        "title": "Night Photography",
+        "description": "Enhance low-light photos with AI-powered noise reduction"
+      }
     },
     "features": {
       "title": "Features",
@@ -185,6 +211,38 @@
     "cta": {
       "title": "Get Started Now",
       "subtitle": "Transform your photos into artwork"
+    },
+    "badges": {
+      "aiPowered": "AI-Powered Image Enhancement",
+      "powerfulFeatures": "Powerful Features",
+      "beforeAfter": "Before & After Showcase",
+      "customerStories": "Customer Stories",
+      "readyToTransform": "Ready to Transform Your Images?"
+    },
+    "categories": {
+      "all": "All Categories",
+      "portraits": "Portraits",
+      "landscapes": "Landscapes",
+      "products": "Products",
+      "vintage": "Vintage"
+    },
+    "buttons": {
+      "getStartedFree": "Get Started Free",
+      "tryItNow": "Try It Now",
+      "viewDetails": "View Details"
+    },
+    "stats": {
+      "imagesEnhanced": "Images Enhanced",
+      "satisfactionRate": "Satisfaction Rate",
+      "processingTime": "Processing Time"
+    },
+    "trustIndicators": {
+      "aiPowered": "AI-Powered",
+      "aiPoweredDesc": "Advanced Technology",
+      "fastProcessing": "Fast Processing",
+      "fastProcessingDesc": "Results in Seconds",
+      "securePrivate": "Secure & Private",
+      "securePrivateDesc": "Your Data Protected"
     },
     "footer": {
       "description": "Transform your images with AI",

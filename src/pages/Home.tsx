@@ -136,57 +136,57 @@ const Home: React.FC = () => {
       category: 'portrait',
       beforeImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=portrait%20photo%20of%20a%20person%20low%20quality%20blurry%20dark&image_size=square',
       afterImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20portrait%20photo%20high%20quality%20sharp%20bright%20enhanced&image_size=square',
-      title: 'Portrait Enhancement',
-      description: 'Professional portrait with enhanced lighting and clarity'
+      title: t('home.examples.portraitEnhancement.title'),
+      description: t('home.examples.portraitEnhancement.description')
     },
     {
       id: 2,
       category: 'landscape',
       beforeImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=landscape%20photo%20dull%20colors%20low%20contrast%20foggy&image_size=landscape_16_9',
       afterImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=vibrant%20landscape%20photo%20high%20contrast%20clear%20sky%20enhanced%20colors&image_size=landscape_16_9',
-      title: 'Landscape Restoration',
-      description: 'Vibrant colors and enhanced contrast for stunning landscapes'
+      title: t('home.examples.landscapeRestoration.title'),
+      description: t('home.examples.landscapeRestoration.description')
     },
     {
       id: 3,
       category: 'product',
       beforeImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=product%20photo%20poor%20lighting%20shadows%20low%20quality&image_size=square',
       afterImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20product%20photo%20perfect%20lighting%20no%20shadows%20high%20quality&image_size=square',
-      title: 'Product Photography',
-      description: 'Professional product shots with perfect lighting'
+      title: t('home.examples.productPhotography.title'),
+      description: t('home.examples.productPhotography.description')
     },
     {
       id: 4,
       category: 'vintage',
       beforeImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=old%20vintage%20photo%20faded%20scratched%20damaged&image_size=portrait_4_3',
       afterImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=restored%20vintage%20photo%20clear%20colors%20no%20damage%20enhanced&image_size=portrait_4_3',
-      title: 'Vintage Restoration',
-      description: 'Bringing old memories back to life with AI restoration'
+      title: t('home.examples.vintageRestoration.title'),
+      description: t('home.examples.vintageRestoration.description')
     },
     {
       id: 5,
       category: 'portrait',
       beforeImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=selfie%20photo%20poor%20lighting%20grainy%20low%20resolution&image_size=square',
       afterImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=enhanced%20selfie%20perfect%20lighting%20smooth%20skin%20high%20resolution&image_size=square',
-      title: 'Selfie Enhancement',
-      description: 'Transform casual selfies into professional-quality photos'
+      title: t('home.examples.selfieEnhancement.title'),
+      description: t('home.examples.selfieEnhancement.description')
     },
     {
       id: 6,
       category: 'landscape',
       beforeImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=night%20photo%20very%20dark%20noisy%20underexposed&image_size=landscape_16_9',
       afterImage: 'https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=enhanced%20night%20photo%20clear%20details%20reduced%20noise%20perfect%20exposure&image_size=landscape_16_9',
-      title: 'Night Photography',
-      description: 'Enhance low-light photos with AI-powered noise reduction'
+      title: t('home.examples.nightPhotography.title'),
+      description: t('home.examples.nightPhotography.description')
     }
   ];
 
   const categories = [
-    { id: 'all', label: 'All Categories' },
-    { id: 'portrait', label: 'Portraits' },
-    { id: 'landscape', label: 'Landscapes' },
-    { id: 'product', label: 'Products' },
-    { id: 'vintage', label: 'Vintage' }
+    { id: 'all', label: t('home.categories.all') },
+    { id: 'portrait', label: t('home.categories.portraits') },
+    { id: 'landscape', label: t('home.categories.landscapes') },
+    { id: 'product', label: t('home.categories.products') },
+    { id: 'vintage', label: t('home.categories.vintage') }
   ];
 
   const filteredImages = selectedCategory === 'all' 
@@ -258,7 +258,7 @@ const Home: React.FC = () => {
             {/* Floating Badge */}
             <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 text-primary-700 text-sm font-medium mb-8 animate-fade-in" role="banner" aria-label="AI-Powered Image Enhancement feature">
               <Sparkles className="w-4 h-4 mr-2" aria-hidden="true" />
-              AI-Powered Image Enhancement
+              {t('home.badges.aiPowered')}
             </div>
             
             {/* Main Title with Gradient Animation */}
@@ -336,15 +336,15 @@ const Home: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20 animate-fade-in" style={{animationDelay: '0.6s'}}>
               <div className="text-center">
                 <div className="text-3xl md:text-4xl font-bold text-primary-600 mb-2">10K+</div>
-                <div className="text-gray-600">Images Enhanced</div>
+                <div className="text-gray-600">{t('home.stats.imagesEnhanced')}</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl md:text-4xl font-bold text-secondary-600 mb-2">99.9%</div>
-                <div className="text-gray-600">Satisfaction Rate</div>
+                <div className="text-gray-600">{t('home.stats.satisfactionRate')}</div>
               </div>
               <div className="text-center">
                 <div className="text-3xl md:text-4xl font-bold text-accent-600 mb-2">&lt;30s</div>
-                <div className="text-gray-600">Processing Time</div>
+                <div className="text-gray-600">{t('home.stats.processingTime')}</div>
               </div>
             </div>
           </div>
@@ -364,7 +364,7 @@ const Home: React.FC = () => {
           <header className="text-center mb-12 sm:mb-16 lg:mb-20">
             <div className="inline-flex items-center px-4 py-2 rounded-full bg-primary-100 text-primary-700 text-sm font-medium mb-6" aria-hidden="true">
               <Zap className="w-4 h-4 mr-2" />
-              Powerful Features
+              {t('home.badges.powerfulFeatures')}
             </div>
             <h2 id="features-title" className="text-4xl md:text-5xl font-display font-bold text-gray-900 mb-6" role="heading" aria-level={2}>
               {t('home.features.title')}
@@ -415,7 +415,7 @@ const Home: React.FC = () => {
           <div className="text-center mb-12 sm:mb-16 lg:mb-20">
             <div className="inline-flex items-center px-4 py-2 rounded-full bg-accent-100 text-accent-700 text-sm font-medium mb-6">
               <ImageIcon className="w-4 h-4 mr-2" />
-              Before & After Showcase
+              {t('home.badges.beforeAfter')}
             </div>
             <h2 className="text-4xl md:text-5xl font-display font-bold text-gray-900 mb-6">
               {t('home.examples.title')}
@@ -464,8 +464,8 @@ const Home: React.FC = () => {
                   <ImageComparison
                     beforeImage={image.beforeImage}
                     afterImage={image.afterImage}
-                    beforeLabel="Before"
-                    afterLabel="After"
+                    beforeLabel={t('common.before')}
+                    afterLabel={t('common.after')}
                     className="rounded-t-2xl"
                   />
                   <div className="p-6">
@@ -476,7 +476,7 @@ const Home: React.FC = () => {
                       {image.description}
                     </p>
                     <div className="mt-4 flex items-center text-primary-600 text-sm font-medium">
-                      <span>View Details</span>
+                      <span>{t('home.buttons.viewDetails')}</span>
                       <ArrowRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
                     </div>
                   </div>
@@ -491,7 +491,7 @@ const Home: React.FC = () => {
               to={user ? `/${currentLang}/dashboard` : `/${currentLang}/register`}
               className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-primary-600 to-secondary-600 text-white rounded-xl font-semibold hover:from-primary-700 hover:to-secondary-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
             >
-              <span>{user ? 'Try It Now' : 'Get Started Free'}</span>
+              <span>{user ? t('home.buttons.tryItNow') : t('home.buttons.getStartedFree')}</span>
               <ArrowRight className="w-5 h-5 ml-2" />
             </Link>
           </div>
@@ -504,7 +504,7 @@ const Home: React.FC = () => {
           <div className="text-center mb-12 sm:mb-16 lg:mb-20">
             <div className="inline-flex items-center px-4 py-2 rounded-full bg-secondary-100 text-secondary-700 text-sm font-medium mb-6">
               <Users className="w-4 h-4 mr-2" />
-              Customer Stories
+              {t('home.badges.customerStories')}
             </div>
             <h2 className="text-4xl md:text-5xl font-display font-bold text-gray-900 mb-6">
               {t('home.testimonials.title')}
@@ -573,7 +573,7 @@ const Home: React.FC = () => {
           {/* Badge */}
           <div className="inline-flex items-center px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 text-white text-sm font-medium mb-8 animate-fade-in">
             <Sparkles className="w-4 h-4 mr-2" />
-            Ready to Transform Your Images?
+            {t('home.badges.readyToTransform')}
           </div>
           
           {/* Title */}
@@ -601,16 +601,16 @@ const Home: React.FC = () => {
           {/* Trust Indicators */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 mt-12 sm:mt-16 animate-fade-in" style={{animationDelay: '0.6s'}}>
             <div className="text-center">
-              <div className="text-2xl md:text-3xl font-bold text-white mb-2">✨ AI-Powered</div>
-              <div className="text-white/80">Advanced Technology</div>
+              <div className="text-2xl md:text-3xl font-bold text-white mb-2">✨ {t('home.trustIndicators.aiPowered')}</div>
+              <div className="text-white/80">{t('home.trustIndicators.aiPoweredDesc')}</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl md:text-3xl font-bold text-white mb-2">🚀 Fast Processing</div>
-              <div className="text-white/80">Results in Seconds</div>
+              <div className="text-2xl md:text-3xl font-bold text-white mb-2">🚀 {t('home.trustIndicators.fastProcessing')}</div>
+              <div className="text-white/80">{t('home.trustIndicators.fastProcessingDesc')}</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl md:text-3xl font-bold text-white mb-2">🔒 Secure & Private</div>
-              <div className="text-white/80">Your Data Protected</div>
+              <div className="text-2xl md:text-3xl font-bold text-white mb-2">🔒 {t('home.trustIndicators.securePrivate')}</div>
+              <div className="text-white/80">{t('home.trustIndicators.securePrivateDesc')}</div>
             </div>
           </div>
         </div>

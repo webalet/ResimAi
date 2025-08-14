@@ -28,7 +28,9 @@
     "goToDashboard": "Panele Git",
     "startNow": "Hemen Başla",
     "and": "ve",
-    "or": "veya"
+    "or": "veya",
+    "before": "Önce",
+    "after": "Sonra"
   },
   "navigation": {
     "home": "Ana Sayfa",
@@ -141,7 +143,31 @@
         "title": "Cilt Düzeltici"
       },
       "original": "Orijinal",
-      "aiProcessed": "AI İşlenmiş"
+      "aiProcessed": "AI İşlenmiş",
+      "portraitEnhancement": {
+        "title": "Portre İyileştirme",
+        "description": "Gelişmiş aydınlatma ve netlik ile profesyonel portre"
+      },
+      "landscapeRestoration": {
+        "title": "Manzara Restorasyonu",
+        "description": "Çarpıcı manzaralar için canlı renkler ve gelişmiş kontrast"
+      },
+      "productPhotography": {
+        "title": "Ürün Fotoğrafçılığı",
+        "description": "Mükemmel aydınlatma ile profesyonel ürün çekimleri"
+      },
+      "vintageRestoration": {
+        "title": "Vintage Restorasyon",
+        "description": "AI restorasyonu ile eski anıları hayata döndürme"
+      },
+      "selfieEnhancement": {
+        "title": "Selfie İyileştirme",
+        "description": "Günlük selfielerinizi profesyonel kalitede fotoğraflara dönüştürün"
+      },
+      "nightPhotography": {
+        "title": "Gece Fotoğrafçılığı",
+        "description": "AI destekli gürültü azaltma ile düşük ışık fotoğraflarını iyileştirin"
+      }
     },
     "features": {
       "title": "Özellikler",
@@ -189,6 +215,38 @@
     "cta": {
       "title": "Hemen Başlayın",
       "subtitle": "Fotoğraflarınızı sanat eserine dönüştürün"
+    },
+    "badges": {
+      "aiPowered": "AI Destekli Görüntü İyileştirme",
+      "powerfulFeatures": "Güçlü Özellikler",
+      "beforeAfter": "Önce & Sonra Vitrin",
+      "customerStories": "Müşteri Hikayeleri",
+      "readyToTransform": "Görsellerinizi Dönüştürmeye Hazır mısınız?"
+    },
+    "categories": {
+      "all": "Tüm Kategoriler",
+      "portraits": "Portreler",
+      "landscapes": "Manzaralar",
+      "products": "Ürünler",
+      "vintage": "Vintage"
+    },
+    "buttons": {
+      "getStartedFree": "Ücretsiz Başla",
+      "tryItNow": "Şimdi Dene",
+      "viewDetails": "Detayları Görüntüle"
+    },
+    "stats": {
+      "imagesEnhanced": "Görsel İyileştirildi",
+      "satisfactionRate": "Memnuniyet Oranı",
+      "processingTime": "İşlem Süresi"
+    },
+    "trustIndicators": {
+      "aiPowered": "AI Destekli",
+      "aiPoweredDesc": "Gelişmiş Teknoloji",
+      "fastProcessing": "Hızlı İşlem",
+      "fastProcessingDesc": "Saniyeler İçinde Sonuç",
+      "securePrivate": "Güvenli ve Özel",
+      "securePrivateDesc": "Verileriniz Korunuyor"
     },
     "footer": {
       "description": "AI ile görsellerinizi dönüştürün",
