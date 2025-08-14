@@ -464,8 +464,8 @@ router.get('/settings', adminAuth, async (req: Request, res: Response) => {
           expiresIn: savedSettings.jwt?.expiresIn || '7d'
         },
         server: {
-          port: savedSettings.server?.port || '3001',
-          url: savedSettings.server?.url || 'http://64.226.75.76:3001'
+          port: savedSettings.server?.port || '80',
+          url: savedSettings.server?.url || 'http://64.226.75.76:80'
         }
       },
       categories: savedSettings.categories || [

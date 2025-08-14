@@ -39,7 +39,7 @@ import { auth, optionalAuth } from './middleware/auth.js';
 import { adminLogin } from './middleware/adminAuth.js';
 
 const app = express();
-const PORT = parseInt(process.env.PORT || '3001', 10);
+const PORT = parseInt(process.env.PORT || '80', 10);
 
 // Security middleware
 app.use(helmet({
@@ -67,10 +67,10 @@ const getAllowedOrigins = () => {
     // Production origins
     if (process.env.FRONTEND_URL) baseOrigins.push(process.env.FRONTEND_URL);
     if (process.env.API_BASE_URL) baseOrigins.push(process.env.API_BASE_URL);
-    baseOrigins.push('http://64.226.75.76:5173', 'http://64.226.75.76:3001');
+    baseOrigins.push('http://64.226.75.76:5173', 'http://64.226.75.76:80', 'http://64.226.75.76', 'http://64.226.75.76:4173');
   } else {
     // Development origins
-    baseOrigins.push('http://64.226.75.76:5173', 'http://64.226.75.76:3000', 'http://64.226.75.76:5174');
+    baseOrigins.push('http://64.226.75.76:5173', 'http://64.226.75.76:3000', 'http://64.226.75.76:5174', 'http://64.226.75.76', 'http://64.226.75.76:4173');
     if (process.env.FRONTEND_URL) baseOrigins.push(process.env.FRONTEND_URL);
     if (process.env.API_BASE_URL) baseOrigins.push(process.env.API_BASE_URL);
   }
