@@ -10,11 +10,11 @@ const getApiBaseUrl = () => {
   
   // Development mode kontrolü
   if (import.meta.env.DEV) {
-    return 'http://64.226.75.76:5173';
+    return 'http://64.226.75.76';
   }
   
   // Production default
-  return 'http://64.226.75.76:5173';
+  return 'http://64.226.75.76';
 };
 
 const API_BASE_URL = getApiBaseUrl();

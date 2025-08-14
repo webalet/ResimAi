@@ -11,7 +11,7 @@ const testData = {
 };
 
 const jobId = '910c555d-ead2-4aab-81ec-70b1d4d8db00';
-const url = `http://64.226.75.76:3001/api/images/n8n-result?jobId=${jobId}`;
+const url = `http://64.226.75.76/api/images/n8n-result?jobId=${jobId}`;
 
 console.log('Testing n8n callback with data:', testData);
 console.log('URL:', url);

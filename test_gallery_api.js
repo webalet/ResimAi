@@ -1,7 +1,7 @@
 // Test script to check if the gallery API is working with authentication
 import fetch from 'node-fetch';
 
-const API_BASE_URL = 'http://64.226.75.76:3001';
+const API_BASE_URL = 'http://64.226.75.76';
 
 // Check if there's a token in localStorage (simulate browser environment)
 const testToken = 'test-token'; // We'll need to get a real token

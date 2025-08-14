@@ -56,7 +56,7 @@ const ProcessedImageResult: React.FC<ProcessedImageResultProps> = ({ jobId, onCl
         return;
       }
 
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76:5173';
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76';
       const response = await fetch(`${API_BASE_URL}/api/images/jobs/${jobId}`, {
         headers: {
           'Authorization': `Bearer ${token}`

@@ -2,7 +2,7 @@ const axios = require('axios');
 
 // Test webhook callback to simulate n8n response
 async function testWebhookCallback() {
-  const webhookUrl = 'http://64.226.75.76:3001/api/images/webhook/job-complete';
+  const webhookUrl = 'http://64.226.75.76/api/images/webhook/job-complete';
   
   const testPayload = {
     jobId: '910c555d-ead2-4aab-81ec-70b1d4d8db00',
@@ -40,7 +40,7 @@ async function testWebhookCallback() {
 
 // Test with failed status as well
 async function testFailedWebhook() {
-  const webhookUrl = 'http://64.226.75.76:3001/api/images/webhook/job-complete';
+  const webhookUrl = 'http://64.226.75.76/api/images/webhook/job-complete';
   
   const testPayload = {
     jobId: '910c555d-ead2-4aab-81ec-70b1d4d8db00',

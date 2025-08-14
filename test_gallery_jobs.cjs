@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-const API_BASE_URL = 'http://64.226.75.76:3001/api';
+const API_BASE_URL = 'http://64.226.75.76/api';
 const jobId = '910c555d-ead2-4aab-81ec-70b1d4d8db00';
 const userCredentials = {
   email: 'darkhesaplar@gmail.com',

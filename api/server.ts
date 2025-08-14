@@ -67,10 +67,10 @@ const getAllowedOrigins = () => {
     // Production origins
     if (process.env.FRONTEND_URL) baseOrigins.push(process.env.FRONTEND_URL);
     if (process.env.API_BASE_URL) baseOrigins.push(process.env.API_BASE_URL);
-    baseOrigins.push('http://64.226.75.76:5173', 'http://64.226.75.76:80', 'http://64.226.75.76', 'http://64.226.75.76:4173');
+    baseOrigins.push('http://64.226.75.76', 'https://64.226.75.76');
   } else {
     // Development origins
-    baseOrigins.push('http://64.226.75.76:5173', 'http://64.226.75.76:3000', 'http://64.226.75.76:5174', 'http://64.226.75.76', 'http://64.226.75.76:4173');
+    baseOrigins.push('http://64.226.75.76', 'https://64.226.75.76');
     if (process.env.FRONTEND_URL) baseOrigins.push(process.env.FRONTEND_URL);
     if (process.env.API_BASE_URL) baseOrigins.push(process.env.API_BASE_URL);
   }
