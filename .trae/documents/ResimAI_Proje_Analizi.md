@@ -107,7 +107,7 @@ proxy: {
 ```typescript
 // api/app.ts - Kısıtlayıcı CORS
 app.use(cors({
-  origin: ['http://64.226.75.76:5173'], // Sadece bir origin
+  origin: ['http://64.226.75.76'], // Sadece bir origin
   credentials: true
 }));
 ```
@@ -230,7 +230,7 @@ Mevcut migration'lar:
 
 ### 9.1 Mevcut Deployment
 
-**Frontend:** http://64.226.75.76:5173 (Vite dev server)
+**Frontend:** http://64.226.75.76 (Port 80)
 **Backend:** http://64.226.75.76:3001 (Express server)
 
 ### 9.2 Production Hazırlığı

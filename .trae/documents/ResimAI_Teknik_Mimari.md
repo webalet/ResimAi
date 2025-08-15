@@ -477,7 +477,7 @@ COPY package*.json ./
 RUN npm ci --only=production
 COPY . .
 RUN npm run build
-EXPOSE 5173
+EXPOSE 80
 CMD ["npm", "run", "preview"]
 
 # Dockerfile.backend
@@ -500,7 +500,7 @@ server {
     
     # Frontend
     location / {
-        proxy_pass http://localhost:5173;
+        proxy_pass http://localhost:80;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
     }

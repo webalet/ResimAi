@@ -276,7 +276,7 @@
 - [x] **Local Testing:** Tüm özellikler test edildi
 - [x] **Build Success:** Production build hatasız
 - [ ] **SSH Deployment:** `ssh root@64.226.75.76 "pm2 restart all"`
-- [ ] **Live Testing:** http://64.226.75.76:5173/ kontrolü
+- [ ] **Live Testing:** http://64.226.75.76/ kontrolü
 - [x] **Performance Check:** Lighthouse audit
 - [x] **Cross-browser Test:** Chrome, Firefox, Safari
 - [x] **Mobile Test:** iOS, Android cihazlarda
@@ -326,7 +326,7 @@ pm2 logs
 ```
 
 #### Deployment Sonrası Kontroller
-- [ ] **Site Erişimi:** http://64.226.75.76:5173/ açılıyor mu?
+- [ ] **Site Erişimi:** http://64.226.75.76/ açılıyor mu?
 - [ ] **Logo Kontrolü:** Stylica.ai logosu doğru görünüyor mu?
 - [ ] **Responsive Test:** Mobile ve desktop görünümler çalışıyor mu?
 - [ ] **Animasyonlar:** Tüm animasyonlar smooth çalışıyor mu?
