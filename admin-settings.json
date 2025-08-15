@@ -1,4 +1,4 @@
-{
+﻿{
   "supabase": {
     "url": "https://pfpaeiyshitndugrzmmb.supabase.co",
     "anonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmcGFlaXlzaGl0bmR1Z3J6bW1iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ2NzM0MTAsImV4cCI6MjA3MDI0OTQxMH0.CZzstaQmMmEdA1PVntBskuzdqHKe6_ovVSLfYFkD23E",
@@ -16,10 +16,10 @@
     {
       "id": "1",
       "name": "Corporate",
-      "display_name_tr": "Kurumsal Fotoğraf",
+      "display_name_tr": "Kurumsal FotoÄŸraf",
       "display_name_en": "Corporate Photography",
       "type": "Corporate",
-      "description": "Profesyonel iş dünyası için kurumsal fotoğraflar. Yönetici pozisyonları, şirket profilleri ve resmi toplantılar için ideal.",
+      "description": "Profesyonel iÅŸ dÃ¼nyasÄ± iÃ§in kurumsal fotoÄŸraflar. YÃ¶netici pozisyonlarÄ±, ÅŸirket profilleri ve resmi toplantÄ±lar iÃ§in ideal.",
       "description_en": "Professional corporate photography for business world. Perfect for executive positions, company profiles and formal meetings.",
       "image_url": "/images/corporate.jpg",
       "styles": ["Professional", "Business Casual", "Executive", "Formal Meeting", "Leadership", "Corporate Headshot"],
@@ -29,10 +29,10 @@
     {
       "id": "2",
       "name": "Creative",
-      "display_name_tr": "Yaratıcı Portre",
+      "display_name_tr": "YaratÄ±cÄ± Portre",
       "display_name_en": "Creative Portrait",
       "type": "Creative",
-      "description": "Sanatsal ve yaratıcı portre fotoğrafları. Özgün tarzınızı yansıtan, artistik ve etkileyici görüntüler.",
+      "description": "Sanatsal ve yaratÄ±cÄ± portre fotoÄŸraflarÄ±. Ã–zgÃ¼n tarzÄ±nÄ±zÄ± yansÄ±tan, artistik ve etkileyici gÃ¶rÃ¼ntÃ¼ler.",
       "description_en": "Artistic and creative portrait photography. Unique images that reflect your personal style with artistic and impressive visuals.",
       "image_url": "/images/creative.jpg",
       "styles": ["Artistic", "Bohemian", "Vintage", "Modern Art", "Abstract", "Dramatic"],
@@ -42,10 +42,10 @@
     {
       "id": "3",
       "name": "Avatar",
-      "display_name_tr": "Avatar Oluşturucu",
+      "display_name_tr": "Avatar OluÅŸturucu",
       "display_name_en": "Avatar Creator",
       "type": "Avatar",
-      "description": "Dijital avatar ve karakter fotoğrafları. Sosyal medya profilleri, oyun karakterleri ve dijital kimlik için.",
+      "description": "Dijital avatar ve karakter fotoÄŸraflarÄ±. Sosyal medya profilleri, oyun karakterleri ve dijital kimlik iÃ§in.",
       "description_en": "Digital avatar and character photography. Perfect for social media profiles, gaming characters and digital identity.",
       "image_url": "/images/avatar.jpg",
       "styles": ["Cartoon", "Realistic", "Anime", "Fantasy", "Superhero", "Gaming"],
@@ -55,10 +55,10 @@
     {
       "id": "4",
       "name": "Outfit",
-      "display_name_tr": "Elbise Değişimi",
+      "display_name_tr": "Elbise DeÄŸiÅŸimi",
       "display_name_en": "Outfit Change",
       "type": "Outfit",
-      "description": "AI ile kıyafet değiştirme ve stil önerileri. Farklı kıyafet kombinasyonlarını deneyimleyin.",
+      "description": "AI ile kÄ±yafet deÄŸiÅŸtirme ve stil Ã¶nerileri. FarklÄ± kÄ±yafet kombinasyonlarÄ±nÄ± deneyimleyin.",
       "description_en": "AI-powered outfit change and style suggestions. Experience different clothing combinations effortlessly.",
       "image_url": "/images/outfit.jpg",
       "styles": ["Casual", "Formal", "Sporty", "Trendy", "Business", "Evening"],
@@ -68,10 +68,10 @@
     {
       "id": "5",
       "name": "Background",
-      "display_name_tr": "Arkaplan Değiştirme",
+      "display_name_tr": "Arkaplan DeÄŸiÅŸtirme",
       "display_name_en": "Background Change",
       "type": "Background",
-      "description": "Profesyonel arka plan değiştirme hizmeti. Fotoğraflarınızı istediğiniz ortamda gösterin.",
+      "description": "Profesyonel arka plan deÄŸiÅŸtirme hizmeti. FotoÄŸraflarÄ±nÄ±zÄ± istediÄŸiniz ortamda gÃ¶sterin.",
       "description_en": "Professional background change service. Showcase your photos in any environment you desire.",
       "image_url": "/images/background.jpg",
       "styles": ["Office", "Studio", "Nature", "Abstract", "Urban", "Luxury"],
@@ -81,14 +81,27 @@
     {
       "id": "6",
       "name": "Skincare",
-      "display_name_tr": "Cilt Düzeltme",
+      "display_name_tr": "Cilt DÃ¼zeltme",
       "display_name_en": "Skin Enhancement",
       "type": "Skincare",
-      "description": "AI destekli cilt düzeltme ve güzelleştirme. Doğal görünümlü, pürüzsüz ve parlak cilt.",
+      "description": "AI destekli cilt dÃ¼zeltme ve gÃ¼zelleÅŸtirme. DoÄŸal gÃ¶rÃ¼nÃ¼mlÃ¼, pÃ¼rÃ¼zsÃ¼z ve parlak cilt.",
       "description_en": "AI-powered skin correction and enhancement. Natural-looking, smooth and radiant skin.",
       "image_url": "/images/skincare.jpg",
       "styles": ["Natural", "Glowing", "Professional", "Fresh", "Radiant", "Flawless"],
       "styles_en": ["Natural", "Glowing", "Professional", "Fresh", "Radiant", "Flawless"],
+      "is_active": true
+    },
+    {
+      "id": "7",
+      "name": "Fashion Photography",
+      "display_name_tr": "Moda FotoÄŸrafÃ§Ä±lÄ±ÄŸÄ±",
+      "display_name_en": "Fashion Photography",
+      "type": "Fashion Photography",
+      "description": "Profesyonel moda fotoÄŸrafÃ§Ä±lÄ±ÄŸÄ± ve stil Ã§ekimleri. Trend kÄ±yafetler, aksesuar kombinasyonlarÄ± ve moda dÃ¼nyasÄ±na uygun pozlar.",
+      "description_en": "Professional fashion photography and style shoots. Trendy outfits, accessory combinations and poses suitable for the fashion world.",
+      "image_url": "/images/ornek.jpg",
+      "styles": ["High Fashion", "Street Style", "Editorial", "Commercial", "Avant-garde", "Minimalist Fashion"],
+      "styles_en": ["High Fashion", "Street Style", "Editorial", "Commercial", "Avant-garde", "Minimalist Fashion"],
       "is_active": true
     }
   ],
@@ -104,7 +117,7 @@
       "Minimalist": "Create a clean, minimalist portrait with the person against a pure white or soft neutral background. Simplify their clothing to solid, muted colors like white, beige, or soft gray. Remove any distracting elements, use soft natural lighting, and focus on clean lines and elegant simplicity. The composition should be balanced and serene with plenty of negative space."
     },
     "Avatar": {
-      "Çizgi Film": "Transform the person into a vibrant cartoon-style avatar with exaggerated facial features, bright cartoon colors, simplified geometric shapes, large expressive eyes, and smooth animated textures. Apply a cel-shaded effect with bold outlines and maintain the playful, animated character aesthetic typical of modern animation studios.",
+      "Ã‡izgi Film": "Transform the person into a vibrant cartoon-style avatar with exaggerated facial features, bright cartoon colors, simplified geometric shapes, large expressive eyes, and smooth animated textures. Apply a cel-shaded effect with bold outlines and maintain the playful, animated character aesthetic typical of modern animation studios.",
       "Realistik": "Create a high-quality realistic digital avatar that preserves all natural human features and proportions with enhanced detail. Improve skin texture, add subtle lighting effects, maintain authentic facial expressions, and ensure photorealistic quality while keeping the person's unique characteristics and identity intact.",
       "Fantastik": "Transform the person into an enchanting fantasy avatar with magical elements such as glowing eyes, ethereal lighting effects, mystical aura, fantasy-themed accessories like elven ears or magical symbols, and otherworldly atmospheric effects. Add fantasy colors and magical particle effects while maintaining recognizable human features."
     },
@@ -115,13 +128,21 @@
     },
     "Background": {
       "Ofis": "Replace the background with a sophisticated modern office environment featuring floor-to-ceiling windows with city views, sleek glass conference tables, contemporary furniture, soft ambient lighting, and professional workplace atmosphere. Add subtle details like modern art on walls and high-tech equipment.",
-      "Doğa": "Transform the background into a breathtaking natural outdoor scene with lush green forests, golden sunlight filtering through trees, scenic mountain landscapes, or serene lakeside views. Include natural elements like flowing water, wildflowers, and soft natural lighting that creates a peaceful, organic atmosphere.",
-      "Stüdyo": "Create a professional photography studio background with seamless gradient lighting, soft diffused illumination, clean minimalist backdrop in neutral tones (white, gray, or subtle colors), and professional studio lighting setup that enhances the subject without distractions."
+      "DoÄŸa": "Transform the background into a breathtaking natural outdoor scene with lush green forests, golden sunlight filtering through trees, scenic mountain landscapes, or serene lakeside views. Include natural elements like flowing water, wildflowers, and soft natural lighting that creates a peaceful, organic atmosphere.",
+      "StÃ¼dyo": "Create a professional photography studio background with seamless gradient lighting, soft diffused illumination, clean minimalist backdrop in neutral tones (white, gray, or subtle colors), and professional studio lighting setup that enhances the subject without distractions."
     },
     "Skincare": {
-      "Doğal": "Apply professional natural skin enhancement: subtly even out skin tone, reduce minor blemishes while preserving natural texture and pores, enhance the skin's inherent glow with soft lighting, and maintain authentic skin characteristics. Focus on healthy, realistic improvements that look naturally beautiful.",
-      "Pürüzsüz": "Create flawless, magazine-quality skin with professional retouching: smooth out all imperfections, minimize pores, even skin tone completely, remove blemishes and fine lines, and apply subtle contouring for a polished, airbrushed finish while keeping facial features natural.",
+      "DoÄŸal": "Apply professional natural skin enhancement: subtly even out skin tone, reduce minor blemishes while preserving natural texture and pores, enhance the skin's inherent glow with soft lighting, and maintain authentic skin characteristics. Focus on healthy, realistic improvements that look naturally beautiful.",
+      "PÃ¼rÃ¼zsÃ¼z": "Create flawless, magazine-quality skin with professional retouching: smooth out all imperfections, minimize pores, even skin tone completely, remove blemishes and fine lines, and apply subtle contouring for a polished, airbrushed finish while keeping facial features natural.",
       "Parlak": "Transform the skin with a luminous, radiant glow: enhance natural skin luminosity, add subtle highlighting to cheekbones and high points of the face, create a healthy dewy finish, boost overall skin radiance with warm golden undertones, and apply professional-grade skin brightening effects for a vibrant, youthful appearance."
+    },
+    "Fashion Photography": {
+      "High Fashion": "Transform the person into a high-fashion model with dramatic poses, elegant styling, and sophisticated fashion elements. Add luxury fashion accessories, create dramatic lighting effects, and enhance with editorial-style composition typical of high-end fashion magazines.",
+      "Street Style": "Create a trendy street-style look with casual yet fashionable clothing, urban background elements, and contemporary styling. Focus on accessible fashion trends, relaxed poses, and authentic street photography aesthetics.",
+      "Editorial": "Transform into an editorial fashion shoot with artistic composition, creative styling, and magazine-quality presentation. Add professional fashion photography elements, dramatic lighting, and sophisticated visual storytelling.",
+      "Commercial": "Create a commercial fashion look suitable for advertising and marketing. Focus on clean, appealing presentation, marketable styling, and professional product-focused composition that highlights fashion items effectively.",
+      "Avant-garde": "Transform into an avant-garde fashion concept with experimental styling, unconventional fashion elements, and artistic interpretation. Add creative fashion accessories, bold styling choices, and innovative visual concepts.",
+      "Minimalist Fashion": "Create a clean, minimalist fashion aesthetic with simple yet elegant styling, neutral colors, and sophisticated simplicity. Focus on refined fashion elements, clean lines, and understated luxury presentation."
     }
   }
 }

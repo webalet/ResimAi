@@ -302,8 +302,10 @@ const AdminSettings = () => {
             display_name_en: cat.display_name_en || cat.name,
             type: cat.type || cat.name,
             description: cat.description || '',
+            description_en: cat.description_en || cat.description || '',
             image_url: cat.image_url,
             styles: cat.styles,
+            styles_en: cat.styles_en || cat.styles || [],
             is_active: cat.is_active !== undefined ? cat.is_active : true,
             created_at: cat.created_at || new Date().toISOString(),
             updated_at: cat.updated_at || new Date().toISOString()
@@ -1005,7 +1007,14 @@ const AdminSettings = () => {
     setCategories(prev => prev.map((cat, i) => 
       i === categoryIndex ? {
         ...cat,
-        styles_en: (cat.styles_en || []).map((style, si) => si === styleIndex ? newStyle : style)
+        styles_en: (() => {
+          const currentStylesEn = cat.styles_en || [];
+          // Eğer styles_en array'i styles array'inden kısa ise, eksik elemanları ekle
+          while (currentStylesEn.length < cat.styles.length) {
+            currentStylesEn.push(cat.styles[currentStylesEn.length] || '');
+          }
+          return currentStylesEn.map((style, si) => si === styleIndex ? newStyle : style);
+        })()
       } : cat
     ));
   };
