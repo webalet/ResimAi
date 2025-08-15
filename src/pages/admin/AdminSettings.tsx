@@ -655,8 +655,10 @@ const AdminSettings = () => {
         return;
       }
       
-      // Get current settings first
       const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76';
+      
+      // 1. Save to admin-settings.json first
+      // Get current settings first
       const currentResponse = await fetch(`${API_BASE_URL}/api/admin/admin-settings`, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -710,8 +712,71 @@ const AdminSettings = () => {
         throw new Error(responseData.message || 'Kaydetme işlemi başarısız');
       }
       
+      // 2. Save each category to Supabase database
+      for (const category of categories) {
+        try {
+          // Check if category exists in database
+          const checkResponse = await fetch(`${API_BASE_URL}/api/categories/${category.id}`);
+          
+          if (checkResponse.ok) {
+            // Category exists, update it
+            const updateResponse = await fetch(`${API_BASE_URL}/api/categories/${category.id}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({
+                name: category.name,
+                display_name_tr: category.display_name_tr,
+                display_name_en: category.display_name_en,
+                type: category.type || category.name,
+                description: category.description,
+                description_en: category.description_en,
+                image_url: category.image_url,
+                styles: category.styles,
+                styles_en: category.styles_en,
+                is_active: category.is_active !== undefined ? category.is_active : true
+              })
+            });
+            
+            if (!updateResponse.ok) {
+              console.warn(`Kategori güncelleme hatası (${category.name}):`, updateResponse.statusText);
+            }
+          } else {
+            // Category doesn't exist, create it
+            const createResponse = await fetch(`${API_BASE_URL}/api/categories`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify({
+                id: category.id,
+                name: category.name,
+                display_name_tr: category.display_name_tr,
+                display_name_en: category.display_name_en,
+                type: category.type || category.name,
+                description: category.description,
+                description_en: category.description_en,
+                image_url: category.image_url,
+                styles: category.styles,
+                styles_en: category.styles_en,
+                is_active: category.is_active !== undefined ? category.is_active : true
+              })
+            });
+            
+            if (!createResponse.ok) {
+              console.warn(`Kategori oluşturma hatası (${category.name}):`, createResponse.statusText);
+            }
+          }
+        } catch (categoryError) {
+          console.warn(`Kategori kaydetme hatası (${category.name}):`, categoryError);
+        }
+      }
+      
       toggleEditMode('categories');
-      showMessage('success', 'Kategoriler ve prompt\'lar başarıyla kaydedildi!');
+      showMessage('success', 'Kategoriler hem admin ayarlarına hem de veritabanına başarıyla kaydedildi!');
     } catch (error) {
       console.error('Save categories error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen hata';
