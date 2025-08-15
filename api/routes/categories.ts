@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { supabase } from '../config/supabase.js';
 import { auth } from '../middleware/auth.js';
+import { adminAuth } from '../middleware/adminAuth.js';
 
 const router = Router();
 
@@ -146,11 +147,13 @@ router.get('/type/:type', async (req: Request, res: Response): Promise<void> => 
 // Admin routes (protected)
 
 // Create category
-router.post('/', auth, async (req: Request, res: Response): Promise<void> => {
+router.post('/', adminAuth, async (req: Request, res: Response): Promise<void> => {
   try {
+    console.log('🔥 [CREATE CATEGORY] Request body:', req.body);
     const { name, display_name_tr, display_name_en, type, description, description_en, image_url, styles, styles_en } = req.body;
 
     if (!name || !type || !display_name_tr || !display_name_en) {
+      console.log('🔥 [CREATE CATEGORY] Validation failed:', { name, type, display_name_tr, display_name_en });
       res.status(400).json({
         success: false,
         message: 'Kategori adı, Türkçe ve İngilizce görünen adlar ve tipi gereklidir'
@@ -158,46 +161,38 @@ router.post('/', auth, async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    // Check if category type already exists
-    const { data: existingCategory } = await supabase
-      .from('categories')
-      .select('id')
-      .eq('type', type)
-      .single();
-
-    if (existingCategory) {
-      res.status(400).json({
-        success: false,
-        message: 'Bu tip zaten mevcut'
-      });
-      return;
-    }
+    // Allow multiple categories with same type
+    const insertData = {
+      name,
+      display_name_tr,
+      display_name_en,
+      type,
+      description,
+      description_en,
+      image_url,
+      styles: styles || [],
+      styles_en: styles_en || [],
+      is_active: true
+    };
+    
+    console.log('🔥 [CREATE CATEGORY] Insert data:', insertData);
 
     const { data: category, error } = await supabase
       .from('categories')
-      .insert({
-        name,
-        display_name_tr,
-        display_name_en,
-        type,
-        description,
-        description_en,
-        image_url,
-        styles: styles || [],
-        styles_en: styles_en || [],
-        is_active: true
-      })
+      .insert(insertData)
       .select()
       .single();
 
     if (error) {
-      console.error('Category creation error:', error);
+      console.error('🔥 [CREATE CATEGORY] Supabase error:', error);
       res.status(500).json({
         success: false,
         message: 'Kategori oluşturulurken hata oluştu'
       });
       return;
     }
+    
+    console.log('🔥 [CREATE CATEGORY] Success:', category);
 
     res.status(201).json({
       success: true,
@@ -215,7 +210,7 @@ router.post('/', auth, async (req: Request, res: Response): Promise<void> => {
 });
 
 // Update category
-router.put('/:id', auth, async (req: Request, res: Response): Promise<void> => {
+router.put('/:id', adminAuth, async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const { name, display_name_tr, display_name_en, type, description, description_en, image_url, styles, styles_en, is_active } = req.body;
@@ -297,7 +292,7 @@ router.put('/:id', auth, async (req: Request, res: Response): Promise<void> => {
 });
 
 // Delete category
-router.delete('/:id', auth, async (req: Request, res: Response): Promise<void> => {
+router.delete('/:id', adminAuth, async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
 

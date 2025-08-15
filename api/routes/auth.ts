@@ -415,4 +415,71 @@ router.get('/export', auth, async (req: Request, res: Response): Promise<void> =
   }
 });
 
+// Admin login
+router.post('/admin/login', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      res.status(400).json({
+        success: false,
+        message: 'E-posta ve şifre gereklidir'
+      });
+      return;
+    }
+
+    // Get admin user
+    const { data: user, error } = await supabase
+      .from('users')
+      .select('id, name, email, password_hash, is_admin')
+      .eq('email', email)
+      .eq('is_admin', true)
+      .single();
+
+    if (error || !user) {
+      res.status(401).json({
+        success: false,
+        message: 'Geçersiz admin bilgileri'
+      });
+      return;
+    }
+
+    // Check password
+    const isValidPassword = await bcrypt.compare(password, user.password_hash);
+    
+    if (!isValidPassword) {
+      res.status(401).json({
+        success: false,
+        message: 'Geçersiz admin bilgileri'
+      });
+      return;
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: user.id, email: user.email, isAdmin: true },
+      process.env.JWT_SECRET || 'your-secret-key',
+      { expiresIn: '24h' } // Shorter expiry for admin sessions
+    );
+
+    // Remove password from response
+    const { password_hash, ...adminWithoutPassword } = user;
+
+    res.json({
+      success: true,
+      data: {
+        admin: adminWithoutPassword,
+        token
+      },
+      message: 'Admin girişi başarılı'
+    });
+  } catch (error) {
+    console.error('Admin login error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Sunucu hatası'
+    });
+  }
+});
+
 export default router;

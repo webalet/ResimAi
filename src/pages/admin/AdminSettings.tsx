@@ -715,12 +715,15 @@ const AdminSettings = () => {
       // 2. Save each category to Supabase database
       for (const category of categories) {
         try {
-          // Check if category exists in database
-          const checkResponse = await fetch(`${API_BASE_URL}/api/categories/${category.id}`);
+          // Check if category exists by type
+          const checkResponse = await fetch(`${API_BASE_URL}/api/categories/type/${encodeURIComponent(category.type || category.name)}`);
           
           if (checkResponse.ok) {
-            // Category exists, update it
-            const updateResponse = await fetch(`${API_BASE_URL}/api/categories/${category.id}`, {
+            // Category exists, get its ID and update it
+            const existingCategory = await checkResponse.json();
+            const categoryId = existingCategory.data.id;
+            
+            const updateResponse = await fetch(`${API_BASE_URL}/api/categories/${categoryId}`, {
               method: 'PUT',
               headers: {
                 'Content-Type': 'application/json',
@@ -752,7 +755,6 @@ const AdminSettings = () => {
                 'Authorization': `Bearer ${token}`
               },
               body: JSON.stringify({
-                id: category.id,
                 name: category.name,
                 display_name_tr: category.display_name_tr,
                 display_name_en: category.display_name_en,
@@ -767,7 +769,10 @@ const AdminSettings = () => {
             });
             
             if (!createResponse.ok) {
-              console.warn(`Kategori oluşturma hatası (${category.name}):`, createResponse.statusText);
+              const errorText = await createResponse.text();
+              console.warn(`Kategori oluşturma hatası (${category.name}):`, errorText);
+            } else {
+              console.log(`Kategori başarıyla oluşturuldu: ${category.name}`);
             }
           }
         } catch (categoryError) {

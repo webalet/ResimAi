@@ -5,9 +5,13 @@ import { supabase } from '../config/supabase.js';
 
 export const adminAuth = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
+    console.log('🔥 [ADMIN AUTH] Starting admin auth middleware');
+    console.log('🔥 [ADMIN AUTH] Authorization header:', req.headers.authorization ? 'Bearer ***' : 'None');
+    
     const token = req.header('Authorization')?.replace('Bearer ', '');
 
     if (!token) {
+      console.log('🔥 [ADMIN AUTH] No token found');
       res.status(401).json({
         success: false,
         message: 'Erişim token bulunamadı'
@@ -15,8 +19,10 @@ export const adminAuth = async (req: Request, res: Response, next: NextFunction)
       return;
     }
 
+    console.log('🔥 [ADMIN AUTH] Token found, verifying...');
     // Verify JWT token
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as any;
+    console.log('🔥 [ADMIN AUTH] Token decoded:', { userId: decoded.userId, email: decoded.email });
     
     // Get user from database and check admin status
     const { data: user, error } = await supabase
@@ -25,7 +31,10 @@ export const adminAuth = async (req: Request, res: Response, next: NextFunction)
       .eq('id', decoded.userId)
       .single();
 
+    console.log('🔥 [ADMIN AUTH] User query result:', { user, error });
+
     if (error || !user) {
+      console.log('🔥 [ADMIN AUTH] User not found or error:', error);
       res.status(401).json({
         success: false,
         message: 'Geçersiz token'
@@ -34,6 +43,7 @@ export const adminAuth = async (req: Request, res: Response, next: NextFunction)
     }
 
     if (!user.is_admin) {
+      console.log('🔥 [ADMIN AUTH] User is not admin:', user.is_admin);
       res.status(403).json({
         success: false,
         message: 'Bu işlem için admin yetkisi gereklidir'
@@ -41,6 +51,7 @@ export const adminAuth = async (req: Request, res: Response, next: NextFunction)
       return;
     }
 
+    console.log('🔥 [ADMIN AUTH] Admin auth successful');
     // Add user info to request
     (req as any).userId = user.id;
     (req as any).userEmail = user.email;
@@ -48,7 +59,7 @@ export const adminAuth = async (req: Request, res: Response, next: NextFunction)
     
     next();
   } catch (error) {
-    console.error('Admin auth error:', error);
+    console.error('🔥 [ADMIN AUTH] Error:', error);
     res.status(401).json({
       success: false,
       message: 'Geçersiz token'
