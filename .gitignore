@@ -25,7 +25,7 @@ dist-ssr
 .vite
 
 # Admin settings (local configuration)
-admin-settings.json
+# admin-settings.json - Commented out to allow deployment
 
 # Environment variables
 .env
