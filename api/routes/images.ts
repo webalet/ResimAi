@@ -123,7 +123,7 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
   });
   try {
     const userId = (req as any).userId;
-    const { style, imageUrl } = req.body;
+    const { style, imageUrl, category } = req.body;
     const file = req.file;
 
     console.log('🚀 [UPLOAD-AND-PROCESS] Request received:', {
@@ -270,8 +270,8 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
         operation_type: 'image_processing'
       });
 
-    // Generate dynamic prompt based on style
-    const dynamicPrompt = generatePrompt(style);
+    // Generate dynamic prompt based on category and style
+    const dynamicPrompt = generatePrompt(category || style, style);
     
     // Send direct webhook request (bypass n8n)
     console.log('🎯 [UPLOAD DEBUG] Sending direct webhook request to external URL:', {
@@ -297,6 +297,7 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
     // Send POST request to external webhook with JSON body
     const webhookData = {
       imageUrl: originalImageUrl || '',
+      category: category || style,
       style: style,
       prompt: dynamicPrompt,
       userId: userId,
@@ -372,11 +373,13 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
   }
 }
 
-// Generate dynamic prompt based on style - synchronized with AdminSettings
-const generatePrompt = (style: string): string => {
+// Generate dynamic prompt based on category and style - synchronized with AdminSettings
+const generatePrompt = (category: string, style: string): string => {
   // DEBUG: Log incoming parameters
   console.log('🔍 [DEBUG PROMPT] Function called with parameters:', {
+    category: category,
     style: style,
+    categoryType: typeof category,
     styleType: typeof style
   });
   
@@ -406,16 +409,31 @@ const generatePrompt = (style: string): string => {
       keys: aiPrompts ? Object.keys(aiPrompts) : []
     });
     
-    // Search for style across all categories
+    // Search for style in specified category first, then in all categories
     if (aiPrompts && typeof aiPrompts === 'object') {
-      console.log('🔍 [DEBUG PROMPT] Searching for style across all categories:', { style });
+      console.log('🔍 [DEBUG PROMPT] Searching for style in specified category first:', { category, style });
+      
+      // First, try to find in the specified category
+      if (category && aiPrompts[category] && typeof aiPrompts[category] === 'object' && aiPrompts[category][style]) {
+        const foundPrompt = aiPrompts[category][style];
+        console.log('✅ [DEBUG PROMPT] Found prompt in specified category:', {
+          category,
+          style,
+          prompt: foundPrompt.substring(0, 100) + '...'
+        });
+        return foundPrompt;
+      }
+      
+      // If not found in specified category, search across all categories
+      console.log('🔍 [DEBUG PROMPT] Style not found in specified category, searching all categories:', { category, style });
       
       for (const categoryName of Object.keys(aiPrompts)) {
-        const category = aiPrompts[categoryName];
-        if (category && typeof category === 'object' && category[style]) {
-          const foundPrompt = category[style];
-          console.log('✅ [DEBUG PROMPT] Found prompt in category:', {
-            category: categoryName,
+        const categoryData = aiPrompts[categoryName];
+        if (categoryData && typeof categoryData === 'object' && categoryData[style]) {
+          const foundPrompt = categoryData[style];
+          console.log('✅ [DEBUG PROMPT] Found prompt in different category:', {
+            requestedCategory: category,
+            foundInCategory: categoryName,
             style,
             prompt: foundPrompt.substring(0, 100) + '...'
           });
@@ -423,7 +441,7 @@ const generatePrompt = (style: string): string => {
         }
       }
       
-      console.warn('⚠️ [DEBUG PROMPT] Style not found in any category, using fallback:', { style });
+      console.warn('⚠️ [DEBUG PROMPT] Style not found in any category, using fallback:', { category, style });
     } else {
       console.warn('⚠️ [DEBUG PROMPT] aiPrompts is not a valid object, using fallback');
     }
@@ -474,8 +492,8 @@ router.post('/process', auth, async (req: Request, res: Response): Promise<void>
       return;
     }
     
-    // Generate dynamic prompt based on style
-    const dynamicPrompt = generatePrompt(style);
+    // Generate dynamic prompt based on category and style
+    const dynamicPrompt = generatePrompt('', style);
     
     console.log('📝 [PROCESS] Generated prompt:', {
       style,

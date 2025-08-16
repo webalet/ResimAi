@@ -177,7 +177,15 @@ const Categories: React.FC = () => {
       }
       
       formData.append('style', uploadState.selectedStyle);
-      formData.append('category', uploadState.selectedCategory?.type || '');
+      
+      // Debug: Check selectedCategory structure
+      console.log('🔍 [DEBUG] Selected Category:', uploadState.selectedCategory);
+      console.log('🔍 [DEBUG] Category type:', uploadState.selectedCategory?.type);
+      console.log('🔍 [DEBUG] Category name:', uploadState.selectedCategory?.name);
+      
+      // Use type if available, otherwise use name as fallback
+      const categoryValue = uploadState.selectedCategory?.type || uploadState.selectedCategory?.name || '';
+      formData.append('category', categoryValue);
       
       console.log('🚀 [UPLOAD-AND-PROCESS] Sending request to:', '/api/images/upload-and-process');
       console.log('🚀 [UPLOAD-AND-PROCESS] FormData contents:', {
@@ -185,7 +193,8 @@ const Categories: React.FC = () => {
         fileSize: uploadState.file?.size,
         fileType: uploadState.file?.type,
         imageUrl: uploadState.imageUrl,
-        style: uploadState.selectedStyle
+        style: uploadState.selectedStyle,
+        category: categoryValue
       });
       
       const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76';
