@@ -129,8 +129,8 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
     let style: string | undefined;
     let imageUrl: string | undefined;
     
-    // 🚨 CRITICAL FIX: Backend Category Parsing Düzeltmesi
-    let category: string = 'Avatar'; // Default değer
+    // Backend Category Parsing - undefined olarak başlat
+    let category: string | undefined = undefined;
     
     if (isMultipart) {
       // For multipart requests, data comes from req.body (parsed by multer)
@@ -138,12 +138,16 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
       imageUrl = req.body.imageUrl;
       const receivedCategory = req.body.category;
       
-      // Güvenli kategori kontrolü - string 'undefined' dahil
-      if (receivedCategory && receivedCategory !== 'undefined' && receivedCategory.trim() !== '') {
-        category = receivedCategory;
+      // Güvenli kategori kontrolü - string 'undefined' ve boş değerleri kontrol et
+      if (receivedCategory && 
+          receivedCategory !== 'undefined' && 
+          receivedCategory !== 'null' && 
+          receivedCategory.trim() !== '' && 
+          receivedCategory.trim() !== 'undefined') {
+        category = receivedCategory.trim();
         console.log('✅ [MULTIPART CATEGORY] Valid category received:', category);
       } else {
-        console.log('🚨 [MULTIPART CATEGORY FIX] Invalid category, using default Avatar. Received:', receivedCategory);
+        console.log('🚨 [MULTIPART CATEGORY FIX] Invalid category received, will use Avatar. Received:', receivedCategory);
       }
     } else {
       // For JSON requests, data comes from req.body
@@ -152,12 +156,16 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
       imageUrl = bodyData.imageUrl;
       const receivedCategory = bodyData.category;
       
-      // Güvenli kategori kontrolü - string 'undefined' dahil
-      if (receivedCategory && receivedCategory !== 'undefined' && receivedCategory.trim() !== '') {
-        category = receivedCategory;
+      // Güvenli kategori kontrolü - string 'undefined' ve boş değerleri kontrol et
+      if (receivedCategory && 
+          receivedCategory !== 'undefined' && 
+          receivedCategory !== 'null' && 
+          receivedCategory.trim() !== '' && 
+          receivedCategory.trim() !== 'undefined') {
+        category = receivedCategory.trim();
         console.log('✅ [JSON CATEGORY] Valid category received:', category);
       } else {
-        console.log('🚨 [JSON CATEGORY FIX] Invalid category, using default Avatar. Received:', receivedCategory);
+        console.log('🚨 [JSON CATEGORY FIX] Invalid category received, will use Avatar. Received:', receivedCategory);
       }
     }
     
@@ -364,20 +372,34 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
       'final category value': category || 'Unknown'
     });
     
-    // Dinamik kategori ve style belirleme
-    let finalCategory = category || 'Avatar';
-    let finalStyle = style || 'Professional';
+    // Final kategori ve style belirleme
+    let finalCategory: string;
+    let finalStyle: string;
     
-    // Güvenli kategori kontrolü
-    if (!finalCategory || finalCategory === 'undefined' || finalCategory.trim() === '') {
+    // Kategori belirleme - geçerli kategori varsa kullan, yoksa Avatar default
+    if (category && 
+        category !== 'undefined' && 
+        category !== 'null' && 
+        category.trim() !== '' && 
+        category.trim() !== 'undefined') {
+      finalCategory = category.trim();
+      console.log('✅ [FINAL CATEGORY] Using received category:', finalCategory);
+    } else {
       finalCategory = 'Avatar';
-      console.log('🔧 [CATEGORY FIX] Category was undefined, defaulting to Avatar:', finalCategory);
+      console.log('🔧 [FINAL CATEGORY] Using default Avatar. Original category was:', category);
     }
     
-    // Güvenli style kontrolü
-    if (!finalStyle || finalStyle === 'undefined' || finalStyle.trim() === '') {
+    // Style belirleme
+    if (style && 
+        style !== 'undefined' && 
+        style !== 'null' && 
+        style.trim() !== '' && 
+        style.trim() !== 'undefined') {
+      finalStyle = style.trim();
+      console.log('✅ [FINAL STYLE] Using received style:', finalStyle);
+    } else {
       finalStyle = 'Professional';
-      console.log('🔧 [STYLE FIX] Style was undefined, defaulting to Professional:', finalStyle);
+      console.log('🔧 [FINAL STYLE] Using default Professional. Original style was:', style);
     }
     
     console.log('✅ [DYNAMIC VALUES] Using dynamic category and style:', {
