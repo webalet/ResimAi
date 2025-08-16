@@ -130,6 +130,12 @@ app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Debug middleware - log all requests
+app.use((req, res, next) => {
+  console.log(`🔍 [DEBUG] ${req.method} ${req.url} - IP: ${req.ip} - Headers: ${JSON.stringify(req.headers)}`);
+  next();
+});
+
 // Apply rate limiting
 app.use('/api/', limiter);
 app.use('/api/auth/', authLimiter);
