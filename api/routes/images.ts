@@ -391,18 +391,31 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
       categoryLength: category ? category.length : 0
     });
     
-    console.log('🔍 [WEBHOOK DEBUG] POST request being sent to N8N:', {
-      url: webhookUrl,
-      method: 'POST',
-      data: webhookData
+    // N8N GET metoduna uygun format - Query parametreleri kullan
+    const webhookParams = new URLSearchParams({
+      imageUrl: originalImageUrl || '',
+      category: finalCategory,
+      style: style,
+      prompt: dynamicPrompt,
+      userId: userId,
+      jobId: imageJob.id.toString(),
+      image_url: originalImageUrl || '', // FAL AI expects this field
+      strength: '0.8',
+      guidance_scale: '7.5',
+      num_inference_steps: '50'
     });
     
-    fetch(webhookUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(webhookData)
+    const finalWebhookUrl = `${webhookUrl}?${webhookParams.toString()}`;
+    
+    console.log('🔍 [WEBHOOK DEBUG] GET request being sent to N8N:', {
+      url: finalWebhookUrl,
+      method: 'GET',
+      category: finalCategory,
+      categoryType: typeof finalCategory
+    });
+    
+    fetch(finalWebhookUrl, {
+      method: 'GET'
     }).then(response => {
       console.log('✅ [UPLOAD DEBUG] External webhook request completed:', {
         jobId: imageJob.id,
