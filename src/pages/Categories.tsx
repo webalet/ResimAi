@@ -174,7 +174,6 @@ const Categories: React.FC = () => {
         formData.append('imageUrl', uploadState.imageUrl);
       }
       
-      formData.append('category', uploadState.selectedCategory.name);
       formData.append('style', uploadState.selectedStyle);
       
       console.log('🚀 [UPLOAD-AND-PROCESS] Sending request to:', '/api/images/upload-and-process');
@@ -183,7 +182,6 @@ const Categories: React.FC = () => {
         fileSize: uploadState.file?.size,
         fileType: uploadState.file?.type,
         imageUrl: uploadState.imageUrl,
-        category: uploadState.selectedCategory.name,
         style: uploadState.selectedStyle
       });
       

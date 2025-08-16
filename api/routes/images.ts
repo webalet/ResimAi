@@ -123,13 +123,11 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
   });
   try {
     const userId = (req as any).userId;
-    const { category, categoryType, style, imageUrl } = req.body;
+    const { style, imageUrl } = req.body;
     const file = req.file;
 
     console.log('🚀 [UPLOAD-AND-PROCESS] Request received:', {
       userId,
-      category,
-      categoryType,
       style,
       imageUrl,
       fileName: file?.originalname,
@@ -147,13 +145,11 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
       return;
     }
 
-    // Use category parameter (frontend sends 'category', not 'categoryType')
-    const categoryParam = category || categoryType;
-    if (!categoryParam || !style) {
-      console.log('❌ [UPLOAD-AND-PROCESS] Missing parameters:', { category, categoryType, style });
+    if (!style) {
+      console.log('❌ [UPLOAD-AND-PROCESS] Missing parameters:', { style });
       res.status(400).json({
         success: false,
-        message: 'Kategori ve stil gereklidir'
+        message: 'Stil gereklidir'
       });
       return;
     }
@@ -181,25 +177,7 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
       return;
     }
 
-    // Get category
-    console.log('🔍 [UPLOAD-AND-PROCESS] Looking for category:', categoryParam);
-    const { data: categoryData, error: categoryError } = await supabase
-      .from('categories')
-      .select('id, name')
-      .eq('name', categoryParam)
-      .eq('is_active', true)
-      .single();
-
-    if (categoryError || !categoryData) {
-      console.log('❌ [UPLOAD-AND-PROCESS] Category not found:', { categoryParam, error: categoryError });
-      res.status(404).json({
-        success: false,
-        message: 'Kategori bulunamadı'
-      });
-      return;
-    }
-
-    console.log('✅ [UPLOAD-AND-PROCESS] Category found:', categoryData);
+    // Category lookup removed - using style-based processing only
 
     let originalImageUrl: string | null = null;
     let originalImagePath: string | null = null;
@@ -248,8 +226,6 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
       .from('image_jobs')
       .insert({
         user_id: userId,
-        category_id: categoryData.id,
-        category_type: categoryParam,
         style_type: style,
         style: style,
         original_image_url: originalImageUrl,
@@ -403,10 +379,6 @@ const generatePrompt = (style: string): string => {
     styleType: typeof style
   });
   
-  // DEBUG: Log current working directory
-  const currentDir = process.cwd();
-  console.log('🔍 [DEBUG PROMPT] Current working directory:', currentDir);
-  
   // Load prompts from admin-settings.json
   try {
     const settingsPath = path.join(process.cwd(), 'admin-settings.json');
@@ -433,8 +405,27 @@ const generatePrompt = (style: string): string => {
       keys: aiPrompts ? Object.keys(aiPrompts) : []
     });
     
-    // Since we don't use category anymore, use a default fallback
-    console.warn('⚠️ [DEBUG PROMPT] Category-based prompts disabled, using fallback for style:', { style });
+    // Search for style across all categories
+    if (aiPrompts && typeof aiPrompts === 'object') {
+      console.log('🔍 [DEBUG PROMPT] Searching for style across all categories:', { style });
+      
+      for (const categoryName of Object.keys(aiPrompts)) {
+        const category = aiPrompts[categoryName];
+        if (category && typeof category === 'object' && category[style]) {
+          const foundPrompt = category[style];
+          console.log('✅ [DEBUG PROMPT] Found prompt in category:', {
+            category: categoryName,
+            style,
+            prompt: foundPrompt.substring(0, 100) + '...'
+          });
+          return foundPrompt;
+        }
+      }
+      
+      console.warn('⚠️ [DEBUG PROMPT] Style not found in any category, using fallback:', { style });
+    } else {
+      console.warn('⚠️ [DEBUG PROMPT] aiPrompts is not a valid object, using fallback');
+    }
   } catch (error) {
     console.error('❌ [DEBUG PROMPT] Error reading admin-settings.json:', {
       error: error instanceof Error ? error.message : error,
@@ -466,19 +457,18 @@ const generatePrompt = (style: string): string => {
 router.post('/process', auth, async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = (req as any).userId;
-    const { imageUrl, category, style } = req.body;
+    const { imageUrl, style } = req.body;
     
     console.log('🎯 [PROCESS] Processing request:', {
       userId,
       imageUrl: imageUrl?.substring(0, 50) + '...',
-      category,
       style
     });
     
-    if (!imageUrl || !category || !style) {
+    if (!imageUrl || !style) {
       res.status(400).json({
         success: false,
-        message: 'imageUrl, category ve style gereklidir'
+        message: 'imageUrl ve style gereklidir'
       });
       return;
     }
@@ -534,7 +524,6 @@ router.get('/webhook-test', async (req: Request, res: Response): Promise<void> =
     }
     const webhookData = {
       imageUrl: imageUrl || '',
-      category: 'test',
       style: 'test',
       prompt: 'Test webhook request',
       userId: 'test-user'
@@ -544,7 +533,6 @@ router.get('/webhook-test', async (req: Request, res: Response): Promise<void> =
     
     const webhookParams = new URLSearchParams({
       'query[imageUrl]': String(webhookData.imageUrl || ''),
-      'query[category]': String(webhookData.category),
       'query[style]': String(webhookData.style),
       'query[prompt]': String(webhookData.prompt),
       'query[userId]': String(webhookData.userId)
