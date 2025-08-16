@@ -136,10 +136,12 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
       imageUrl = req.body.imageUrl;
       category = req.body.category;
       
-      // CRITICAL FIX: Handle string "undefined" from frontend
-      if (category === 'undefined' || category === undefined || !category) {
-        category = undefined;
-        console.log('⚠️ [MULTIPART CATEGORY FIX] Category was undefined or string "undefined", setting to undefined');
+      // CRITICAL FIX: Only set to undefined if truly empty, preserve valid values
+      if (!category || category.trim() === '') {
+        category = 'Unknown';
+        console.log('⚠️ [MULTIPART CATEGORY FIX] Category was empty, setting to Unknown');
+      } else {
+        console.log('✅ [MULTIPART CATEGORY] Valid category preserved:', category);
       }
     } else {
       // For JSON requests, data comes from req.body
@@ -148,10 +150,12 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
       imageUrl = bodyData.imageUrl;
       category = bodyData.category;
       
-      // CRITICAL FIX: Handle string "undefined" from frontend
-      if (category === 'undefined' || category === undefined || !category) {
-        category = undefined;
-        console.log('⚠️ [JSON CATEGORY FIX] Category was undefined or string "undefined", setting to undefined');
+      // CRITICAL FIX: Only set to Unknown if truly empty, preserve valid values
+      if (!category || category.trim() === '') {
+        category = 'Unknown';
+        console.log('⚠️ [JSON CATEGORY FIX] Category was empty, setting to Unknown');
+      } else {
+        console.log('✅ [JSON CATEGORY] Valid category preserved:', category);
       }
     }
     
@@ -358,8 +362,8 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
       'final category value': category || 'Unknown'
     });
     
-    // CRITICAL FIX: Ensure category is never undefined in webhook
-    const finalCategory = (category && category !== 'undefined' && category !== undefined) ? category : 'Unknown';
+    // CRITICAL FIX: Use the already validated category value
+    const finalCategory = category || 'Unknown';
     
     // Send POST request to external webhook with JSON body
     const webhookData = {
