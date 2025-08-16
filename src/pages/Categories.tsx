@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { ArrowRight, Sparkles, Upload as UploadIcon, Image as ImageIcon, X, Check, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowRight, Upload as UploadIcon, Image as ImageIcon, X } from 'lucide-react';
 import { Category } from '../../shared/types';
 import LoadingSpinner from '../components/LoadingSpinner';
-import ProcessedImageResult from '../components/ProcessedImageResult';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
@@ -15,7 +14,6 @@ interface UploadState {
   imageUrl: string;
   preview: string | null;
   isUploading: boolean;
-  isDragOver: boolean;
 }
 
 const Categories: React.FC = () => {
@@ -28,112 +26,58 @@ const Categories: React.FC = () => {
     file: null,
     imageUrl: '',
     preview: null,
-    isUploading: false,
-    isDragOver: false
+    isUploading: false
   });
-  const [showResult, setShowResult] = useState(false);
-  const [currentJobId, setCurrentJobId] = useState<string | null>(null);
   
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const { user } = useAuth();
   const { t, i18n } = useTranslation();
 
-  // Helper function to get category display name based on current language
+  // Helper functions
   const getCategoryDisplayName = (category: Category) => {
     return i18n.language === 'en' ? (category.display_name_en || category.display_name_tr) : category.display_name_tr;
   };
 
-  const selectCategory = (category: Category) => {
-    console.log('🔍 [CATEGORY SELECT] Category selected:', {
-      category: category,
-      categoryType: category.type,
-      categoryName: category.name,
-      categoryId: category.id,
-      fullCategoryObject: JSON.stringify(category, null, 2)
-    });
-    
-    setUploadState(prev => ({
-      ...prev,
-      selectedCategory: category,
-      selectedStyle: (category.styles && category.styles[0]) || ''
-    }));
-  };
-
-  // Helper function to get category description based on current language
   const getCategoryDescription = (category: Category) => {
     return i18n.language === 'en' ? (category.description_en || category.description) : category.description;
   };
 
-  // Helper function to get style name based on current language
   const getStyleName = (category: Category, styleIndex: number) => {
-    if (!category.styles || !category.styles[styleIndex]) {
-      return '';
-    }
+    if (!category.styles || !category.styles[styleIndex]) return '';
     if (i18n.language === 'en' && category.styles_en && category.styles_en[styleIndex]) {
       return category.styles_en[styleIndex];
     }
     return category.styles[styleIndex];
   };
 
-  useEffect(() => {
-    loadCategories();
-  }, []);
-
+  // Load categories from API
   const loadCategories = async () => {
     try {
-      console.log('🔄 Loading categories from API...');
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76';
-      const response = await fetch(`${API_BASE_URL}/api/categories`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
+      const response = await fetch('http://64.226.75.76/api/categories');
+      if (!response.ok) throw new Error('Failed to load categories');
+      
       const data = await response.json();
-      console.log('📦 API Response:', data);
-      console.log('📊 Categories data:', data.data);
-      
-      // DEBUG: Log each category's type field
-      if (data.data && Array.isArray(data.data)) {
-        data.data.forEach((cat: any, index: number) => {
-          console.log(`🔍 [CATEGORY ${index}] Debug info:`, {
-            id: cat.id,
-            name: cat.name,
-            type: cat.type,
-            typeExists: 'type' in cat,
-            typeValue: cat.type,
-            typeType: typeof cat.type,
-            fullObject: JSON.stringify(cat, null, 2)
-          });
-        });
-      }
-      
       setCategories(data.data || []);
-      setLoading(false);
-      
-      console.log('✅ Categories loaded successfully:', data.data?.length || 0, 'categories');
     } catch (error) {
-      console.error('❌ Categories loading failed:', error);
-      toast.error(t('categories.loadError'));
+      console.error('Error loading categories:', error);
+      toast.error('Kategoriler yüklenemedi');
+    } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    loadCategories();
+  }, []);
 
-
+  // Handle file selection
   const handleFileSelect = (file: File) => {
     if (!file.type.startsWith('image/')) {
-      toast.error(t('categories.invalidFileType'));
+      toast.error('Lütfen geçerli bir resim dosyası seçin');
       return;
     }
 
     if (file.size > 10 * 1024 * 1024) {
-      toast.error(t('categories.fileSizeError'));
+      toast.error('Dosya boyutu 10MB\'dan küçük olmalıdır');
       return;
     }
 
@@ -148,50 +92,32 @@ const Categories: React.FC = () => {
     reader.readAsDataURL(file);
   };
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setUploadState(prev => ({ ...prev, isDragOver: false }));
-    
-    const files = Array.from(e.dataTransfer.files);
-    if (files.length > 0) {
-      handleFileSelect(files[0]);
-    }
-  };
-
-  const handleImageUrlChange = (url: string) => {
-    setUploadState(prev => ({
-      ...prev,
-      imageUrl: url,
-      preview: url
-    }));
-  };
-
+  // Handle image upload and processing
   const handleUpload = async () => {
-    if (!uploadState.selectedStyle) {
-      toast.error(t('categories.selectStyle'));
+    if (!uploadState.selectedCategory || !uploadState.selectedStyle) {
+      toast.error('Lütfen kategori ve stil seçin');
       return;
     }
 
     if (uploadState.uploadMethod === 'file' && !uploadState.file) {
-      toast.error(t('categories.selectFile'));
+      toast.error('Lütfen bir dosya seçin');
       return;
     }
 
     if (uploadState.uploadMethod === 'url' && !uploadState.imageUrl) {
-      toast.error(t('categories.enterImageUrl'));
+      toast.error('Lütfen resim URL\'si girin');
+      return;
+    }
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      toast.error('Lütfen giriş yapın');
       return;
     }
 
     setUploadState(prev => ({ ...prev, isUploading: true }));
 
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        toast.error(t('categories.pleaseLogin'));
-        return;
-      }
-
-      // Use the combined upload-and-process endpoint
       const formData = new FormData();
       
       if (uploadState.uploadMethod === 'file' && uploadState.file) {
@@ -201,73 +127,23 @@ const Categories: React.FC = () => {
       }
       
       formData.append('style', uploadState.selectedStyle);
-      
-      // Debug: Check selectedCategory structure
-      console.log('🔍 [DEBUG] Selected Category:', uploadState.selectedCategory);
-      console.log('🔍 [DEBUG] Category type:', uploadState.selectedCategory?.type);
-      console.log('🔍 [DEBUG] Category name:', uploadState.selectedCategory?.name);
-      
-      // Use type if available, otherwise use name as fallback
-      const categoryValue = uploadState.selectedCategory?.type || uploadState.selectedCategory?.name || '';
-      formData.append('category', categoryValue);
-      
-      console.log('🚀 [UPLOAD-AND-PROCESS] Sending request to:', '/api/images/upload-and-process');
-      console.log('🚀 [UPLOAD-AND-PROCESS] FormData contents:', {
-        fileName: uploadState.file?.name,
-        fileSize: uploadState.file?.size,
-        fileType: uploadState.file?.type,
-        imageUrl: uploadState.imageUrl,
-        style: uploadState.selectedStyle,
-        category: categoryValue
-      });
-      
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76';
-      const response = await fetch(`${API_BASE_URL}/api/images/upload-and-process`, {
+      formData.append('category', uploadState.selectedCategory.type || uploadState.selectedCategory.name);
+
+      const response = await fetch('http://64.226.75.76/api/images/upload-and-process', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
         },
         body: formData
       });
-      
-      console.log('📥 [UPLOAD-AND-PROCESS] Response received:', {
-        status: response.status,
-        statusText: response.statusText,
-        headers: Object.fromEntries(response.headers.entries()),
-        url: response.url
-      });
-      
+
       if (!response.ok) {
-        let errorMessage = 'Upload ve işleme başarısız';
-        try {
-          const errorData = await response.json();
-          errorMessage = errorData.error || errorData.message || errorMessage;
-        } catch (parseError) {
-          errorMessage = `HTTP ${response.status}: ${response.statusText}`;
-        }
-        throw new Error(errorMessage);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Upload başarısız');
       }
-      
-      let result;
-      try {
-        const responseText = await response.text();
-        console.log('📄 [UPLOAD-AND-PROCESS] Raw response text:', responseText.substring(0, 200) + (responseText.length > 200 ? '...' : ''));
-        
-        if (!responseText.trim()) {
-          throw new Error('Sunucu boş yanıt döndürdü');
-        }
-        
-        result = JSON.parse(responseText);
-        console.log('✅ [UPLOAD-AND-PROCESS] Parsed response data:', result);
-      } catch (parseError) {
-        console.error('❌ [UPLOAD-AND-PROCESS] JSON parse error:', parseError);
-        throw new Error('Sunucu geçersiz yanıt döndürdü (JSON parse hatası)');
-      }
+
+      const result = await response.json();
       toast.success('Fotoğraf başarıyla işlendi!');
-      
-      // Set job ID and show result modal
-      setCurrentJobId(result.data?.id || null);
-      setShowResult(true);
       
       // Reset form
       setUploadState({
@@ -277,18 +153,18 @@ const Categories: React.FC = () => {
         file: null,
         imageUrl: '',
         preview: null,
-        isUploading: false,
-        isDragOver: false
+        isUploading: false
       });
       
     } catch (error) {
-      console.error('Upload failed:', error);
-      toast.error(`Upload failed: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`);
+      console.error('Upload error:', error);
+      toast.error(error instanceof Error ? error.message : 'Bir hata oluştu');
     } finally {
       setUploadState(prev => ({ ...prev, isUploading: false }));
     }
   };
 
+  // Reset selection
   const resetSelection = () => {
     setUploadState({
       selectedCategory: null,
@@ -297,31 +173,30 @@ const Categories: React.FC = () => {
       file: null,
       imageUrl: '',
       preview: null,
-      isUploading: false,
-      isDragOver: false
+      isUploading: false
     });
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-96">
-        <LoadingSpinner size="lg" text={t('categories.loading')} />
+        <LoadingSpinner size="lg" text="Kategoriler yükleniyor..." />
       </div>
     );
   }
 
-  // If category is selected, show upload interface
+  // Upload interface when category is selected
   if (uploadState.selectedCategory) {
     return (
       <div className="max-w-4xl mx-auto space-y-6">
-        {/* Header with back button */}
+        {/* Header */}
         <div className="flex items-center justify-between">
           <button
             onClick={resetSelection}
             className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
           >
             <ArrowRight className="h-4 w-4 rotate-180 mr-2" />
-            {t('categories.backToCategories')}
+            Kategorilere Dön
           </button>
           <div className="text-center">
             <h1 className="text-2xl font-bold text-gray-900">
@@ -337,7 +212,7 @@ const Categories: React.FC = () => {
           <div className="space-y-6">
             {/* Style Selection */}
             <div className="bg-white rounded-xl shadow-sm border p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('categories.styleSelection')}</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Stil Seçimi</h3>
               <div className="grid grid-cols-2 gap-3">
                 {(uploadState.selectedCategory.styles || []).map((style, styleIndex) => (
                   <button
@@ -355,9 +230,9 @@ const Categories: React.FC = () => {
               </div>
             </div>
 
-            {/* Upload Method Selection */}
+            {/* Upload Method */}
             <div className="bg-white rounded-xl shadow-sm border p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('categories.uploadMethod')}</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Yükleme Yöntemi</h3>
               <div className="flex space-x-4 mb-4">
                 <button
                   onClick={() => setUploadState(prev => ({ ...prev, uploadMethod: 'file' }))}
@@ -368,7 +243,7 @@ const Categories: React.FC = () => {
                   }`}
                 >
                   <UploadIcon className="h-5 w-5 mx-auto mb-1" />
-                  {t('categories.uploadFile')}
+                  Dosya Yükle
                 </button>
                 <button
                   onClick={() => setUploadState(prev => ({ ...prev, uploadMethod: 'url' }))}
@@ -379,47 +254,28 @@ const Categories: React.FC = () => {
                   }`}
                 >
                   <ImageIcon className="h-5 w-5 mx-auto mb-1" />
-                  {t('categories.enterUrl')}
+                  URL Gir
                 </button>
               </div>
 
               {/* File Upload */}
               {uploadState.uploadMethod === 'file' && (
-                <div
-                  className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-                    uploadState.isDragOver
-                      ? 'border-purple-500 bg-purple-50'
-                      : 'border-gray-300 hover:border-gray-400'
-                  }`}
-                  onDrop={handleDrop}
-                  onDragOver={(e) => {
-                    e.preventDefault();
-                    setUploadState(prev => ({ ...prev, isDragOver: true }));
-                  }}
-                  onDragLeave={() => setUploadState(prev => ({ ...prev, isDragOver: false }))}
-                >
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
                   <UploadIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                   <p className="text-lg font-medium text-gray-900 mb-2">
-                    {t('categories.dragDropText')}
+                    Dosyayı sürükleyin veya seçin
                   </p>
                   <p className="text-sm text-gray-500 mb-4">
-                    {t('categories.supportedFormats')}
+                    JPG, PNG, GIF (Max 10MB)
                   </p>
-                  <button
-                    onClick={() => fileInputRef.current?.click()}
-                    className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors"
-                  >
-                    {t('categories.selectFile')}
-                  </button>
                   <input
-                    ref={fileInputRef}
                     type="file"
                     accept="image/*"
                     onChange={(e) => {
                       const file = e.target.files?.[0];
                       if (file) handleFileSelect(file);
                     }}
-                    className="hidden"
+                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
                   />
                 </div>
               )}
@@ -429,14 +285,15 @@ const Categories: React.FC = () => {
                 <div className="space-y-4">
                   <input
                     type="url"
-                    placeholder={t('categories.urlPlaceholder')}
+                    placeholder="https://example.com/image.jpg"
                     value={uploadState.imageUrl}
-                    onChange={(e) => handleImageUrlChange(e.target.value)}
+                    onChange={(e) => setUploadState(prev => ({ 
+                      ...prev, 
+                      imageUrl: e.target.value,
+                      preview: e.target.value 
+                    }))}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   />
-                  <p className="text-sm text-gray-500">
-                    {t('categories.validUrlRequired')}
-                  </p>
                 </div>
               )}
             </div>
@@ -452,10 +309,10 @@ const Categories: React.FC = () => {
               {uploadState.isUploading ? (
                 <>
                   <LoadingSpinner size="sm" className="mr-2" />
-                  {t('categories.processing')}
+                  İşleniyor...
                 </>
               ) : (
-                t('categories.processPhoto')
+                'Fotoğrafı İşle'
               )}
             </button>
           </div>
@@ -463,7 +320,7 @@ const Categories: React.FC = () => {
           {/* Right Column - Preview */}
           <div className="space-y-6">
             <div className="bg-white rounded-xl shadow-sm border p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('categories.preview')}</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Önizleme</h3>
               {uploadState.preview ? (
                 <div className="relative">
                   <img
@@ -487,36 +344,10 @@ const Categories: React.FC = () => {
                 <div className="h-64 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
                   <div className="text-center">
                     <ImageIcon className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                    <p className="text-gray-500">{t('categories.previewText')}</p>
+                    <p className="text-gray-500">Resim önizlemesi burada görünecek</p>
                   </div>
                 </div>
               )}
-            </div>
-
-            {/* Selected Options Summary */}
-            <div className="bg-gray-50 rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('categories.yourSelections')}</h3>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">{t('categories.category')}</span>
-                  <span className="font-medium">{getCategoryDisplayName(uploadState.selectedCategory)}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">{t('categories.style')}</span>
-                  <span className="font-medium">
-                    {uploadState.selectedStyle ? 
-                      getStyleName(uploadState.selectedCategory, (uploadState.selectedCategory.styles || []).indexOf(uploadState.selectedStyle)) 
-                      : t('categories.notSelected')
-                    }
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">{t('categories.method')}</span>
-                  <span className="font-medium">
-                    {uploadState.uploadMethod === 'file' ? t('categories.fileUpload') : 'URL'}
-                  </span>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -524,28 +355,16 @@ const Categories: React.FC = () => {
     );
   }
 
-  // Default category selection view
+  // Category selection view
   return (
-    <>
-      {/* ProcessedImageResult Modal */}
-      {showResult && currentJobId && (
-        <ProcessedImageResult
-          jobId={currentJobId}
-          onClose={() => {
-            setShowResult(false);
-            setCurrentJobId(null);
-          }}
-        />
-      )}
-      
     <div className="space-y-6">
       {/* Header */}
       <div className="text-center">
         <h1 className="text-3xl font-bold text-gray-900 mb-4">
-          {t('categories.title')}
+          Kategori Seçin
         </h1>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          {t('categories.subtitle')}
+          Fotoğrafınızı işlemek için bir kategori seçin
         </p>
       </div>
 
@@ -554,7 +373,12 @@ const Categories: React.FC = () => {
         {categories.map((category) => (
           <div
             key={category.id}
-            className="bg-white rounded-xl shadow-sm border hover:shadow-lg transition-all duration-200 overflow-hidden group"
+            className="bg-white rounded-xl shadow-sm border hover:shadow-lg transition-all duration-200 overflow-hidden group cursor-pointer"
+            onClick={() => setUploadState(prev => ({
+              ...prev,
+              selectedCategory: category,
+              selectedStyle: (category.styles && category.styles[0]) || ''
+            }))}
           >
             <div className="aspect-square relative overflow-hidden">
               <img
@@ -584,7 +408,7 @@ const Categories: React.FC = () => {
               <p className="text-gray-600 mb-4">{getCategoryDescription(category)}</p>
               
               <div className="mb-4">
-                <p className="text-sm font-medium text-gray-700 mb-2">{t('categories.availableStyles')}:</p>
+                <p className="text-sm font-medium text-gray-700 mb-2">Mevcut Stiller:</p>
                 <div className="flex flex-wrap gap-2">
                   {(category.styles || []).map((style, index) => (
                     <span
@@ -597,42 +421,15 @@ const Categories: React.FC = () => {
                 </div>
               </div>
               
-              <button
-                onClick={() => selectCategory(category)}
-                className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-200 flex items-center justify-center group"
-              >
-                {t('categories.selectCategory')}
+              <div className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-200 flex items-center justify-center group">
+                Kategoriyi Seç
                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-              </button>
+              </div>
             </div>
           </div>
         ))}
       </div>
-
-      {/* Info Section */}
-      <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl p-6 border">
-        <div className="flex items-start space-x-4">
-          <div className="p-2 bg-purple-100 rounded-lg">
-            <Sparkles className="h-6 w-6 text-purple-600" />
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              {t('categories.aiProcessing')}
-            </h3>
-            <p className="text-gray-600 mb-4">
-              {t('categories.aiDescription')}
-            </p>
-            <ul className="text-sm text-gray-600 space-y-1">
-              <li>• {t('categories.highResolution')}</li>
-              <li>• {t('categories.fastProcessing')}</li>
-              <li>• {t('categories.multipleStyles')}</li>
-              <li>• {t('categories.qualityGuarantee')}</li>
-            </ul>
-          </div>
-        </div>
-      </div>
     </div>
-    </>
   );
 };
 
