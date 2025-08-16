@@ -19,11 +19,11 @@
           "parameters": [
             {
               "name": "prompt",
-              "value": "={{ $json.query.prompt }}"
+              "value": "={{ $json.prompt }}"
             },
             {
               "name": "image_url",
-              "value": "={{ $json.query.imageUrl }}"
+              "value": "={{ $json.imageUrl }}"
             },
             {
               "name": "guidance_scale",
@@ -172,7 +172,7 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=http://64.226.75.76:3001/api/images/n8n-result?jobId={{$('Webhook').item.json.query.jobId}}",
+        "url": "=http://64.226.75.76:3001/api/images/n8n-result?jobId={{ $('Webhook').item.json.query.query.jobId }}",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "=[{\"images\":[{\"url\":\"{{$json.images[0].url}}\",\"width\":{{$json.images[0].width || 880}},\"height\":{{$json.images[0].height || 1184}}}],\"prompt\":\"{{$('Webhook').item.json.query.prompt || 'Enhance and improve the person in the image with professional quality.'}}\"}]",
@@ -264,11 +264,11 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "47b2f1cc-a5b6-496e-a36a-2f2feebd9e9a",
+  "versionId": "00d56ab6-3caf-4fb9-a67d-142e2995d257",
   "meta": {
     "instanceId": "5ecd23462a5bfd3bdbe29bb08a7e1e22048f9c995c224703731a47c0abc0bdb6"
   },

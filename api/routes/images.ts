@@ -300,7 +300,7 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
     console.log('🎯 [UPLOAD DEBUG] Sending direct webhook request to external URL:', {
       jobId: imageJob.id,
       imageUrl: originalImageUrl?.substring(0, 50) + '...',
-      categoryType: categoryParam,
+      category: categoryParam,
       style,
       userId,
       prompt: dynamicPrompt
