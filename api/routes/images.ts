@@ -126,9 +126,9 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
     // Handle both multipart form data and JSON requests
     const isMultipart = req.headers['content-type']?.includes('multipart/form-data');
     
-    let style: string;
-    let imageUrl: string;
-    let category: string;
+    let style: string | undefined;
+    let imageUrl: string | undefined;
+    let category: string | undefined;
     
     if (isMultipart) {
       // For multipart requests, data comes from req.body (parsed by multer)
@@ -325,7 +325,7 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
       styleType: typeof style
     });
     
-    const dynamicPrompt = generatePrompt(category, style);
+    const dynamicPrompt = generatePrompt(category || '', style);
     
     // Send direct webhook request (bypass n8n)
     console.log('🎯 [UPLOAD DEBUG] Sending direct webhook request to external URL:', {
