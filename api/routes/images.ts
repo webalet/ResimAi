@@ -318,18 +318,27 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
       console.warn('⚠️ [WEBHOOK URL] Could not read admin-settings.json, using fallback URL:', error);
     }
     
-    // Send GET request to external webhook with N8N query format
-    const webhookParams = new URLSearchParams({
-      'query[imageUrl]': originalImageUrl || '',
-      'query[category]': categoryParam,
-      'query[style]': style,
-      'query[prompt]': dynamicPrompt,
-      'query[userId]': userId,
-      'query[jobId]': imageJob.id.toString()
-    });
+    // Send POST request to external webhook with JSON body format for FAL AI
+    const webhookPayload = {
+      imageUrl: originalImageUrl || '',
+      category: categoryParam,
+      style: style,
+      prompt: dynamicPrompt,
+      userId: userId,
+      jobId: imageJob.id.toString(),
+      image_url: originalImageUrl || '', // FAL AI expects this field
+      // Additional FAL AI parameters
+      strength: 0.8,
+      guidance_scale: 7.5,
+      num_inference_steps: 50
+    };
     
-    fetch(`${webhookUrl}?${webhookParams.toString()}`, {
-      method: 'GET'
+    fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(webhookPayload)
     }).then(response => {
       console.log('✅ [UPLOAD DEBUG] External webhook request completed:', {
         jobId: imageJob.id,
@@ -384,40 +393,35 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
 
 // Generate dynamic prompt based on category and style - synchronized with AdminSettings
 const generatePrompt = (category: string, style: string): string => {
-  const prompts: { [key: string]: { [key: string]: string } } = {
+  // Load prompts from admin-settings.json
+  try {
+    const settingsPath = path.join(process.cwd(), 'admin-settings.json');
+    const settingsData = fs.readFileSync(settingsPath, 'utf8');
+    const settings = JSON.parse(settingsData);
+    
+    const aiPrompts = settings.aiPrompts;
+    if (aiPrompts && aiPrompts[category] && aiPrompts[category][style]) {
+      return aiPrompts[category][style];
+    }
+  } catch (error) {
+    console.warn('⚠️ [PROMPT] Could not read admin-settings.json, using fallback prompts:', error);
+  }
+
+  // Fallback prompts if admin-settings.json is not available
+  const fallbackPrompts: { [key: string]: { [key: string]: string } } = {
     'Corporate': {
-      'Klasik': 'Put the person in a traditional office environment with classic wooden furniture and formal atmosphere. Also, make sure they wear a classic business suit with traditional styling and conservative colors.',
-      'Modern': 'Put the person in a modern tech office environment with glass walls, contemporary furniture, and innovative workspace design. Also, make sure they wear a sleek contemporary business suit with modern cut and trendy styling.',
-      'Resmi': 'Put the person in a very formal corporate boardroom environment with mahogany furniture and executive atmosphere. Also, make sure they wear a strictly formal business suit with conservative styling, tie, and traditional corporate appearance.'
-    },
-    'Creative': {
-      'Sanatsal': 'Transform the person with artistic effects: add colorful paint splashes on their face and hair, apply vibrant artistic makeup with bold colors, add creative face painting designs, and enhance with artistic lighting effects on the person. Keep the original background unchanged, focus only on making the person artistic and colorful.',
-      'Renkli': 'Transform the person into a vibrant, colorful portrait with rainbow-like color gradients on their clothing, add bright neon lighting effects around them, enhance their features with vivid makeup in electric blues, hot pinks, and golden yellows. Create a dynamic atmosphere with colorful light rays and energetic visual elements while maintaining the person as the focal point.',
-      'Minimalist': 'Create a clean, minimalist portrait with the person against a pure white or soft neutral background. Simplify their clothing to solid, muted colors like white, beige, or soft gray. Remove any distracting elements, use soft natural lighting, and focus on clean lines and elegant simplicity. The composition should be balanced and serene with plenty of negative space.'
-    },
-    'Avatar': {
-      'Çizgi Film': 'Transform the person into a vibrant cartoon-style avatar with exaggerated facial features, bright cartoon colors, simplified geometric shapes, large expressive eyes, and smooth animated textures. Apply a cel-shaded effect with bold outlines and maintain the playful, animated character aesthetic typical of modern animation studios.',
-      'Realistik': 'Create a high-quality realistic digital avatar that preserves all natural human features and proportions with enhanced detail. Improve skin texture, add subtle lighting effects, maintain authentic facial expressions, and ensure photorealistic quality while keeping the person\'s unique characteristics and identity intact.',
-      'Fantastik': 'Transform the person into an enchanting fantasy avatar with magical elements such as glowing eyes, ethereal lighting effects, mystical aura, fantasy-themed accessories like elven ears or magical symbols, and otherworldly atmospheric effects. Add fantasy colors and magical particle effects while maintaining recognizable human features.'
-    },
-    'Outfit': {
-      'Casual': 'Transform the person\'s outfit to stylish casual wear: fitted dark jeans or chinos, a trendy t-shirt or casual button-down shirt, comfortable sneakers or casual shoes, and add accessories like a watch or casual jacket. Create a relaxed, everyday look that\'s both comfortable and fashionable.',
-      'Formal': 'Change the person\'s outfit to elegant formal attire: for men, a well-tailored dark suit with dress shirt, tie, and polished dress shoes; for women, an elegant cocktail dress or professional pantsuit with heels and refined accessories. Ensure the styling is sophisticated and appropriate for formal events.',
-      'Spor': 'Transform the person into athletic sportswear: moisture-wicking workout clothes, athletic shorts or leggings, performance t-shirt or tank top, quality running shoes, and sport-specific accessories like a fitness tracker or gym bag. Create an active, energetic appearance suitable for exercise or sports activities.'
-    },
-    'Background': {
-      'Ofis': 'Replace the background with a sophisticated modern office environment featuring floor-to-ceiling windows with city views, sleek glass conference tables, contemporary furniture, soft ambient lighting, and professional workplace atmosphere. Add subtle details like modern art on walls and high-tech equipment.',
-      'Doğa': 'Transform the background into a breathtaking natural outdoor scene with lush green forests, golden sunlight filtering through trees, scenic mountain landscapes, or serene lakeside views. Include natural elements like flowing water, wildflowers, and soft natural lighting that creates a peaceful, organic atmosphere.',
-      'Stüdyo': 'Create a professional photography studio background with seamless gradient lighting, soft diffused illumination, clean minimalist backdrop in neutral tones (white, gray, or subtle colors), and professional studio lighting setup that enhances the subject without distractions.'
+      'Professional': 'Put the person in a traditional office environment with classic wooden furniture and formal atmosphere. Also, make sure they wear a classic business suit with traditional styling and conservative colors.',
+      'Business Casual': 'Put the person in a modern tech office environment with glass walls, contemporary furniture, and innovative workspace design. Also, make sure they wear a sleek contemporary business suit with modern cut and trendy styling.',
+      'Executive': 'Put the person in a very formal corporate boardroom environment with mahogany furniture and executive atmosphere. Also, make sure they wear a strictly formal business suit with conservative styling, tie, and traditional corporate appearance.'
     },
     'Skincare': {
-      'Doğal': 'Apply professional natural skin enhancement: subtly even out skin tone, reduce minor blemishes while preserving natural texture and pores, enhance the skin\'s inherent glow with soft lighting, and maintain authentic skin characteristics. Focus on healthy, realistic improvements that look naturally beautiful.',
-      'Pürüzsüz': 'Create flawless, magazine-quality skin with professional retouching: smooth out all imperfections, minimize pores, even skin tone completely, remove blemishes and fine lines, and apply subtle contouring for a polished, airbrushed finish while keeping facial features natural.',
-      'Parlak': 'Transform the skin with a luminous, radiant glow: enhance natural skin luminosity, add subtle highlighting to cheekbones and high points of the face, create a healthy dewy finish, boost overall skin radiance with warm golden undertones, and apply professional-grade skin brightening effects for a vibrant, youthful appearance.'
+      'Natural': 'Apply professional natural skin enhancement: subtly even out skin tone, reduce minor blemishes while preserving natural texture and pores, enhance the skin\'s inherent glow with soft lighting, and maintain authentic skin characteristics. Focus on healthy, realistic improvements that look naturally beautiful.',
+      'Glowing': 'Transform the skin with a luminous, radiant glow: enhance natural skin luminosity, add subtle highlighting to cheekbones and high points of the face, create a healthy dewy finish, boost overall skin radiance with warm golden undertones, and apply professional-grade skin brightening effects for a vibrant, youthful appearance.',
+      'Flawless': 'Create flawless, magazine-quality skin with professional retouching: smooth out all imperfections, minimize pores, even skin tone completely, remove blemishes and fine lines, and apply subtle contouring for a polished, airbrushed finish while keeping facial features natural.'
     }
   };
 
-  return prompts[category]?.[style] || 'professional portrait, high quality, studio lighting';
+  return fallbackPrompts[category]?.[style] || 'professional portrait, high quality, studio lighting';
 };
 
 // Process image endpoint (simplified - no webhook call)
