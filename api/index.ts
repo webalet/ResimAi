@@ -1,6 +1,3 @@
-/**
- * Vercel serverless function entry point - All routes combined
- */
 
 import express, { type Request, type Response, type NextFunction }  from 'express';
 import cors from 'cors';

@@ -318,14 +318,14 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
       console.warn('⚠️ [WEBHOOK URL] Could not read admin-settings.json, using fallback URL:', error);
     }
     
-    // Send GET request to external webhook with query parameters
+    // Send GET request to external webhook with N8N query format
     const webhookParams = new URLSearchParams({
-      imageUrl: originalImageUrl || '',
-      category: categoryType,
-      style: style,
-      prompt: dynamicPrompt,
-      userId: userId,
-      jobId: imageJob.id.toString()
+      'query[imageUrl]': originalImageUrl || '',
+      'query[category]': categoryType,
+      'query[style]': style,
+      'query[prompt]': dynamicPrompt,
+      'query[userId]': userId,
+      'query[jobId]': imageJob.id.toString()
     });
     
     fetch(`${webhookUrl}?${webhookParams.toString()}`, {
@@ -503,11 +503,11 @@ router.get('/webhook-test', async (req: Request, res: Response): Promise<void> =
     console.log('🚀 [WEBHOOK TEST] Harici webhook\'a GET isteği gönderiliyor:', webhookUrl);
     
     const webhookParams = new URLSearchParams({
-      imageUrl: String(webhookData.imageUrl || ''),
-      category: String(webhookData.category),
-      style: String(webhookData.style),
-      prompt: String(webhookData.prompt),
-      userId: String(webhookData.userId)
+      'query[imageUrl]': String(webhookData.imageUrl || ''),
+      'query[category]': String(webhookData.category),
+      'query[style]': String(webhookData.style),
+      'query[prompt]': String(webhookData.prompt),
+      'query[userId]': String(webhookData.userId)
     });
     
     const response = await fetch(`${webhookUrl}?${webhookParams.toString()}`, {

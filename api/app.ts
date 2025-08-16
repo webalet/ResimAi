@@ -1,6 +1,4 @@
-/**
- * This is a API server - All routes combined for Vercel deployment
- */
+
 
 import express, { type Request, type Response, type NextFunction }  from 'express';
 import cors from 'cors';
