@@ -343,7 +343,7 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
     });
 
     // Get webhook URL from admin-settings.json
-    let webhookUrl = 'https://1qe4j72v.rpcld.net/webhook-test/cd11e789-5e4e-4dda-a86e-e1204e036c82'; // fallback
+    let webhookUrl = 'https://1qe4j72v.rpcld.net/webhook/cd11e789-5e4e-4dda-a86e-e1204e036c82'; // fallback
     try {
       const settingsPath = path.join(process.cwd(), 'admin-settings.json');
       const settingsData = fs.readFileSync(settingsPath, 'utf8');
@@ -388,19 +388,15 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
       'prompt length': dynamicPrompt.length
     });
     
-    // URLSearchParams ile dinamik değerler
+    // N8N formatında query parametreleri
     const webhookParams = new URLSearchParams();
     
-    webhookParams.set('imageUrl', originalImageUrl || '');
-    webhookParams.set('category', finalCategory); // Dinamik kategori
-    webhookParams.set('style', finalStyle); // Dinamik style
-    webhookParams.set('prompt', dynamicPrompt); // Dinamik prompt
-    webhookParams.set('userId', userId);
-    webhookParams.set('jobId', imageJob.id.toString());
-    webhookParams.set('image_url', originalImageUrl || '');
-    webhookParams.set('strength', '0.8');
-    webhookParams.set('guidance_scale', '7.5');
-    webhookParams.set('num_inference_steps', '50');
+    webhookParams.set('query[imageUrl]', originalImageUrl || '');
+    webhookParams.set('query[category]', finalCategory); // Dinamik kategori
+    webhookParams.set('query[style]', finalStyle); // Dinamik style
+    webhookParams.set('query[prompt]', dynamicPrompt); // Dinamik prompt
+    webhookParams.set('query[userId]', userId);
+    webhookParams.set('query[jobId]', imageJob.id.toString());
     
     const finalWebhookUrl = `${webhookUrl}?${webhookParams.toString()}`;
     
