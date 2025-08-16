@@ -226,6 +226,7 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
       .from('image_jobs')
       .insert({
         user_id: userId,
+        category_type: style, // Add required category_type field
         style_type: style,
         style: style,
         original_image_url: originalImageUrl,
