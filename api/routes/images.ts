@@ -331,127 +331,13 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
         operation_type: 'image_processing'
       });
 
-    // Generate dynamic prompt based on category and style
-    console.log('🔍 [GENERATE PROMPT DEBUG] Calling generatePrompt with:', {
-      category: category,
-      style: style,
-      categoryType: typeof category,
-      styleType: typeof style
-    });
-    
-    const dynamicPrompt = generatePrompt(category || '', style);
-    
-    // Send direct webhook request (bypass n8n)
-    console.log('🎯 [UPLOAD DEBUG] Sending direct webhook request to external URL:', {
-      jobId: imageJob.id,
-      imageUrl: originalImageUrl?.substring(0, 50) + '...',
-      style,
-      userId,
-      prompt: dynamicPrompt
-    });
-
-    // Get webhook URL from admin-settings.json
-    let webhookUrl = 'https://1qe4j72v.rpcld.net/webhook/cd11e789-5e4e-4dda-a86e-e1204e036c82'; // fallback
-    try {
-      const settingsPath = path.join(process.cwd(), 'admin-settings.json');
-      const settingsData = fs.readFileSync(settingsPath, 'utf8');
-      const settings = JSON.parse(settingsData);
-      webhookUrl = settings.n8n?.webhookUrl || webhookUrl;
-      console.log('🔗 [WEBHOOK URL] Using webhook URL from admin-settings:', webhookUrl);
-    } catch (error) {
-      console.warn('⚠️ [WEBHOOK URL] Could not read admin-settings.json, using fallback URL:', error);
-    }
-    
-    // CRITICAL DEBUG: Category value before webhook
-    console.log('🔍 [PRE-WEBHOOK CATEGORY DEBUG] Category analysis before webhook:', {
-      'original category': category,
-      'category type': typeof category,
-      'category === undefined': category === undefined,
-      'category === "undefined"': category === 'undefined',
-      'category || "Unknown"': category || 'Unknown',
-      'final category value': category || 'Unknown'
-    });
-    
-    // Final kategori ve style belirleme
-    let finalCategory: string;
-    let finalStyle: string;
-    
-    // Kategori belirleme - geçerli kategori varsa kullan, yoksa Avatar default
-    if (category && 
-        category !== 'undefined' && 
-        category !== 'null' && 
-        category.trim() !== '' && 
-        category.trim() !== 'undefined') {
-      finalCategory = category.trim();
-      console.log('✅ [FINAL CATEGORY] Using received category:', finalCategory);
-    } else {
-      finalCategory = 'Avatar';
-      console.log('🔧 [FINAL CATEGORY] Using default Avatar. Original category was:', category);
-    }
-    
-    // Style belirleme
-    if (style && 
-        style !== 'undefined' && 
-        style !== 'null' && 
-        style.trim() !== '' && 
-        style.trim() !== 'undefined') {
-      finalStyle = style.trim();
-      console.log('✅ [FINAL STYLE] Using received style:', finalStyle);
-    } else {
-      finalStyle = 'Professional';
-      console.log('🔧 [FINAL STYLE] Using default Professional. Original style was:', style);
-    }
-    
-    console.log('✅ [DYNAMIC VALUES] Using dynamic category and style:', {
-      'original category': category,
-      'final category': finalCategory,
-      'original style': style,
-      'final style': finalStyle,
-      'prompt length': dynamicPrompt.length
-    });
-    
-    // N8N formatında query parametreleri
-    const webhookParams = new URLSearchParams();
-    
-    webhookParams.set('query[imageUrl]', originalImageUrl || '');
-    webhookParams.set('query[category]', finalCategory); // Dinamik kategori
-    webhookParams.set('query[style]', finalStyle); // Dinamik style
-    webhookParams.set('query[prompt]', dynamicPrompt); // Dinamik prompt
-    webhookParams.set('query[userId]', userId);
-    webhookParams.set('query[jobId]', imageJob.id.toString());
-    
-    const finalWebhookUrl = `${webhookUrl}?${webhookParams.toString()}`;
-    
-    console.log('📤 [WEBHOOK SEND] Sending request with dynamic values:', {
-      url: webhookUrl,
-      category: finalCategory,
-      style: finalStyle,
-      promptPreview: dynamicPrompt.substring(0, 100) + '...',
-      userId: userId
-    });
-    
-    fetch(finalWebhookUrl, {
-      method: 'GET'
-    }).then(response => {
-      console.log('✅ [WEBHOOK SUCCESS] Request completed:', {
-        jobId: imageJob.id,
-        status: response.status,
-        category: finalCategory,
-        style: finalStyle
-      });
-      return response.text();
-    }).then(responseText => {
-      console.log('📝 [WEBHOOK RESPONSE] N8N response received:', {
-        jobId: imageJob.id,
-        responseLength: responseText.length
-      });
-    }).catch((error: Error) => {
-      console.error('❌ [WEBHOOK ERROR] Request failed:', {
-        jobId: imageJob.id,
-        error: error.message,
-        category: finalCategory,
-        style: finalStyle
-      });
+    // Send webhook notification
+    await sendWebhook({
+      imageUrl: originalImageUrl || '',
+      category: category || 'Avatar',
+      style: style || 'Professional',
+      userId: userId,
+      jobId: imageJob.id
     });
 
     res.status(201).json({
@@ -626,257 +512,61 @@ function getUltimateFallbackPrompt(category: string, style: string): string {
 
 // Generate dynamic prompt function ends here
 
-// 🚨 TAMAMEN YENİDEN YAZILDI: Process image endpoint with guaranteed webhook
-router.post('/process', auth, async (req: Request, res: Response): Promise<void> => {
-  try {
-    const userId = (req as any).userId;
-    const { imageUrl, style, category } = req.body;
-    
-    console.log('🎯 [PROCESS] Processing request:', {
-      userId,
-      imageUrl: imageUrl?.substring(0, 50) + '...',
-      style,
-      category,
-      bodyKeys: Object.keys(req.body)
-    });
-    
-    // Güvenli parametre kontrolü
-    if (!imageUrl || !style) {
-      res.status(400).json({
-        success: false,
-        message: 'imageUrl ve style gereklidir'
-      });
-      return;
-    }
-    
-    // Güvenli kategori ve style değerleri
-    const safeCategory = category && category !== 'undefined' && category.trim() !== '' ? category : 'Avatar';
-    const safeStyle = style && style !== 'undefined' && style.trim() !== '' ? style : 'Professional';
-    
-    console.log('🔒 [PROCESS] Safe parameters:', {
-      originalCategory: category,
-      originalStyle: style,
-      safeCategory,
-      safeStyle
-    });
-    
-    // Generate dynamic prompt with guaranteed category
-    const dynamicPrompt = generatePrompt(safeCategory, safeStyle);
-    
-    console.log('📝 [PROCESS] Generated prompt:', {
-      category: safeCategory,
-      style: safeStyle,
-      promptLength: dynamicPrompt.length,
-      promptPreview: dynamicPrompt.substring(0, 100) + '...'
-    });
-    
-    // 🚨 WEBHOOK GÖNDERİM GARANTİSİ
-    await sendWebhookWithGuarantee({
-      imageUrl,
-      category: safeCategory,
-      style: safeStyle,
-      prompt: dynamicPrompt,
-      userId
-    });
-    
-    // Return success response
-    res.status(200).json({
-      success: true,
-      message: 'Fotoğraf işleme başlatıldı',
-      data: {
-        imageUrl,
-        category: safeCategory,
-        style: safeStyle,
-        prompt: dynamicPrompt,
-        userId,
-        status: 'processing'
-      }
-    });
-    
-  } catch (error) {
-    console.error('❌ [PROCESS] Critical error:', {
-      error: error instanceof Error ? error.message : error,
-      stack: error instanceof Error ? error.stack : undefined
-    });
-    res.status(500).json({
-      success: false,
-      message: 'Sunucu hatası',
-      error: error instanceof Error ? error.message : 'Bilinmeyen hata'
-    });
-    return;
-  }
-});
+// Process endpoint removed - using only upload-and-process
 
-// 🚨 WEBHOOK GÖNDERİM GARANTİ FONKSİYONU
-async function sendWebhookWithGuarantee(data: {
+// Simple webhook function
+async function sendWebhook(data: {
   imageUrl: string;
   category: string;
   style: string;
-  prompt: string;
   userId: string;
+  jobId: string;
 }): Promise<void> {
-  console.log('🚀 [WEBHOOK GUARANTEE] Starting guaranteed webhook send:', {
-    category: data.category,
-    style: data.style,
-    promptLength: data.prompt.length,
-    userId: data.userId
-  });
-  
-  // Final kontrol mekanizması
-  if (!data.category || data.category === 'undefined') {
-    data.category = 'Avatar';
-    console.log('🚨 [WEBHOOK GUARANTEE] Fixed undefined category to Avatar');
-  }
-  
-  if (!data.style || data.style === 'undefined') {
-    data.style = 'Professional';
-    console.log('🚨 [WEBHOOK GUARANTEE] Fixed undefined style to Professional');
-  }
-  
-  if (!data.prompt || data.prompt.trim() === '') {
-    data.prompt = getUltimateFallbackPrompt(data.category, data.style);
-    console.log('🚨 [WEBHOOK GUARANTEE] Generated emergency prompt');
-  }
-  
   try {
-    // Webhook URL'sini admin-settings.json'dan al
-    let webhookUrl = 'https://1qe4j72v.rpcld.net/webhook/cd11e789-5e4e-4dda-a86e-e1204e036c82'; // fallback
-    
-    try {
-      const settingsPath = path.join(process.cwd(), 'admin-settings.json');
-      const settingsData = fs.readFileSync(settingsPath, 'utf8');
-      const settings = JSON.parse(settingsData);
-      webhookUrl = settings.n8n?.webhookUrl || webhookUrl;
-      console.log('🔗 [WEBHOOK GUARANTEE] Using webhook URL from admin-settings:', webhookUrl);
-    } catch (error) {
-      console.warn('⚠️ [WEBHOOK GUARANTEE] Using fallback webhook URL:', error);
-    }
-    
-    // URLSearchParams güvenlik kontrolü
-    const webhookParams = new URLSearchParams();
-    webhookParams.set('query[imageUrl]', String(data.imageUrl || ''));
-    webhookParams.set('query[category]', String(data.category));
-    webhookParams.set('query[style]', String(data.style));
-    webhookParams.set('query[prompt]', String(data.prompt));
-    webhookParams.set('query[userId]', String(data.userId));
-    
-    console.log('📤 [WEBHOOK GUARANTEE] Sending webhook with guaranteed data:', {
-      url: webhookUrl,
-      category: data.category,
-      style: data.style,
-      promptLength: data.prompt.length,
-      userId: data.userId,
-      paramsString: webhookParams.toString().substring(0, 200) + '...'
-    });
-    
-    const response = await fetch(`${webhookUrl}?${webhookParams.toString()}`, {
-      method: 'GET',
-      headers: {
-        'User-Agent': 'ResimAI-Backend/1.0'
-      }
-    });
-    
-    const responseText = await response.text();
-    let responseData;
-    
-    try {
-      responseData = JSON.parse(responseText);
-    } catch {
-      responseData = responseText;
-    }
-    
-    console.log('✅ [WEBHOOK GUARANTEE] Webhook sent successfully:', {
-      status: response.status,
-      statusText: response.statusText,
-      responseLength: responseText.length,
-      category: data.category,
-      style: data.style
-    });
-    
-  } catch (error) {
-    console.error('❌ [WEBHOOK GUARANTEE] Webhook failed but continuing:', {
-      error: error instanceof Error ? error.message : error,
-      category: data.category,
-      style: data.style,
-      promptLength: data.prompt.length
-    });
-    // Webhook hatası olsa bile devam et - kullanıcıya hata döndürme
-  }
-}
-
-// Webhook test endpoint (proxy to external webhook)
-router.get('/webhook-test', async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { imageUrl } = req.query;
-    console.log('🧪 [WEBHOOK TEST] Test isteği alındı', { imageUrl });
-    
     // Get webhook URL from admin-settings.json
-    let webhookUrl = 'https://1qe4j72v.rpcld.net/webhook/cd11e789-5e4e-4dda-a86e-e1204e036c82'; // fallback
+    let webhookUrl = 'https://1qe4j72v.rpcld.net/webhook/cd11e789-5e4e-4dda-a86e-e1204e036c82';
+    
     try {
       const settingsPath = path.join(process.cwd(), 'admin-settings.json');
       const settingsData = fs.readFileSync(settingsPath, 'utf8');
       const settings = JSON.parse(settingsData);
       webhookUrl = settings.n8n?.webhookUrl || webhookUrl;
-      console.log('🔗 [WEBHOOK TEST] Using webhook URL from admin-settings:', webhookUrl);
     } catch (error) {
-      console.warn('⚠️ [WEBHOOK TEST] Could not read admin-settings.json, using fallback URL:', error);
+      console.log('Using fallback webhook URL');
     }
-    const webhookData = {
-      imageUrl: imageUrl || '',
-      style: 'test',
-      prompt: 'Test webhook request',
-      userId: 'test-user'
-    };
     
-    console.log('🚀 [WEBHOOK TEST] Harici webhook\'a GET isteği gönderiliyor:', webhookUrl);
+    // Generate prompt
+    const prompt = generatePrompt(data.category, data.style);
     
-    const webhookParams = new URLSearchParams({
-      'query[imageUrl]': String(webhookData.imageUrl || ''),
-      'query[style]': String(webhookData.style),
-      'query[prompt]': String(webhookData.prompt),
-      'query[userId]': String(webhookData.userId)
+    // Create webhook parameters
+    const params = new URLSearchParams();
+    params.set('query[imageUrl]', data.imageUrl);
+    params.set('query[category]', data.category);
+    params.set('query[style]', data.style);
+    params.set('query[prompt]', prompt);
+    params.set('query[userId]', data.userId);
+    params.set('query[jobId]', data.jobId);
+    
+    console.log('Sending webhook:', {
+      category: data.category,
+      style: data.style,
+      jobId: data.jobId
     });
     
-    const response = await fetch(`${webhookUrl}?${webhookParams.toString()}`, {
+    // Send webhook
+    const response = await fetch(`${webhookUrl}?${params.toString()}`, {
       method: 'GET'
     });
     
-    const responseText = await response.text();
-    let responseData;
-    
-    try {
-      responseData = JSON.parse(responseText);
-    } catch {
-      responseData = responseText;
-    }
-    
-    console.log('✅ [WEBHOOK TEST] Webhook yanıtı:', {
-      status: response.status,
-      statusText: response.statusText,
-      data: responseData
-    });
-    
-    res.status(200).json({
-      success: true,
-      webhook: {
-        status: response.status,
-        statusText: response.statusText,
-        data: responseData,
-        timestamp: new Date().toISOString()
-      }
-    });
+    console.log('Webhook sent:', response.status);
     
   } catch (error) {
-    console.error('❌ [WEBHOOK TEST] Hata:', error);
-    
-    res.status(500).json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Bilinmeyen hata',
-      timestamp: new Date().toISOString()
-    });
-    return;
+    console.error('Webhook error:', error);
+    // Don't throw error - continue processing
   }
-});
+}
+
+// Webhook test endpoint removed
 
 // Get user's image jobs
 router.get('/jobs', auth, async (req: Request, res: Response): Promise<void> => {
