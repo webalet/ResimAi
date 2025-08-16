@@ -387,35 +387,52 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
       'full webhookData': webhookData
     });
     
-    console.log('🔍 [WEBHOOK CATEGORY DEBUG] Category value being sent:', {
-      originalCategory: category,
-      finalCategory: category || 'Unknown',
-      style: style,
-      categoryType: typeof category,
-      categoryLength: category ? category.length : 0
+    // 🚨 CRITICAL DEBUG 1: Category Flow Analysis
+    console.log('🔍 [CRITICAL DEBUG] Category flow analysis:', {
+      'req.body.category': req.body.category,
+      'parsed category': category,
+      'finalCategory': finalCategory,
+      'category type': typeof category,
+      'finalCategory type': typeof finalCategory,
+      'category === undefined': category === undefined,
+      'category === "undefined"': category === 'undefined',
+      'finalCategory === undefined': finalCategory === undefined,
+      'finalCategory === "undefined"': finalCategory === 'undefined'
     });
     
-    // N8N GET metoduna uygun format - Query parametreleri kullan
-    const webhookParams = new URLSearchParams({
-      imageUrl: originalImageUrl || '',
-      category: finalCategory,
-      style: style,
-      prompt: dynamicPrompt,
-      userId: userId,
-      jobId: imageJob.id.toString(),
-      image_url: originalImageUrl || '', // FAL AI expects this field
-      strength: '0.8',
-      guidance_scale: '7.5',
-      num_inference_steps: '50'
+    // 🚨 CRITICAL DEBUG 2: URLSearchParams Test
+    const webhookParams = new URLSearchParams();
+    
+    // Test hard-coded category first
+    const testCategory = 'Avatar';
+    console.log('🔍 [HARD-CODED TEST] Setting category to:', testCategory);
+    
+    webhookParams.set('imageUrl', originalImageUrl || '');
+    webhookParams.set('category', testCategory); // Use hard-coded value for testing
+    webhookParams.set('style', style);
+    webhookParams.set('prompt', dynamicPrompt);
+    webhookParams.set('userId', userId);
+    webhookParams.set('jobId', imageJob.id.toString());
+    webhookParams.set('image_url', originalImageUrl || '');
+    webhookParams.set('strength', '0.8');
+    webhookParams.set('guidance_scale', '7.5');
+    webhookParams.set('num_inference_steps', '50');
+    
+    // 🚨 CRITICAL DEBUG 3: URLSearchParams Verification
+    console.log('🔍 [URL PARAMS DEBUG] URLSearchParams verification:', {
+      'category set as': webhookParams.get('category'),
+      'category type': typeof webhookParams.get('category'),
+      'all params': Object.fromEntries(webhookParams.entries()),
+      'params string': webhookParams.toString()
     });
     
     const finalWebhookUrl = `${webhookUrl}?${webhookParams.toString()}`;
     
-    console.log('🔍 [WEBHOOK DEBUG] GET request being sent to N8N:', {
+    console.log('🔍 [WEBHOOK DEBUG] Final GET request to N8N:', {
       url: finalWebhookUrl,
       method: 'GET',
-      category: finalCategory,
-      categoryType: typeof finalCategory
+      'extracted category from URL': new URL(finalWebhookUrl).searchParams.get('category'),
+      'URL length': finalWebhookUrl.length
     });
     
     fetch(finalWebhookUrl, {
