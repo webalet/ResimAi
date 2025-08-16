@@ -307,7 +307,7 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
     });
 
     // Get webhook URL from admin-settings.json
-    let webhookUrl = 'https://1qe4j72v.rpcld.net/webhook/cd11e789-5e4e-4dda-a86e-e1204e036c82'; // fallback
+    let webhookUrl = 'https://1qe4j72v.rpcld.net/webhook-test/cd11e789-5e4e-4dda-a86e-e1204e036c82'; // fallback
     try {
       const settingsPath = path.join(process.cwd(), 'admin-settings.json');
       const settingsData = fs.readFileSync(settingsPath, 'utf8');
@@ -318,8 +318,8 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
       console.warn('⚠️ [WEBHOOK URL] Could not read admin-settings.json, using fallback URL:', error);
     }
     
-    // Send POST request to external webhook with JSON body format for FAL AI
-    const webhookPayload = {
+    // Send GET request to external webhook with query parameters
+    const webhookParams = new URLSearchParams({
       imageUrl: originalImageUrl || '',
       category: categoryParam,
       style: style,
@@ -328,25 +328,21 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
       jobId: imageJob.id.toString(),
       image_url: originalImageUrl || '', // FAL AI expects this field
       // Additional FAL AI parameters
-      strength: 0.8,
-      guidance_scale: 7.5,
-      num_inference_steps: 50
-    };
-    
-    console.log('🔍 [WEBHOOK DEBUG] Full payload being sent to N8N:', {
-      url: webhookUrl,
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      payload: webhookPayload,
-      payloadString: JSON.stringify(webhookPayload, null, 2)
+      strength: '0.8',
+      guidance_scale: '7.5',
+      num_inference_steps: '50'
     });
     
-    fetch(webhookUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(webhookPayload)
+    const fullWebhookUrl = `${webhookUrl}?${webhookParams.toString()}`;
+    
+    console.log('🔍 [WEBHOOK DEBUG] Full GET request being sent to N8N:', {
+      url: fullWebhookUrl,
+      method: 'GET',
+      params: Object.fromEntries(webhookParams)
+    });
+    
+    fetch(fullWebhookUrl, {
+      method: 'GET'
     }).then(response => {
       console.log('✅ [UPLOAD DEBUG] External webhook request completed:', {
         jobId: imageJob.id,
