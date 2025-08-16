@@ -43,6 +43,14 @@ const Categories: React.FC = () => {
     return i18n.language === 'en' ? (category.display_name_en || category.display_name_tr) : category.display_name_tr;
   };
 
+  const selectCategory = (category: Category) => {
+    setUploadState(prev => ({
+      ...prev,
+      selectedCategory: category,
+      selectedStyle: (category.styles && category.styles[0]) || ''
+    }));
+  };
+
   // Helper function to get category description based on current language
   const getCategoryDescription = (category: Category) => {
     return i18n.language === 'en' ? (category.description_en || category.description) : category.description;
@@ -92,13 +100,7 @@ const Categories: React.FC = () => {
     }
   };
 
-  const selectCategory = (category: Category) => {
-    setUploadState(prev => ({
-      ...prev,
-      selectedCategory: category,
-      selectedStyle: (category.styles && category.styles[0]) || ''
-    }));
-  };
+
 
   const handleFileSelect = (file: File) => {
     if (!file.type.startsWith('image/')) {

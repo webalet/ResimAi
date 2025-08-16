@@ -447,6 +447,8 @@
     "fileSizeError": "Dosya boyutu 10MB'dan küçük olmalıdır",
     "selectCategoryAndStyle": "Lütfen kategori ve stil seçin",
     "selectStyle": "Lütfen stil seçin",
+    "imageProcessing": "Görsel İşleme",
+    "selectStyleAndUpload": "Stil seçin ve görselinizi yükleyin",
     "enterImageUrl": "Lütfen resim URL'si girin",
     "pleaseLogin": "Lütfen giriş yapın"
   },

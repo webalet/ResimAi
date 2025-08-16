@@ -443,6 +443,8 @@
     "fileSizeError": "File size must be less than 10MB",
     "selectCategoryAndStyle": "Please select category and style",
     "selectStyle": "Please select style",
+    "imageProcessing": "Image Processing",
+    "selectStyleAndUpload": "Select style and upload your image",
     "enterImageUrl": "Please enter image URL",
     "pleaseLogin": "Please log in"
   },
