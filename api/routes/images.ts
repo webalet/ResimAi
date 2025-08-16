@@ -318,8 +318,8 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
       console.warn('⚠️ [WEBHOOK URL] Could not read admin-settings.json, using fallback URL:', error);
     }
     
-    // Send GET request to external webhook with query parameters
-    const webhookParams = new URLSearchParams({
+    // Send POST request to external webhook with JSON body
+    const webhookData = {
       imageUrl: originalImageUrl || '',
       category: categoryParam,
       style: style,
@@ -331,18 +331,20 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
       strength: '0.8',
       guidance_scale: '7.5',
       num_inference_steps: '50'
+    };
+    
+    console.log('🔍 [WEBHOOK DEBUG] POST request being sent to N8N:', {
+      url: webhookUrl,
+      method: 'POST',
+      data: webhookData
     });
     
-    const fullWebhookUrl = `${webhookUrl}?${webhookParams.toString()}`;
-    
-    console.log('🔍 [WEBHOOK DEBUG] Full GET request being sent to N8N:', {
-      url: fullWebhookUrl,
-      method: 'GET',
-      params: Object.fromEntries(webhookParams)
-    });
-    
-    fetch(fullWebhookUrl, {
-      method: 'GET'
+    fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(webhookData)
     }).then(response => {
       console.log('✅ [UPLOAD DEBUG] External webhook request completed:', {
         jobId: imageJob.id,
