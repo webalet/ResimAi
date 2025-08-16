@@ -2,87 +2,25 @@
   "name": "My workflow 3",
   "nodes": [
     {
-      "parameters": {
-        "method": "POST",
-        "url": "=https://queue.fal.run/fal-ai/flux-pro/kontext",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Authorization",
-              "value": "Key eb020624-43ba-431b-adc7-9335842304e3:759be7ee30b01b5d33e3c82d1d940efd"
-            }
-          ]
-        },
-        "sendBody": true,
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "prompt",
-              "value": "={{ $json.prompt }}"
-            },
-            {
-              "name": "image_url",
-              "value": "={{ $json.imageUrl }}"
-            },
-            {
-              "name": "guidance_scale",
-              "value": "3.5"
-            },
-            {
-              "name": "num_images",
-              "value": "1"
-            },
-            {
-              "name": "output_format",
-              "value": "jpeg"
-            },
-            {
-              "name": "safety_tolerance",
-              "value": "2"
-            },
-            {
-              "name": "seed",
-              "value": "12345"
-            },
-            {
-              "name": "sync_mode",
-              "value": "false"
-            }
-          ]
-        },
-        "options": {}
-      },
+      "parameters": {},
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -1728,
-        -144
+        -416,
+        -16
       ],
-      "id": "e5db9326-0724-4857-8b5c-301568f0da14",
+      "id": "8f41dbf2-184c-4a51-a352-688d9ec982cb",
       "name": "Görsel Oluşturucu"
     },
     {
-      "parameters": {
-        "url": "=https://queue.fal.run/fal-ai/flux-pro/requests/{{ $json.request_id }}/status",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Authorization",
-              "value": "Key eb020624-43ba-431b-adc7-9335842304e3:759be7ee30b01b5d33e3c82d1d940efd"
-            }
-          ]
-        },
-        "options": {}
-      },
+      "parameters": {},
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -1536,
-        -144
+        -224,
+        -16
       ],
-      "id": "a347756f-c4c9-451d-8cf5-9a814abb85b8",
+      "id": "31c5d5de-3361-4ade-a8dd-68eb56029098",
       "name": "Durum"
     },
     {
@@ -90,101 +28,56 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        -1280,
-        -144
+        32,
+        -16
       ],
-      "id": "481fff9e-c9da-4700-b5de-9ad566af60be",
+      "id": "f4ba43d0-ed82-465a-8c02-f0ccdffce45b",
       "name": "Wait",
       "webhookId": "2670b458-f50e-4492-beb2-1ec709b111be"
     },
     {
-      "parameters": {
-        "url": "=https://queue.fal.run/fal-ai/flux-pro/requests/{{ $json.request_id }}",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Authorization",
-              "value": "Key eb020624-43ba-431b-adc7-9335842304e3:759be7ee30b01b5d33e3c82d1d940efd"
-            }
-          ]
-        },
-        "options": {}
-      },
+      "parameters": {},
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -720,
-        -160
+        592,
+        -32
       ],
-      "id": "deaf2d9c-ff03-46bc-8eb7-f6b18a263e75",
+      "id": "f5ce2a42-111e-4988-93c5-0f829c4e8b56",
       "name": "Sonucu Al"
     },
     {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict",
-            "version": 2
-          },
-          "conditions": [
-            {
-              "id": "fb932bb5-c5f5-4ebd-bb3b-8e6d908929d2",
-              "leftValue": "={{ $json.status }}",
-              "rightValue": "COMPLETED",
-              "operator": {
-                "type": "string",
-                "operation": "equals",
-                "name": "filter.operator.equals"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
+      "parameters": {},
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -1040,
-        -144
+        272,
+        -16
       ],
-      "id": "b52dd34e-b485-4dd8-88b1-ba08f8beda36",
+      "id": "08e5c08a-cf69-43b5-8723-0f013d80f8f6",
       "name": "If"
     },
     {
-      "parameters": {
-        "path": "cd11e789-5e4e-4dda-a86e-e1204e036c82",
-        "options": {}
-      },
+      "parameters": {},
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -1968,
-        -144
+        -656,
+        -16
       ],
-      "id": "1c02ec2f-a3fd-4ebd-975a-08f43c019bbf",
+      "id": "a44fc58d-069a-46fc-afed-85c8d46ae2ff",
       "name": "Webhook",
       "webhookId": "cd11e789-5e4e-4dda-a86e-e1204e036c82"
     },
     {
-      "parameters": {
-        "method": "POST",
-        "url": "=http://64.226.75.76:3001/api/images/n8n-result?jobId={{ $('Webhook').item.json.query.query.jobId }}",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "=[{\"images\":[{\"url\":\"{{$json.images[0].url}}\",\"width\":{{$json.images[0].width || 880}},\"height\":{{$json.images[0].height || 1184}}}],\"prompt\":\"{{$('Webhook').item.json.query.prompt || 'Enhance and improve the person in the image with professional quality.'}}\"}]",
-        "options": {}
-      },
+      "parameters": {},
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        -480,
-        -160
+        832,
+        -32
       ],
-      "id": "f636547f-c067-4bc1-801e-85966f79e65b",
+      "id": "616c43f7-9a4b-4846-8a2b-f8c829deb36b",
       "name": "HTTP Request"
     }
   ],
@@ -268,7 +161,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "00d56ab6-3caf-4fb9-a67d-142e2995d257",
+  "versionId": "7b36e310-0742-496c-aa9d-d13bfea1d1e9",
   "meta": {
     "instanceId": "5ecd23462a5bfd3bdbe29bb08a7e1e22048f9c995c224703731a47c0abc0bdb6"
   },

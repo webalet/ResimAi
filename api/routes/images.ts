@@ -293,14 +293,13 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
         operation_type: 'image_processing'
       });
 
-    // Generate dynamic prompt based on category and style
-    const dynamicPrompt = generatePrompt(categoryParam, style);
+    // Generate dynamic prompt based on style
+    const dynamicPrompt = generatePrompt(style);
     
     // Send direct webhook request (bypass n8n)
     console.log('🎯 [UPLOAD DEBUG] Sending direct webhook request to external URL:', {
       jobId: imageJob.id,
       imageUrl: originalImageUrl?.substring(0, 50) + '...',
-      category: categoryParam,
       style,
       userId,
       prompt: dynamicPrompt
@@ -321,7 +320,6 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
     // Send POST request to external webhook with JSON body
     const webhookData = {
       imageUrl: originalImageUrl || '',
-      category: categoryParam,
       style: style,
       prompt: dynamicPrompt,
       userId: userId,
@@ -397,13 +395,11 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
   }
 }
 
-// Generate dynamic prompt based on category and style - synchronized with AdminSettings
-const generatePrompt = (category: string, style: string): string => {
+// Generate dynamic prompt based on style - synchronized with AdminSettings
+const generatePrompt = (style: string): string => {
   // DEBUG: Log incoming parameters
   console.log('🔍 [DEBUG PROMPT] Function called with parameters:', {
-    category: category,
     style: style,
-    categoryType: typeof category,
     styleType: typeof style
   });
   
@@ -434,23 +430,11 @@ const generatePrompt = (category: string, style: string): string => {
     const aiPrompts = settings.aiPrompts;
     console.log('🔍 [DEBUG PROMPT] aiPrompts object:', {
       exists: !!aiPrompts,
-      keys: aiPrompts ? Object.keys(aiPrompts) : [],
-      categoryExists: aiPrompts && aiPrompts[category],
-      styleExists: aiPrompts && aiPrompts[category] && aiPrompts[category][style]
+      keys: aiPrompts ? Object.keys(aiPrompts) : []
     });
     
-    if (aiPrompts && aiPrompts[category] && aiPrompts[category][style]) {
-      const selectedPrompt = aiPrompts[category][style];
-      console.log('✅ [DEBUG PROMPT] Found matching prompt:', {
-        category,
-        style,
-        promptLength: selectedPrompt.length,
-        promptPreview: selectedPrompt.substring(0, 100) + '...'
-      });
-      return selectedPrompt;
-    } else {
-      console.warn('⚠️ [DEBUG PROMPT] No matching prompt found in admin-settings.json for:', { category, style });
-    }
+    // Since we don't use category anymore, use a default fallback
+    console.warn('⚠️ [DEBUG PROMPT] Category-based prompts disabled, using fallback for style:', { style });
   } catch (error) {
     console.error('❌ [DEBUG PROMPT] Error reading admin-settings.json:', {
       error: error instanceof Error ? error.message : error,
@@ -458,27 +442,21 @@ const generatePrompt = (category: string, style: string): string => {
     });
   }
 
-  // Fallback prompts if admin-settings.json is not available
-  const fallbackPrompts: { [key: string]: { [key: string]: string } } = {
-    'Corporate': {
-      'Professional': 'Put the person in a traditional office environment with classic wooden furniture and formal atmosphere. Also, make sure they wear a classic business suit with traditional styling and conservative colors.',
-      'Business Casual': 'Put the person in a modern tech office environment with glass walls, contemporary furniture, and innovative workspace design. Also, make sure they wear a sleek contemporary business suit with modern cut and trendy styling.',
-      'Executive': 'Put the person in a very formal corporate boardroom environment with mahogany furniture and executive atmosphere. Also, make sure they wear a strictly formal business suit with conservative styling, tie, and traditional corporate appearance.'
-    },
-    'Skincare': {
-      'Natural': 'Apply professional natural skin enhancement: subtly even out skin tone, reduce minor blemishes while preserving natural texture and pores, enhance the skin\'s inherent glow with soft lighting, and maintain authentic skin characteristics. Focus on healthy, realistic improvements that look naturally beautiful.',
-      'Glowing': 'Transform the skin with a luminous, radiant glow: enhance natural skin luminosity, add subtle highlighting to cheekbones and high points of the face, create a healthy dewy finish, boost overall skin radiance with warm golden undertones, and apply professional-grade skin brightening effects for a vibrant, youthful appearance.',
-      'Flawless': 'Create flawless, magazine-quality skin with professional retouching: smooth out all imperfections, minimize pores, even skin tone completely, remove blemishes and fine lines, and apply subtle contouring for a polished, airbrushed finish while keeping facial features natural.'
-    }
+  // Fallback prompts based on style only
+  const fallbackPrompts: { [key: string]: string } = {
+    'Professional': 'Put the person in a traditional office environment with classic wooden furniture and formal atmosphere. Also, make sure they wear a classic business suit with traditional styling and conservative colors.',
+    'Business Casual': 'Put the person in a modern tech office environment with glass walls, contemporary furniture, and innovative workspace design. Also, make sure they wear a sleek contemporary business suit with modern cut and trendy styling.',
+    'Executive': 'Put the person in a very formal corporate boardroom environment with mahogany furniture and executive atmosphere. Also, make sure they wear a strictly formal business suit with conservative styling, tie, and traditional corporate appearance.',
+    'Natural': 'Apply professional natural skin enhancement: subtly even out skin tone, reduce minor blemishes while preserving natural texture and pores, enhance the skin\'s inherent glow with soft lighting, and maintain authentic skin characteristics. Focus on healthy, realistic improvements that look naturally beautiful.',
+    'Glowing': 'Transform the skin with a luminous, radiant glow: enhance natural skin luminosity, add subtle highlighting to cheekbones and high points of the face, create a healthy dewy finish, boost overall skin radiance with warm golden undertones, and apply professional-grade skin brightening effects for a vibrant, youthful appearance.',
+    'Flawless': 'Create flawless, magazine-quality skin with professional retouching: smooth out all imperfections, minimize pores, even skin tone completely, remove blemishes and fine lines, and apply subtle contouring for a polished, airbrushed finish while keeping facial features natural.'
   };
 
-  const fallbackPrompt = fallbackPrompts[category]?.[style] || 'professional portrait, high quality, studio lighting';
+  const fallbackPrompt = fallbackPrompts[style] || 'professional portrait, high quality, studio lighting';
   console.log('🔄 [DEBUG PROMPT] Using fallback prompt:', {
-    category,
     style,
     fallbackPrompt,
-    availableCategories: Object.keys(fallbackPrompts),
-    availableStyles: fallbackPrompts[category] ? Object.keys(fallbackPrompts[category]) : []
+    availableStyles: Object.keys(fallbackPrompts)
   });
   
   return fallbackPrompt;
@@ -505,11 +483,10 @@ router.post('/process', auth, async (req: Request, res: Response): Promise<void>
       return;
     }
     
-    // Generate dynamic prompt based on category and style
-    const dynamicPrompt = generatePrompt(category, style);
+    // Generate dynamic prompt based on style
+    const dynamicPrompt = generatePrompt(style);
     
     console.log('📝 [PROCESS] Generated prompt:', {
-      category,
       style,
       prompt: dynamicPrompt
     });
@@ -520,7 +497,6 @@ router.post('/process', auth, async (req: Request, res: Response): Promise<void>
       message: 'Fotoğraf işleme başlatıldı',
       data: {
         imageUrl,
-        category,
         style,
         prompt: dynamicPrompt,
         userId,
