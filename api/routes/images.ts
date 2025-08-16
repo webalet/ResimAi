@@ -364,39 +364,37 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
       'final category value': category || 'Unknown'
     });
     
-    // 🚨 CRITICAL FIX: Kategori kesinlikle garanti edilmeli
+    // Dinamik kategori ve style belirleme
     let finalCategory = category || 'Avatar';
+    let finalStyle = style || 'Professional';
     
-    // 🚨 DOUBLE CHECK: Kategori hala undefined ise zorla Avatar yap
+    // Güvenli kategori kontrolü
     if (!finalCategory || finalCategory === 'undefined' || finalCategory.trim() === '') {
       finalCategory = 'Avatar';
-      console.log('🚨 [FORCE CATEGORY] Category was still undefined, FORCING to Avatar:', finalCategory);
+      console.log('🔧 [CATEGORY FIX] Category was undefined, defaulting to Avatar:', finalCategory);
     }
     
-    // 🚨 CRITICAL DEBUG 1: Category Flow Analysis
-    console.log('🔍 [CRITICAL DEBUG] Category flow analysis:', {
-      'req.body.category': req.body.category,
-      'parsed category': category,
-      'finalCategory': finalCategory,
-      'category type': typeof category,
-      'finalCategory type': typeof finalCategory,
-      'category === undefined': category === undefined,
-      'category === "undefined"': category === 'undefined',
-      'finalCategory === undefined': finalCategory === undefined,
-      'finalCategory === "undefined"': finalCategory === 'undefined'
+    // Güvenli style kontrolü
+    if (!finalStyle || finalStyle === 'undefined' || finalStyle.trim() === '') {
+      finalStyle = 'Professional';
+      console.log('🔧 [STYLE FIX] Style was undefined, defaulting to Professional:', finalStyle);
+    }
+    
+    console.log('✅ [DYNAMIC VALUES] Using dynamic category and style:', {
+      'original category': category,
+      'final category': finalCategory,
+      'original style': style,
+      'final style': finalStyle,
+      'prompt length': dynamicPrompt.length
     });
     
-    // 🚨 CRITICAL: URLSearchParams ile kesin kategori gönderimi
+    // URLSearchParams ile dinamik değerler
     const webhookParams = new URLSearchParams();
     
-    // 🚨 FORCE CATEGORY: Kesinlikle Avatar gönder
-    const guaranteedCategory = 'Avatar'; // Test için sabit kategori
-    console.log('🚨 [GUARANTEED CATEGORY] FORCING category to Avatar for testing:', guaranteedCategory);
-    
     webhookParams.set('imageUrl', originalImageUrl || '');
-    webhookParams.set('category', guaranteedCategory); // Kesin kategori
-    webhookParams.set('style', style || 'Professional'); // Style de garanti et
-    webhookParams.set('prompt', dynamicPrompt);
+    webhookParams.set('category', finalCategory); // Dinamik kategori
+    webhookParams.set('style', finalStyle); // Dinamik style
+    webhookParams.set('prompt', dynamicPrompt); // Dinamik prompt
     webhookParams.set('userId', userId);
     webhookParams.set('jobId', imageJob.id.toString());
     webhookParams.set('image_url', originalImageUrl || '');
@@ -404,74 +402,37 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
     webhookParams.set('guidance_scale', '7.5');
     webhookParams.set('num_inference_steps', '50');
     
-    // 🚨 CRITICAL DEBUG: URLSearchParams Verification
-    console.log('🔍 [URL PARAMS DEBUG] URLSearchParams verification:', {
-      'category set as': webhookParams.get('category'),
-      'category type': typeof webhookParams.get('category'),
-      'guaranteed category': guaranteedCategory,
-      'all params': Object.fromEntries(webhookParams.entries()),
-      'params string': webhookParams.toString()
-    });
-    
-    // 🚨 FINAL VERIFICATION: URL'de kategori var mı kontrol et
-    const testUrl = `${webhookUrl}?${webhookParams.toString()}`;
-    const testUrlObj = new URL(testUrl);
-    const extractedCategory = testUrlObj.searchParams.get('category');
-    
-    console.log('🚨 [FINAL VERIFICATION] URL category check:', {
-      'extracted category from URL': extractedCategory,
-      'extracted category type': typeof extractedCategory,
-      'is category Avatar': extractedCategory === 'Avatar',
-      'URL preview': testUrl.substring(0, 200) + '...'
-    });
-    
     const finalWebhookUrl = `${webhookUrl}?${webhookParams.toString()}`;
     
-    console.log('🚨 [WEBHOOK DEBUG] Final GET request to N8N:', {
-      url: finalWebhookUrl,
-      method: 'GET',
-      'extracted category from URL': new URL(finalWebhookUrl).searchParams.get('category'),
-      'URL length': finalWebhookUrl.length,
-      'category MUST be Avatar': new URL(finalWebhookUrl).searchParams.get('category') === 'Avatar'
+    console.log('📤 [WEBHOOK SEND] Sending request with dynamic values:', {
+      url: webhookUrl,
+      category: finalCategory,
+      style: finalStyle,
+      promptPreview: dynamicPrompt.substring(0, 100) + '...',
+      userId: userId
     });
-    
-    // 🚨 FINAL CHECK: Webhook çağrısından önce son kontrol
-    const finalCheck = new URL(finalWebhookUrl);
-    const finalCategoryCheck = finalCheck.searchParams.get('category');
-    
-    console.log('🚨 [FINAL CHECK BEFORE WEBHOOK] Last verification:', {
-      'URL': finalWebhookUrl,
-      'category in URL': finalCategoryCheck,
-      'category is Avatar': finalCategoryCheck === 'Avatar',
-      'all URL params': Object.fromEntries(finalCheck.searchParams.entries())
-    });
-    
-    if (finalCategoryCheck !== 'Avatar') {
-      console.error('🚨 [CRITICAL ERROR] Category is not Avatar in final URL! This should not happen!');
-    }
     
     fetch(finalWebhookUrl, {
       method: 'GET'
     }).then(response => {
-      console.log('✅ [UPLOAD DEBUG] External webhook request completed:', {
+      console.log('✅ [WEBHOOK SUCCESS] Request completed:', {
         jobId: imageJob.id,
         status: response.status,
-        statusText: response.statusText,
-        'sent category': finalCategoryCheck
+        category: finalCategory,
+        style: finalStyle
       });
       return response.text();
     }).then(responseText => {
-      console.log('📝 [UPLOAD DEBUG] External webhook response:', {
+      console.log('📝 [WEBHOOK RESPONSE] N8N response received:', {
         jobId: imageJob.id,
-        response: responseText,
-        'sent category': finalCategoryCheck
+        responseLength: responseText.length
       });
     }).catch((error: Error) => {
-      console.error('❌ [UPLOAD DEBUG] External webhook error:', {
+      console.error('❌ [WEBHOOK ERROR] Request failed:', {
         jobId: imageJob.id,
         error: error.message,
-        stack: error.stack,
-        'sent category': finalCategoryCheck
+        category: finalCategory,
+        style: finalStyle
       });
     });
 
