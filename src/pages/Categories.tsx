@@ -44,6 +44,14 @@ const Categories: React.FC = () => {
   };
 
   const selectCategory = (category: Category) => {
+    console.log('🔍 [CATEGORY SELECT] Category selected:', {
+      category: category,
+      categoryType: category.type,
+      categoryName: category.name,
+      categoryId: category.id,
+      fullCategoryObject: JSON.stringify(category, null, 2)
+    });
+    
     setUploadState(prev => ({
       ...prev,
       selectedCategory: category,
@@ -88,6 +96,21 @@ const Categories: React.FC = () => {
       const data = await response.json();
       console.log('📦 API Response:', data);
       console.log('📊 Categories data:', data.data);
+      
+      // DEBUG: Log each category's type field
+      if (data.data && Array.isArray(data.data)) {
+        data.data.forEach((cat: any, index: number) => {
+          console.log(`🔍 [CATEGORY ${index}] Debug info:`, {
+            id: cat.id,
+            name: cat.name,
+            type: cat.type,
+            typeExists: 'type' in cat,
+            typeValue: cat.type,
+            typeType: typeof cat.type,
+            fullObject: JSON.stringify(cat, null, 2)
+          });
+        });
+      }
       
       setCategories(data.data || []);
       setLoading(false);
