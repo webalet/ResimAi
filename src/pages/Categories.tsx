@@ -82,7 +82,8 @@ const Categories: React.FC = () => {
   const loadCategories = async () => {
     try {
       console.log('🔄 Loading categories from API...');
-      const response = await fetch('/api/categories', {
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76';
+      const response = await fetch(`${API_BASE_URL}/api/categories`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
