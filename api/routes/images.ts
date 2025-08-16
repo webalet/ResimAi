@@ -135,12 +135,24 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
       style = req.body.style;
       imageUrl = req.body.imageUrl;
       category = req.body.category;
+      
+      // CRITICAL FIX: Handle string "undefined" from frontend
+      if (category === 'undefined' || category === undefined || !category) {
+        category = undefined;
+        console.log('⚠️ [MULTIPART CATEGORY FIX] Category was undefined or string "undefined", setting to undefined');
+      }
     } else {
       // For JSON requests, data comes from req.body
       const bodyData = req.body;
       style = bodyData.style;
       imageUrl = bodyData.imageUrl;
       category = bodyData.category;
+      
+      // CRITICAL FIX: Handle string "undefined" from frontend
+      if (category === 'undefined' || category === undefined || !category) {
+        category = undefined;
+        console.log('⚠️ [JSON CATEGORY FIX] Category was undefined or string "undefined", setting to undefined');
+      }
     }
     
     const file = req.file;
@@ -155,6 +167,19 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
       fileSize: file?.size,
       bodyKeys: Object.keys(req.body || {}),
       body: req.body
+    });
+    
+    // CRITICAL DEBUG: Category parsing analysis
+    console.log('🔍 [CATEGORY DEBUG] Detailed category analysis:', {
+      'req.body.category': req.body.category,
+      'category variable': category,
+      'category type': typeof category,
+      'category length': category ? category.length : 0,
+      'category === undefined': category === undefined,
+      'category === "undefined"': category === 'undefined',
+      'isMultipart': isMultipart,
+      'req.body keys': Object.keys(req.body || {}),
+      'req.body values': Object.values(req.body || {})
     });
 
     // Check if either file or imageUrl is provided
@@ -323,10 +348,23 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
       console.warn('⚠️ [WEBHOOK URL] Could not read admin-settings.json, using fallback URL:', error);
     }
     
+    // CRITICAL DEBUG: Category value before webhook
+    console.log('🔍 [PRE-WEBHOOK CATEGORY DEBUG] Category analysis before webhook:', {
+      'original category': category,
+      'category type': typeof category,
+      'category === undefined': category === undefined,
+      'category === "undefined"': category === 'undefined',
+      'category || "Unknown"': category || 'Unknown',
+      'final category value': category || 'Unknown'
+    });
+    
+    // CRITICAL FIX: Ensure category is never undefined in webhook
+    const finalCategory = (category && category !== 'undefined' && category !== undefined) ? category : 'Unknown';
+    
     // Send POST request to external webhook with JSON body
     const webhookData = {
       imageUrl: originalImageUrl || '',
-      category: category || 'Unknown', // Use actual category or fallback
+      category: finalCategory, // Use properly validated category
       style: style,
       prompt: dynamicPrompt,
       userId: userId,
@@ -337,6 +375,13 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
       guidance_scale: '7.5',
       num_inference_steps: '50'
     };
+    
+    // CRITICAL DEBUG: Final webhook data
+    console.log('🔍 [WEBHOOK DATA DEBUG] Final webhook data category:', {
+      'webhookData.category': webhookData.category,
+      'webhookData.category type': typeof webhookData.category,
+      'full webhookData': webhookData
+    });
     
     console.log('🔍 [WEBHOOK CATEGORY DEBUG] Category value being sent:', {
       originalCategory: category,
