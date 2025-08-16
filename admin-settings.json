@@ -1,4 +1,4 @@
-﻿{
+{
   "supabase": {
     "url": "https://pfpaeiyshitndugrzmmb.supabase.co",
     "anonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmcGFlaXlzaGl0bmR1Z3J6bW1iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ2NzM0MTAsImV4cCI6MjA3MDI0OTQxMH0.CZzstaQmMmEdA1PVntBskuzdqHKe6_ovVSLfYFkD23E",
@@ -16,10 +16,10 @@
     {
       "id": "1",
       "name": "Corporate",
-      "display_name_tr": "Kurumsal FotoÄŸraf",
+      "display_name_tr": "Kurumsal Fotoğraf",
       "display_name_en": "Corporate Photography",
       "type": "Corporate",
-      "description": "Profesyonel iÅŸ dÃ¼nyasÄ± iÃ§in kurumsal fotoÄŸraflar. YÃ¶netici pozisyonlarÄ±, ÅŸirket profilleri ve resmi toplantÄ±lar iÃ§in ideal.",
+      "description": "Profesyonel iş dünyası için kurumsal fotoğraflar. Yönetici pozisyonları, şirket profilleri ve resmi toplantılar için ideal.",
       "description_en": "Professional corporate photography for business world. Perfect for executive positions, company profiles and formal meetings.",
       "image_url": "/images/corporate.jpg",
       "styles": ["Professional", "Business Casual", "Executive", "Formal Meeting", "Leadership", "Corporate Headshot"],
@@ -29,10 +29,10 @@
     {
       "id": "2",
       "name": "Creative",
-      "display_name_tr": "YaratÄ±cÄ± Portre",
+      "display_name_tr": "Yaratıcı Portre",
       "display_name_en": "Creative Portrait",
       "type": "Creative",
-      "description": "Sanatsal ve yaratÄ±cÄ± portre fotoÄŸraflarÄ±. Ã–zgÃ¼n tarzÄ±nÄ±zÄ± yansÄ±tan, artistik ve etkileyici gÃ¶rÃ¼ntÃ¼ler.",
+      "description": "Sanatsal ve yaratıcı portre fotoğrafları. Özgün tarzınızı yansıtan, artistik ve etkileyici görüntüler.",
       "description_en": "Artistic and creative portrait photography. Unique images that reflect your personal style with artistic and impressive visuals.",
       "image_url": "/images/creative.jpg",
       "styles": ["Artistic", "Bohemian", "Vintage", "Modern Art", "Abstract", "Dramatic"],
@@ -42,10 +42,10 @@
     {
       "id": "3",
       "name": "Avatar",
-      "display_name_tr": "Avatar OluÅŸturucu",
+      "display_name_tr": "Avatar Oluşturucu",
       "display_name_en": "Avatar Creator",
       "type": "Avatar",
-      "description": "Dijital avatar ve karakter fotoÄŸraflarÄ±. Sosyal medya profilleri, oyun karakterleri ve dijital kimlik iÃ§in.",
+      "description": "Dijital avatar ve karakter fotoğrafları. Sosyal medya profilleri, oyun karakterleri ve dijital kimlik için.",
       "description_en": "Digital avatar and character photography. Perfect for social media profiles, gaming characters and digital identity.",
       "image_url": "/images/avatar.jpg",
       "styles": ["Cartoon", "Realistic", "Anime", "Fantasy", "Superhero", "Gaming"],
@@ -55,10 +55,10 @@
     {
       "id": "4",
       "name": "Outfit",
-      "display_name_tr": "Elbise DeÄŸiÅŸimi",
+      "display_name_tr": "Elbise Değişimi",
       "display_name_en": "Outfit Change",
       "type": "Outfit",
-      "description": "AI ile kÄ±yafet deÄŸiÅŸtirme ve stil Ã¶nerileri. FarklÄ± kÄ±yafet kombinasyonlarÄ±nÄ± deneyimleyin.",
+      "description": "AI ile kıyafet değiştirme ve stil önerileri. Farklı kıyafet kombinasyonlarını deneyimleyin.",
       "description_en": "AI-powered outfit change and style suggestions. Experience different clothing combinations effortlessly.",
       "image_url": "/images/outfit.jpg",
       "styles": ["Casual", "Formal", "Sporty", "Trendy", "Business", "Evening"],
@@ -68,10 +68,10 @@
     {
       "id": "5",
       "name": "Background",
-      "display_name_tr": "Arkaplan DeÄŸiÅŸtirme",
+      "display_name_tr": "Arkaplan Değiştirme",
       "display_name_en": "Background Change",
       "type": "Background",
-      "description": "Profesyonel arka plan deÄŸiÅŸtirme hizmeti. FotoÄŸraflarÄ±nÄ±zÄ± istediÄŸiniz ortamda gÃ¶sterin.",
+      "description": "Profesyonel arka plan değiştirme hizmeti. Fotoğraflarınızı istediğiniz ortamda gösterin.",
       "description_en": "Professional background change service. Showcase your photos in any environment you desire.",
       "image_url": "/images/background.jpg",
       "styles": ["Office", "Studio", "Nature", "Abstract", "Urban", "Luxury"],
@@ -81,10 +81,10 @@
     {
       "id": "6",
       "name": "Skincare",
-      "display_name_tr": "Cilt DÃ¼zeltme",
+      "display_name_tr": "Cilt Düzeltme",
       "display_name_en": "Skin Enhancement",
       "type": "Skincare",
-      "description": "AI destekli cilt dÃ¼zeltme ve gÃ¼zelleÅŸtirme. DoÄŸal gÃ¶rÃ¼nÃ¼mlÃ¼, pÃ¼rÃ¼zsÃ¼z ve parlak cilt.",
+      "description": "AI destekli cilt düzeltme ve güzelleştirme. Doğal görünümlü, pürüzsüz ve parlak cilt.",
       "description_en": "AI-powered skin correction and enhancement. Natural-looking, smooth and radiant skin.",
       "image_url": "/images/skincare.jpg",
       "styles": ["Natural", "Glowing", "Professional", "Fresh", "Radiant", "Flawless"],
@@ -94,10 +94,10 @@
     {
       "id": "7",
       "name": "Fashion Photography",
-      "display_name_tr": "Moda FotoÄŸrafÃ§Ä±lÄ±ÄŸÄ±",
+      "display_name_tr": "Moda Fotoğrafçılığı",
       "display_name_en": "Fashion Photography",
       "type": "Fashion Photography",
-      "description": "Profesyonel moda fotoÄŸrafÃ§Ä±lÄ±ÄŸÄ± ve stil Ã§ekimleri. Trend kÄ±yafetler, aksesuar kombinasyonlarÄ± ve moda dÃ¼nyasÄ±na uygun pozlar.",
+      "description": "Profesyonel moda fotoğrafçılığı ve stil çekimleri. Trend kıyafetler, aksesuar kombinasyonları ve moda dünyasına uygun pozlar.",
       "description_en": "Professional fashion photography and style shoots. Trendy outfits, accessory combinations and poses suitable for the fashion world.",
       "image_url": "/images/ornek.jpg",
       "styles": ["High Fashion", "Street Style", "Editorial", "Commercial", "Avant-garde", "Minimalist Fashion"],
@@ -107,34 +107,46 @@
   ],
   "aiPrompts": {
     "Corporate": {
-      "Klasik": "Put the person in a traditional office environment with classic wooden furniture and formal atmosphere. Also, make sure they wear a classic business suit with traditional styling and conservative colors.",
-      "Modern": "Put the person in a modern tech office environment with glass walls, contemporary furniture, and innovative workspace design. Also, make sure they wear a sleek contemporary business suit with modern cut and trendy styling.",
-      "Resmi": "Put the person in a very formal corporate boardroom environment with mahogany furniture and executive atmosphere. Also, make sure they wear a strictly formal business suit with conservative styling, tie, and traditional corporate appearance."
+      "Professional": "Put the person in a traditional office environment with classic wooden furniture and formal atmosphere. Also, make sure they wear a classic business suit with traditional styling and conservative colors.",
+      "Business Casual": "Put the person in a modern tech office environment with glass walls, contemporary furniture, and innovative workspace design. Also, make sure they wear a sleek contemporary business suit with modern cut and trendy styling.",
+      "Executive": "Put the person in a very formal corporate boardroom environment with mahogany furniture and executive atmosphere. Also, make sure they wear a strictly formal business suit with conservative styling, tie, and traditional corporate appearance.",
+      "Formal Meeting": "Put the person in a conference room setting with professional meeting atmosphere. Ensure they wear formal business attire suitable for important meetings.",
+      "Leadership": "Put the person in an executive office environment that conveys authority and leadership. Dress them in premium business attire that reflects leadership qualities.",
+      "Corporate Headshot": "Create a professional headshot with clean corporate background. Focus on professional business attire and confident expression suitable for corporate profiles."
     },
     "Creative": {
-      "Sanatsal": "Transform the person with artistic effects: add colorful paint splashes on their face and hair, apply vibrant artistic makeup with bold colors, add creative face painting designs, and enhance with artistic lighting effects on the person. Keep the original background unchanged, focus only on making the person artistic and colorful.",
-      "Renkli": "Transform the person into a vibrant, colorful portrait with rainbow-like color gradients on their clothing, add bright neon lighting effects around them, enhance their features with vivid makeup in electric blues, hot pinks, and golden yellows. Create a dynamic atmosphere with colorful light rays and energetic visual elements while maintaining the person as the focal point.",
-      "Minimalist": "Create a clean, minimalist portrait with the person against a pure white or soft neutral background. Simplify their clothing to solid, muted colors like white, beige, or soft gray. Remove any distracting elements, use soft natural lighting, and focus on clean lines and elegant simplicity. The composition should be balanced and serene with plenty of negative space."
+      "Artistic": "Transform the person with artistic effects: add colorful paint splashes on their face and hair, apply vibrant artistic makeup with bold colors, add creative face painting designs, and enhance with artistic lighting effects on the person. Keep the original background unchanged, focus only on making the person artistic and colorful.",
+      "Bohemian": "Transform the person into a bohemian style with flowing fabrics, natural textures, earthy tones, and free-spirited accessories. Add artistic elements like feathers, beads, or natural materials while maintaining a creative, unconventional aesthetic.",
+      "Vintage": "Create a vintage-inspired portrait with retro styling, classic color grading, and period-appropriate elements. Apply vintage photo effects and styling that evokes a specific historical era.",
+      "Modern Art": "Transform the person into a modern art concept with geometric patterns, abstract elements, and contemporary artistic interpretation. Use bold colors and innovative visual techniques.",
+      "Abstract": "Create an abstract artistic interpretation with surreal elements, creative distortions, and experimental visual effects while maintaining the person's recognizable features.",
+      "Dramatic": "Apply dramatic lighting effects, intense shadows, and theatrical elements to create a powerful, emotionally impactful portrait with strong visual contrast."
     },
     "Avatar": {
-      "Ã‡izgi Film": "Transform the person into a vibrant cartoon-style avatar with exaggerated facial features, bright cartoon colors, simplified geometric shapes, large expressive eyes, and smooth animated textures. Apply a cel-shaded effect with bold outlines and maintain the playful, animated character aesthetic typical of modern animation studios.",
-      "Realistik": "Create a high-quality realistic digital avatar that preserves all natural human features and proportions with enhanced detail. Improve skin texture, add subtle lighting effects, maintain authentic facial expressions, and ensure photorealistic quality while keeping the person's unique characteristics and identity intact.",
-      "Fantastik": "Transform the person into an enchanting fantasy avatar with magical elements such as glowing eyes, ethereal lighting effects, mystical aura, fantasy-themed accessories like elven ears or magical symbols, and otherworldly atmospheric effects. Add fantasy colors and magical particle effects while maintaining recognizable human features."
+      "Cartoon": "Transform the person into a vibrant cartoon-style avatar with exaggerated facial features, bright cartoon colors, simplified geometric shapes, large expressive eyes, and smooth animated textures. Apply a cel-shaded effect with bold outlines and maintain the playful, animated character aesthetic typical of modern animation studios.",
+      "Realistic": "Create a high-quality realistic digital avatar that preserves all natural human features and proportions with enhanced detail. Improve skin texture, add subtle lighting effects, maintain authentic facial expressions, and ensure photorealistic quality while keeping the person's unique characteristics and identity intact.",
+      "Anime": "Transform the person into an anime-style avatar with characteristic large eyes, stylized facial features, vibrant hair colors, and typical anime aesthetic. Apply smooth shading and bright, saturated colors typical of Japanese animation.",
+      "Fantasy": "Transform the person into an enchanting fantasy avatar with magical elements such as glowing eyes, ethereal lighting effects, mystical aura, fantasy-themed accessories like elven ears or magical symbols, and otherworldly atmospheric effects. Add fantasy colors and magical particle effects while maintaining recognizable human features.",
+      "Superhero": "Create a superhero-style avatar with heroic proportions, dynamic pose, and superhero costume elements. Add dramatic lighting and powerful visual effects that convey strength and heroism.",
+      "Gaming": "Transform into a gaming character avatar with video game aesthetic, enhanced features suitable for gaming platforms, and styling appropriate for gaming profiles and virtual worlds."
     },
     "Outfit": {
       "Casual": "Transform the person's outfit to stylish casual wear: fitted dark jeans or chinos, a trendy t-shirt or casual button-down shirt, comfortable sneakers or casual shoes, and add accessories like a watch or casual jacket. Create a relaxed, everyday look that's both comfortable and fashionable.",
       "Formal": "Change the person's outfit to elegant formal attire: for men, a well-tailored dark suit with dress shirt, tie, and polished dress shoes; for women, an elegant cocktail dress or professional pantsuit with heels and refined accessories. Ensure the styling is sophisticated and appropriate for formal events.",
-      "Spor": "Transform the person into athletic sportswear: moisture-wicking workout clothes, athletic shorts or leggings, performance t-shirt or tank top, quality running shoes, and sport-specific accessories like a fitness tracker or gym bag. Create an active, energetic appearance suitable for exercise or sports activities."
+      "Sporty": "Transform the person into athletic sportswear: moisture-wicking workout clothes, athletic shorts or leggings, performance t-shirt or tank top, quality running shoes, and sport-specific accessories like a fitness tracker or gym bag. Create an active, energetic appearance suitable for exercise or sports activities."
     },
     "Background": {
-      "Ofis": "Replace the background with a sophisticated modern office environment featuring floor-to-ceiling windows with city views, sleek glass conference tables, contemporary furniture, soft ambient lighting, and professional workplace atmosphere. Add subtle details like modern art on walls and high-tech equipment.",
-      "DoÄŸa": "Transform the background into a breathtaking natural outdoor scene with lush green forests, golden sunlight filtering through trees, scenic mountain landscapes, or serene lakeside views. Include natural elements like flowing water, wildflowers, and soft natural lighting that creates a peaceful, organic atmosphere.",
-      "StÃ¼dyo": "Create a professional photography studio background with seamless gradient lighting, soft diffused illumination, clean minimalist backdrop in neutral tones (white, gray, or subtle colors), and professional studio lighting setup that enhances the subject without distractions."
+      "Office": "Replace the background with a sophisticated modern office environment featuring floor-to-ceiling windows with city views, sleek glass conference tables, contemporary furniture, soft ambient lighting, and professional workplace atmosphere. Add subtle details like modern art on walls and high-tech equipment.",
+      "Nature": "Transform the background into a breathtaking natural outdoor scene with lush green forests, golden sunlight filtering through trees, scenic mountain landscapes, or serene lakeside views. Include natural elements like flowing water, wildflowers, and soft natural lighting that creates a peaceful, organic atmosphere.",
+      "Studio": "Create a professional photography studio background with seamless gradient lighting, soft diffused illumination, clean minimalist backdrop in neutral tones (white, gray, or subtle colors), and professional studio lighting setup that enhances the subject without distractions."
     },
     "Skincare": {
-      "DoÄŸal": "Apply professional natural skin enhancement: subtly even out skin tone, reduce minor blemishes while preserving natural texture and pores, enhance the skin's inherent glow with soft lighting, and maintain authentic skin characteristics. Focus on healthy, realistic improvements that look naturally beautiful.",
-      "PÃ¼rÃ¼zsÃ¼z": "Create flawless, magazine-quality skin with professional retouching: smooth out all imperfections, minimize pores, even skin tone completely, remove blemishes and fine lines, and apply subtle contouring for a polished, airbrushed finish while keeping facial features natural.",
-      "Parlak": "Transform the skin with a luminous, radiant glow: enhance natural skin luminosity, add subtle highlighting to cheekbones and high points of the face, create a healthy dewy finish, boost overall skin radiance with warm golden undertones, and apply professional-grade skin brightening effects for a vibrant, youthful appearance."
+      "Natural": "Apply professional natural skin enhancement: subtly even out skin tone, reduce minor blemishes while preserving natural texture and pores, enhance the skin's inherent glow with soft lighting, and maintain authentic skin characteristics. Focus on healthy, realistic improvements that look naturally beautiful.",
+      "Glowing": "Transform the skin with a luminous, radiant glow: enhance natural skin luminosity, add subtle highlighting to cheekbones and high points of the face, create a healthy dewy finish, boost overall skin radiance with warm golden undertones, and apply professional-grade skin brightening effects for a vibrant, youthful appearance.",
+      "Professional": "Apply professional-grade skin retouching suitable for corporate and business photography. Even out skin tone, reduce imperfections while maintaining natural appearance, and enhance overall skin quality for professional presentations.",
+      "Fresh": "Create a fresh, youthful skin appearance with enhanced natural radiance, improved skin clarity, and a healthy, vibrant complexion that looks naturally refreshed and energized.",
+      "Radiant": "Enhance skin with radiant, luminous effects that create a healthy glow. Add subtle highlighting and skin brightening while maintaining natural skin texture and authenticity.",
+      "Flawless": "Create flawless, magazine-quality skin with professional retouching: smooth out all imperfections, minimize pores, even skin tone completely, remove blemishes and fine lines, and apply subtle contouring for a polished, airbrushed finish while keeping facial features natural."
     },
     "Fashion Photography": {
       "High Fashion": "Transform the person into a high-fashion model with dramatic poses, elegant styling, and sophisticated fashion elements. Add luxury fashion accessories, create dramatic lighting effects, and enhance with editorial-style composition typical of high-end fashion magazines.",
