@@ -333,6 +333,14 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
       num_inference_steps: 50
     };
     
+    console.log('🔍 [WEBHOOK DEBUG] Full payload being sent to N8N:', {
+      url: webhookUrl,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      payload: webhookPayload,
+      payloadString: JSON.stringify(webhookPayload, null, 2)
+    });
+    
     fetch(webhookUrl, {
       method: 'POST',
       headers: {
