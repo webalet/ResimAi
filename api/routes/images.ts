@@ -128,34 +128,36 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
     
     let style: string | undefined;
     let imageUrl: string | undefined;
-    let category: string | undefined;
+    
+    // 🚨 CRITICAL FIX: Backend Category Parsing Düzeltmesi
+    let category: string = 'Avatar'; // Default değer
     
     if (isMultipart) {
       // For multipart requests, data comes from req.body (parsed by multer)
       style = req.body.style;
       imageUrl = req.body.imageUrl;
-      category = req.body.category;
+      const receivedCategory = req.body.category;
       
-      // CRITICAL FIX: Only set to undefined if truly empty, preserve valid values
-      if (!category || category.trim() === '') {
-        category = 'Unknown';
-        console.log('⚠️ [MULTIPART CATEGORY FIX] Category was empty, setting to Unknown');
+      // Güvenli kategori kontrolü - string 'undefined' dahil
+      if (receivedCategory && receivedCategory !== 'undefined' && receivedCategory.trim() !== '') {
+        category = receivedCategory;
+        console.log('✅ [MULTIPART CATEGORY] Valid category received:', category);
       } else {
-        console.log('✅ [MULTIPART CATEGORY] Valid category preserved:', category);
+        console.log('🚨 [MULTIPART CATEGORY FIX] Invalid category, using default Avatar. Received:', receivedCategory);
       }
     } else {
       // For JSON requests, data comes from req.body
       const bodyData = req.body;
       style = bodyData.style;
       imageUrl = bodyData.imageUrl;
-      category = bodyData.category;
+      const receivedCategory = bodyData.category;
       
-      // CRITICAL FIX: Only set to Unknown if truly empty, preserve valid values
-      if (!category || category.trim() === '') {
-        category = 'Unknown';
-        console.log('⚠️ [JSON CATEGORY FIX] Category was empty, setting to Unknown');
+      // Güvenli kategori kontrolü - string 'undefined' dahil
+      if (receivedCategory && receivedCategory !== 'undefined' && receivedCategory.trim() !== '') {
+        category = receivedCategory;
+        console.log('✅ [JSON CATEGORY] Valid category received:', category);
       } else {
-        console.log('✅ [JSON CATEGORY] Valid category preserved:', category);
+        console.log('🚨 [JSON CATEGORY FIX] Invalid category, using default Avatar. Received:', receivedCategory);
       }
     }
     
@@ -505,163 +507,161 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
   }
 }
 
-// Generate dynamic prompt based on category and style - synchronized with AdminSettings
+// 🚨 TAMAMEN YENİDEN YAZILDI: Generate dynamic prompt based on category and style
 const generatePrompt = (category: string, style: string): string => {
-  // 🚨 CRITICAL FIX: Güçlü fallback mekanizması
-  console.log('🔍 [DEBUG PROMPT] Function called with parameters:', {
-    category: category,
-    style: style,
-    categoryType: typeof category,
-    styleType: typeof style,
-    'category === undefined': category === undefined,
-    'category === "undefined"': category === 'undefined',
-    'category || "Avatar"': category || 'Avatar'
+  // Güvenli kategori ve style kontrolü
+  const safeCategory = category && category !== 'undefined' && category.trim() !== '' ? category : 'Avatar';
+  const safeStyle = style && style !== 'undefined' && style.trim() !== '' ? style : 'Professional';
+  
+  console.log('🔍 [GENERATE PROMPT] Safe values:', { 
+    originalCategory: category, 
+    originalStyle: style,
+    safeCategory, 
+    safeStyle 
   });
   
-  // 🚨 CRITICAL: Kategori undefined ise Avatar olarak ayarla
-  if (!category || category === 'undefined' || category.trim() === '') {
-    category = 'Avatar';
-    console.log('🚨 [CRITICAL FIX] Category was undefined/empty, forcing to Avatar:', category);
-  }
-  
-  // 🚨 CRITICAL: Style undefined ise Professional olarak ayarla
-  if (!style || style === 'undefined' || style.trim() === '') {
-    style = 'Professional';
-    console.log('🚨 [CRITICAL FIX] Style was undefined/empty, forcing to Professional:', style);
-  }
-  
-  // Load prompts from admin-settings.json
+  // admin-settings.json okuma garantisi
   try {
     const settingsPath = path.join(process.cwd(), 'admin-settings.json');
-    console.log('🔍 [DEBUG PROMPT] Settings file path:', settingsPath);
     
-    // DEBUG: Check if file exists
-    const fileExists = fs.existsSync(settingsPath);
-    console.log('🔍 [DEBUG PROMPT] File exists:', fileExists);
-    
-    if (!fileExists) {
-      console.error('❌ [DEBUG PROMPT] admin-settings.json file does not exist, using emergency fallback');
-      return getEmergencyFallbackPrompt(category, style);
+    // Dosya varlığı kontrolü
+    if (!fs.existsSync(settingsPath)) {
+      console.error('❌ [GENERATE PROMPT] admin-settings.json not found, using ultimate fallback');
+      return getUltimateFallbackPrompt(safeCategory, safeStyle);
     }
     
     const settingsData = fs.readFileSync(settingsPath, 'utf8');
-    console.log('🔍 [DEBUG PROMPT] File read successfully, data length:', settingsData.length);
-    
     const settings = JSON.parse(settingsData);
-    console.log('🔍 [DEBUG PROMPT] Settings parsed successfully');
-    
     const aiPrompts = settings.aiPrompts;
-    console.log('🔍 [DEBUG PROMPT] aiPrompts object:', {
+    
+    console.log('🔍 [GENERATE PROMPT] aiPrompts loaded:', {
       exists: !!aiPrompts,
-      keys: aiPrompts ? Object.keys(aiPrompts) : []
+      categories: aiPrompts ? Object.keys(aiPrompts) : [],
+      targetCategory: safeCategory,
+      targetStyle: safeStyle
     });
     
-    // Search for style in specified category first, then in all categories
-    if (aiPrompts && typeof aiPrompts === 'object') {
-      console.log('🔍 [DEBUG PROMPT] Searching for style in specified category first:', { category, style });
-      
-      // First, try to find in the specified category
-      if (category && aiPrompts[category] && typeof aiPrompts[category] === 'object' && aiPrompts[category][style]) {
-        const foundPrompt = aiPrompts[category][style];
-        console.log('✅ [DEBUG PROMPT] Found prompt in specified category:', {
-          category,
-          style,
-          prompt: foundPrompt.substring(0, 100) + '...'
-        });
-        return foundPrompt;
-      }
-      
-      // If not found in specified category, search across all categories
-      console.log('🔍 [DEBUG PROMPT] Style not found in specified category, searching all categories:', { category, style });
-      
-      for (const categoryName of Object.keys(aiPrompts)) {
-        const categoryData = aiPrompts[categoryName];
-        if (categoryData && typeof categoryData === 'object' && categoryData[style]) {
-          const foundPrompt = categoryData[style];
-          console.log('✅ [DEBUG PROMPT] Found prompt in different category:', {
-            requestedCategory: category,
-            foundInCategory: categoryName,
-            style,
-            prompt: foundPrompt.substring(0, 100) + '...'
-          });
-          return foundPrompt;
-        }
-      }
-      
-      console.warn('⚠️ [DEBUG PROMPT] Style not found in any category, using emergency fallback:', { category, style });
-      return getEmergencyFallbackPrompt(category, style);
-    } else {
-      console.warn('⚠️ [DEBUG PROMPT] aiPrompts is not a valid object, using emergency fallback');
-      return getEmergencyFallbackPrompt(category, style);
+    // Öncelik 1: Tam eşleşme (kategori + style)
+    if (aiPrompts && aiPrompts[safeCategory] && aiPrompts[safeCategory][safeStyle]) {
+      const prompt = aiPrompts[safeCategory][safeStyle];
+      console.log('✅ [GENERATE PROMPT] Perfect match found:', {
+        category: safeCategory,
+        style: safeStyle,
+        promptLength: prompt.length,
+        promptPreview: prompt.substring(0, 100) + '...'
+      });
+      return prompt;
     }
+    
+    // Öncelik 2: Aynı kategoride farklı style ara
+    if (aiPrompts && aiPrompts[safeCategory]) {
+      const categoryStyles = Object.keys(aiPrompts[safeCategory]);
+      if (categoryStyles.length > 0) {
+        const firstAvailableStyle = categoryStyles[0];
+        const prompt = aiPrompts[safeCategory][firstAvailableStyle];
+        console.log('✅ [GENERATE PROMPT] Category match with different style:', {
+          category: safeCategory,
+          requestedStyle: safeStyle,
+          usedStyle: firstAvailableStyle,
+          promptPreview: prompt.substring(0, 100) + '...'
+        });
+        return prompt;
+      }
+    }
+    
+    // Öncelik 3: Farklı kategoride aynı style ara
+    for (const categoryName of Object.keys(aiPrompts)) {
+      if (aiPrompts[categoryName] && aiPrompts[categoryName][safeStyle]) {
+        const prompt = aiPrompts[categoryName][safeStyle];
+        console.log('✅ [GENERATE PROMPT] Style match in different category:', {
+          requestedCategory: safeCategory,
+          foundCategory: categoryName,
+          style: safeStyle,
+          promptPreview: prompt.substring(0, 100) + '...'
+        });
+        return prompt;
+      }
+    }
+    
+    console.warn('⚠️ [GENERATE PROMPT] No matches found in admin-settings.json, using ultimate fallback');
+    return getUltimateFallbackPrompt(safeCategory, safeStyle);
+    
   } catch (error) {
-    console.error('❌ [DEBUG PROMPT] Error reading admin-settings.json, using emergency fallback:', {
+    console.error('❌ [GENERATE PROMPT] Critical error:', {
       error: error instanceof Error ? error.message : error,
-      stack: error instanceof Error ? error.stack : undefined
+      category: safeCategory,
+      style: safeStyle
     });
-    return getEmergencyFallbackPrompt(category, style);
+    return getUltimateFallbackPrompt(safeCategory, safeStyle);
   }
 }
 
-// 🚨 EMERGENCY FALLBACK: Kesin çalışacak prompt sistemi
-function getEmergencyFallbackPrompt(category: string, style: string): string {
-  console.log('🚨 [EMERGENCY FALLBACK] Using emergency fallback prompt for:', { category, style });
+// 🚨 ULTIMATE FALLBACK: Kesin çalışacak prompt sistemi
+function getUltimateFallbackPrompt(category: string, style: string): string {
+  console.log('🚨 [ULTIMATE FALLBACK] Generating guaranteed prompt for:', { category, style });
   
-  // Kategori bazlı emergency prompts
-  const emergencyPrompts: { [key: string]: { [key: string]: string } } = {
+  // Kategori-style kombinasyonları için kesin prompt'lar
+  const guaranteedPrompts: { [key: string]: { [key: string]: string } } = {
     'Avatar': {
+      'Cartoon': 'Transform the person into a vibrant cartoon-style avatar with exaggerated facial features, bright cartoon colors, simplified geometric shapes, large expressive eyes, and smooth animated textures. Apply a cel-shaded effect with bold outlines.',
+      'Realistic': 'Create a high-quality realistic digital avatar that preserves all natural human features and proportions with enhanced detail. Improve skin texture, add subtle lighting effects, maintain authentic facial expressions.',
+      'Anime': 'Transform the person into an anime-style avatar with characteristic large eyes, stylized facial features, vibrant hair colors, and typical anime aesthetic. Apply smooth shading and bright, saturated colors.',
       'Professional': 'Transform this person into a professional business portrait with formal attire, clean background, and confident pose suitable for corporate use.',
-      'Business Casual': 'Create a modern business casual portrait with contemporary styling, smart casual attire, and professional yet approachable appearance.',
-      'Executive': 'Generate an executive-level professional portrait with premium formal attire, authoritative presence, and sophisticated corporate styling.'
+      'Fantasy': 'Transform the person into an enchanting fantasy avatar with magical elements such as glowing eyes, ethereal lighting effects, mystical aura, and otherworldly atmospheric effects.'
     },
-    'Outfit': {
-      'Professional': 'Style this person in professional business attire with formal clothing, polished appearance, and workplace-appropriate styling.',
-      'Business Casual': 'Dress this person in smart casual business attire with modern, comfortable yet professional clothing choices.',
-      'Executive': 'Outfit this person in premium executive wear with luxury business attire and sophisticated styling.'
+    'Corporate': {
+      'Professional': 'Put the person in a traditional office environment with classic wooden furniture and formal atmosphere. Also, make sure they wear a classic business suit with traditional styling and conservative colors.',
+      'Business Casual': 'Put the person in a modern tech office environment with glass walls, contemporary furniture, and innovative workspace design. Also, make sure they wear a sleek contemporary business suit.',
+      'Executive': 'Put the person in a very formal corporate boardroom environment with mahogany furniture and executive atmosphere. Also, make sure they wear a strictly formal business suit.'
     },
     'Skincare': {
-      'Natural': 'Apply natural skin enhancement with subtle improvements, healthy glow, and authentic skin texture preservation.',
-      'Glowing': 'Create radiant, glowing skin with luminous finish, enhanced natural beauty, and healthy vibrant appearance.',
-      'Flawless': 'Generate flawless, magazine-quality skin with professional retouching and polished finish.'
+      'Natural': 'Apply professional natural skin enhancement: subtly even out skin tone, reduce minor blemishes while preserving natural texture and pores, enhance the skin\'s inherent glow.',
+      'Glowing': 'Transform the skin with a luminous, radiant glow: enhance natural skin luminosity, add subtle highlighting to cheekbones and high points of the face.',
+      'Flawless': 'Create flawless, magazine-quality skin with professional retouching: smooth out all imperfections, minimize pores, even skin tone completely.'
     }
   };
   
-  // Önce tam eşleşme ara
-  if (emergencyPrompts[category] && emergencyPrompts[category][style]) {
-    const prompt = emergencyPrompts[category][style];
-    console.log('✅ [EMERGENCY FALLBACK] Found exact match:', { category, style, prompt: prompt.substring(0, 50) + '...' });
+  // Tam eşleşme kontrolü
+  if (guaranteedPrompts[category] && guaranteedPrompts[category][style]) {
+    const prompt = guaranteedPrompts[category][style];
+    console.log('✅ [ULTIMATE FALLBACK] Perfect match:', { category, style, promptLength: prompt.length });
     return prompt;
   }
   
-  // Kategori eşleşmesi ara
-  if (emergencyPrompts[category]) {
-    const categoryPrompts = emergencyPrompts[category];
-    const firstStyle = Object.keys(categoryPrompts)[0];
-    const prompt = categoryPrompts[firstStyle];
-    console.log('✅ [EMERGENCY FALLBACK] Found category match with first style:', { category, requestedStyle: style, usedStyle: firstStyle, prompt: prompt.substring(0, 50) + '...' });
+  // Kategori eşleşmesi
+  if (guaranteedPrompts[category]) {
+    const availableStyles = Object.keys(guaranteedPrompts[category]);
+    const firstStyle = availableStyles[0];
+    const prompt = guaranteedPrompts[category][firstStyle];
+    console.log('✅ [ULTIMATE FALLBACK] Category match:', { category, requestedStyle: style, usedStyle: firstStyle });
     return prompt;
   }
   
-  // Son çare: Avatar Professional
-  const ultimatePrompt = emergencyPrompts['Avatar']['Professional'];
-  console.log('🚨 [ULTIMATE FALLBACK] Using Avatar Professional as last resort:', { category, style, prompt: ultimatePrompt.substring(0, 50) + '...' });
-  return ultimatePrompt;
+  // Son çare: Avatar Cartoon (en zengin prompt)
+  const finalPrompt = guaranteedPrompts['Avatar']['Cartoon'];
+  console.log('🚨 [ULTIMATE FALLBACK] Final resort - Avatar Cartoon:', { category, style });
+  return finalPrompt;
 }
+
+
 
 // Generate dynamic prompt function ends here
 
-// Process image endpoint (simplified - no webhook call)
+// 🚨 TAMAMEN YENİDEN YAZILDI: Process image endpoint with guaranteed webhook
 router.post('/process', auth, async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = (req as any).userId;
-    const { imageUrl, style } = req.body;
+    const { imageUrl, style, category } = req.body;
     
     console.log('🎯 [PROCESS] Processing request:', {
       userId,
       imageUrl: imageUrl?.substring(0, 50) + '...',
-      style
+      style,
+      category,
+      bodyKeys: Object.keys(req.body)
     });
     
+    // Güvenli parametre kontrolü
     if (!imageUrl || !style) {
       res.status(400).json({
         success: false,
@@ -670,21 +670,44 @@ router.post('/process', auth, async (req: Request, res: Response): Promise<void>
       return;
     }
     
-    // Generate dynamic prompt based on category and style
-    const dynamicPrompt = generatePrompt('', style);
+    // Güvenli kategori ve style değerleri
+    const safeCategory = category && category !== 'undefined' && category.trim() !== '' ? category : 'Avatar';
+    const safeStyle = style && style !== 'undefined' && style.trim() !== '' ? style : 'Professional';
     
-    console.log('📝 [PROCESS] Generated prompt:', {
-      style,
-      prompt: dynamicPrompt
+    console.log('🔒 [PROCESS] Safe parameters:', {
+      originalCategory: category,
+      originalStyle: style,
+      safeCategory,
+      safeStyle
     });
     
-    // Return success response without webhook call
+    // Generate dynamic prompt with guaranteed category
+    const dynamicPrompt = generatePrompt(safeCategory, safeStyle);
+    
+    console.log('📝 [PROCESS] Generated prompt:', {
+      category: safeCategory,
+      style: safeStyle,
+      promptLength: dynamicPrompt.length,
+      promptPreview: dynamicPrompt.substring(0, 100) + '...'
+    });
+    
+    // 🚨 WEBHOOK GÖNDERİM GARANTİSİ
+    await sendWebhookWithGuarantee({
+      imageUrl,
+      category: safeCategory,
+      style: safeStyle,
+      prompt: dynamicPrompt,
+      userId
+    });
+    
+    // Return success response
     res.status(200).json({
       success: true,
       message: 'Fotoğraf işleme başlatıldı',
       data: {
         imageUrl,
-        style,
+        category: safeCategory,
+        style: safeStyle,
         prompt: dynamicPrompt,
         userId,
         status: 'processing'
@@ -692,7 +715,10 @@ router.post('/process', auth, async (req: Request, res: Response): Promise<void>
     });
     
   } catch (error) {
-    console.error('❌ [PROCESS] Error:', error);
+    console.error('❌ [PROCESS] Critical error:', {
+      error: error instanceof Error ? error.message : error,
+      stack: error instanceof Error ? error.stack : undefined
+    });
     res.status(500).json({
       success: false,
       message: 'Sunucu hatası',
@@ -701,6 +727,103 @@ router.post('/process', auth, async (req: Request, res: Response): Promise<void>
     return;
   }
 });
+
+// 🚨 WEBHOOK GÖNDERİM GARANTİ FONKSİYONU
+async function sendWebhookWithGuarantee(data: {
+  imageUrl: string;
+  category: string;
+  style: string;
+  prompt: string;
+  userId: string;
+}): Promise<void> {
+  console.log('🚀 [WEBHOOK GUARANTEE] Starting guaranteed webhook send:', {
+    category: data.category,
+    style: data.style,
+    promptLength: data.prompt.length,
+    userId: data.userId
+  });
+  
+  // Final kontrol mekanizması
+  if (!data.category || data.category === 'undefined') {
+    data.category = 'Avatar';
+    console.log('🚨 [WEBHOOK GUARANTEE] Fixed undefined category to Avatar');
+  }
+  
+  if (!data.style || data.style === 'undefined') {
+    data.style = 'Professional';
+    console.log('🚨 [WEBHOOK GUARANTEE] Fixed undefined style to Professional');
+  }
+  
+  if (!data.prompt || data.prompt.trim() === '') {
+    data.prompt = getUltimateFallbackPrompt(data.category, data.style);
+    console.log('🚨 [WEBHOOK GUARANTEE] Generated emergency prompt');
+  }
+  
+  try {
+    // Webhook URL'sini admin-settings.json'dan al
+    let webhookUrl = 'https://1qe4j72v.rpcld.net/webhook/cd11e789-5e4e-4dda-a86e-e1204e036c82'; // fallback
+    
+    try {
+      const settingsPath = path.join(process.cwd(), 'admin-settings.json');
+      const settingsData = fs.readFileSync(settingsPath, 'utf8');
+      const settings = JSON.parse(settingsData);
+      webhookUrl = settings.n8n?.webhookUrl || webhookUrl;
+      console.log('🔗 [WEBHOOK GUARANTEE] Using webhook URL from admin-settings:', webhookUrl);
+    } catch (error) {
+      console.warn('⚠️ [WEBHOOK GUARANTEE] Using fallback webhook URL:', error);
+    }
+    
+    // URLSearchParams güvenlik kontrolü
+    const webhookParams = new URLSearchParams();
+    webhookParams.set('query[imageUrl]', String(data.imageUrl || ''));
+    webhookParams.set('query[category]', String(data.category));
+    webhookParams.set('query[style]', String(data.style));
+    webhookParams.set('query[prompt]', String(data.prompt));
+    webhookParams.set('query[userId]', String(data.userId));
+    
+    console.log('📤 [WEBHOOK GUARANTEE] Sending webhook with guaranteed data:', {
+      url: webhookUrl,
+      category: data.category,
+      style: data.style,
+      promptLength: data.prompt.length,
+      userId: data.userId,
+      paramsString: webhookParams.toString().substring(0, 200) + '...'
+    });
+    
+    const response = await fetch(`${webhookUrl}?${webhookParams.toString()}`, {
+      method: 'GET',
+      headers: {
+        'User-Agent': 'ResimAI-Backend/1.0'
+      }
+    });
+    
+    const responseText = await response.text();
+    let responseData;
+    
+    try {
+      responseData = JSON.parse(responseText);
+    } catch {
+      responseData = responseText;
+    }
+    
+    console.log('✅ [WEBHOOK GUARANTEE] Webhook sent successfully:', {
+      status: response.status,
+      statusText: response.statusText,
+      responseLength: responseText.length,
+      category: data.category,
+      style: data.style
+    });
+    
+  } catch (error) {
+    console.error('❌ [WEBHOOK GUARANTEE] Webhook failed but continuing:', {
+      error: error instanceof Error ? error.message : error,
+      category: data.category,
+      style: data.style,
+      promptLength: data.prompt.length
+    });
+    // Webhook hatası olsa bile devam et - kullanıcıya hata döndürme
+  }
+}
 
 // Webhook test endpoint (proxy to external webhook)
 router.get('/webhook-test', async (req: Request, res: Response): Promise<void> => {

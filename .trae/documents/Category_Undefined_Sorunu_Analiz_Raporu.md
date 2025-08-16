@@ -286,57 +286,117 @@ console.log('🔍 [WEBHOOK DEBUG] Category value being sent:', finalCategory);
 }
 ```
 
-## 🚨 Yeni Analiz: Sorun Backend'de Devam Ediyor
+### Deneme 3: Kritik Debug Stratejisi ve Fallback Sistemi (16 Ağustos 2025)
+**Yapılan:** 
+- generatePrompt fonksiyonuna güçlü fallback mekanizması eklendi
+- Emergency fallback sistemi oluşturuldu
+- Backend'de hard-coded 'Avatar' testi uygulandı
+- URLSearchParams ile garantili kategori gönderimi
+- Çoklu doğrulama sistemi eklendi
 
-### Mevcut Durum Analizi:
+**Sonuç:** ❌ BAŞARISIZ - Tüm çözümler çalışmadı
+
+**Son Test Verisi (16 Ağustos 2025 - 22:45):**
+```json
+{
+  "query": {
+    "imageUrl": "https://pfpaeiyshitndugrzmmb.supabase.co/storage/v1/object/public/images/originals/cc915709-e35a-48b9-a8f3-db97c5542d3e/1755373527011-url-image.jpeg",
+    "category": "undefined",
+    "style": "Cartoon",
+    "prompt": "professional portrait, high quality, studio lighting",
+    "userId": "cc915709-e35a-48b9-a8f3-db97c5542d3e",
+    "jobId": "94b950d0-3cc5-4b6f-92e1-8d7f2fdd4a7c"
+  }
+}
+```
+
+**Kritik Bulgular:**
+- Hard-coded 'Avatar' testi bile çalışmadı
+- Emergency fallback sistemi devreye girmedi
+- Prompt hala sabit: "professional portrait, high quality, studio lighting"
+- Backend'deki tüm güvenlik önlemleri bypass edildi
+
+## 🚨 KRİTİK ANALİZ: Tüm Çözümler Başarısız - Derin Seviye Sorun
+
+### Son Durum Analizi (16 Ağustos 2025 - 22:45):
 1. **Frontend ✅ Doğru:** `category: "Avatar"` gönderiliyor
-2. **Backend ❌ Sorunlu:** Hala `category: "undefined"` N8N'e iletiyor
+2. **Backend ❌ Kritik Sorun:** Tüm güvenlik önlemlerine rağmen `category: "undefined"` N8N'e gidiyor
 3. **N8N ❌ Yanlış Veri Alıyor:** `category: "undefined"`
+4. **Prompt ❌ Hala Sabit:** "professional portrait, high quality, studio lighting"
 
-### Olası Nedenler:
-1. **Backend'de category değişkeni hala undefined'a çevriliyor**
-2. **Webhook gönderim sırasında category değeri kaybolıyor**
-3. **finalCategory hesaplaması yanlış çalışıyor**
-4. **URLSearchParams category değerini doğru encode etmiyor**
+### Yeni Sorun Hipotezleri:
+1. **Backend'de garantili kategori ayarlaması çalışmıyor**
+2. **URLSearchParams'da kategori kaybolabiliyor**
+3. **N8N workflow'unda kategori override ediliyor olabilir**
+4. **Webhook URL'sinde kategori parametresi düzgün encode edilmiyor**
+5. **generatePrompt fonksiyonu hiç çağrılmıyor olabilir**
+6. **Admin-settings.json dosyası okunamıyor olabilir**
 
-## 🔧 Yeni Çözüm Stratejisi
+## 🔧 ACİL YENİ ÇÖZÜM STRATEJİSİ
 
-### Acil Yapılması Gerekenler:
+### Kritik Yapılması Gerekenler:
 
-1. **Backend Debug Loglarını Artır:**
+1. **Backend'de Webhook Çağrısından Hemen Önce Final URL'yi Logla:**
 ```javascript
-console.log('🔍 [CRITICAL DEBUG] Category flow:', {
-  'req.body.category': req.body.category,
-  'parsed category': category,
-  'finalCategory': finalCategory,
-  'webhookParams category': webhookParams.get('category')
-});
+const finalWebhookUrl = `${webhookUrl}?${webhookParams.toString()}`;
+console.log('🚨 [FINAL URL DEBUG] Complete webhook URL:', finalWebhookUrl);
+console.log('🚨 [FINAL URL DEBUG] Extracted category:', new URL(finalWebhookUrl).searchParams.get('category'));
 ```
 
-2. **URLSearchParams Kontrolü:**
-```javascript
-const webhookParams = new URLSearchParams();
-webhookParams.set('category', finalCategory || 'Unknown');
-console.log('🔍 [URL PARAMS] Category set as:', webhookParams.get('category'));
+2. **N8N Workflow'unu Kontrol Et:**
+- N8N workflow'unda kategori parametresini override eden bir node var mı?
+- Webhook node'undan sonra kategori değeri değiştiriliyor mu?
+- Query parametreleri doğru şekilde parse ediliyor mu?
+
+3. **Webhook URL'sini Manuel Test Et:**
+```bash
+curl "https://1qe4j72v.rpcld.net/webhook/cd11e789-5e4e-4dda-a86e-e1204e036c82?category=Avatar&style=Cartoon&prompt=test"
 ```
 
-3. **Hard-coded Test:**
+4. **generatePrompt Fonksiyonunun Çağrıldığını Doğrula:**
 ```javascript
-// Geçici test için category'yi zorla Avatar yap
-const testCategory = 'Avatar';
-webhookParams.set('category', testCategory);
+console.log('🚨 [GENERATE PROMPT] Function called with:', { category, style });
+console.log('🚨 [GENERATE PROMPT] Returned prompt:', dynamicPrompt);
 ```
 
-### Alternatif Çözümler:
+### Alternatif Acil Çözümler:
 
-1. **N8N Webhook'u POST'a Çevir:** N8N'de webhook metodunu POST'a değiştir
-2. **Webhook Body Gönderimi:** JSON body ile veri gönder
-3. **Direct API Call:** N8N webhook yerine direkt API çağrısı yap
+1. **N8N Webhook'u POST'a Çevir ve JSON Body Kullan**
+2. **Webhook yerine direkt FAL AI API çağrısı yap**
+3. **N8N workflow'unu yeniden kur**
+4. **Kategori parametresini URL path'ine ekle: `/webhook/category/Avatar/style/Cartoon`**
 
 ---
 
 **Rapor Tarihi**: 16 Ağustos 2025  
-**Son Güncelleme**: 16 Ağustos 2025 - 15:30  
-**Durum**: ❌ Sorun Devam Ediyor - Yeni Çözüm Stratejisi Gerekli  
+**Son Güncelleme**: 16 Ağustos 2025 - 22:50  
+**Durum**: 🚨 KRİTİK - Tüm Çözümler Başarısız, Derin Seviye Sorun  
 **N8N Uyumluluğu**: ✅ GET Metodu Doğrulandı  
-**Öncelik**: Kritik - Acil Müdahale Gerekli
+**Backend Çözümleri**: ❌ Hard-coded Test Bile Çalışmadı  
+**Emergency Fallback**: ❌ Devreye Girmedi  
+**Öncelik**: ACIL - Alternatif Yaklaşım Gerekli  
+
+## 🚨 SONUÇ
+
+**16 Ağustos 2025 itibariyle tüm uygulanan çözümler başarısız olmuştur:**
+
+❌ **Başarısız Çözümler:**
+- Webhook metodu değişikliği (POST → GET)
+- Backend category parsing düzeltmesi
+- Hard-coded 'Avatar' testi
+- Emergency fallback sistemi
+- URLSearchParams garantili gönderim
+- generatePrompt güçlü fallback mekanizması
+
+🚨 **Mevcut Durum:**
+- Category hala "undefined" olarak N8N'e gidiyor
+- Prompt hala sabit: "professional portrait, high quality, studio lighting"
+- Backend'deki tüm güvenlik önlemleri bypass ediliyor
+
+🔧 **Önerilen Acil Aksiyonlar:**
+1. N8N workflow'unu tamamen yeniden kur
+2. Webhook yerine direkt API entegrasyonu yap
+3. N8N'de kategori override eden node'ları kontrol et
+4. Manuel webhook URL testi yap
+
+**Bu rapor, sorunun backend'den daha derin seviyede olduğunu göstermektedir.**
