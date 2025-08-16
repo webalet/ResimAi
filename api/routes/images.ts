@@ -294,13 +294,13 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
       });
 
     // Generate dynamic prompt based on category and style
-    const dynamicPrompt = generatePrompt(categoryType, style);
+    const dynamicPrompt = generatePrompt(categoryParam, style);
     
     // Send direct webhook request (bypass n8n)
     console.log('🎯 [UPLOAD DEBUG] Sending direct webhook request to external URL:', {
       jobId: imageJob.id,
       imageUrl: originalImageUrl?.substring(0, 50) + '...',
-      categoryType,
+      categoryType: categoryParam,
       style,
       userId,
       prompt: dynamicPrompt
@@ -321,7 +321,7 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
     // Send GET request to external webhook with N8N query format
     const webhookParams = new URLSearchParams({
       'query[imageUrl]': originalImageUrl || '',
-      'query[category]': categoryType,
+      'query[category]': categoryParam,
       'query[style]': style,
       'query[prompt]': dynamicPrompt,
       'query[userId]': userId,
