@@ -446,6 +446,7 @@
     "invalidFileType": "Lütfen geçerli bir resim dosyası seçin (PNG, JPG, JPEG)",
     "fileSizeError": "Dosya boyutu 10MB'dan küçük olmalıdır",
     "selectCategoryAndStyle": "Lütfen kategori ve stil seçin",
+    "selectStyle": "Lütfen stil seçin",
     "enterImageUrl": "Lütfen resim URL'si girin",
     "pleaseLogin": "Lütfen giriş yapın"
   },

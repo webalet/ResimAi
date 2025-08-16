@@ -442,6 +442,7 @@
     "invalidFileType": "Please select a valid image file (PNG, JPG, JPEG)",
     "fileSizeError": "File size must be less than 10MB",
     "selectCategoryAndStyle": "Please select category and style",
+    "selectStyle": "Please select style",
     "enterImageUrl": "Please enter image URL",
     "pleaseLogin": "Please log in"
   },

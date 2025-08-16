@@ -141,8 +141,8 @@ const Categories: React.FC = () => {
   };
 
   const handleUpload = async () => {
-    if (!uploadState.selectedCategory || !uploadState.selectedStyle) {
-      toast.error(t('categories.selectCategoryAndStyle'));
+    if (!uploadState.selectedStyle) {
+      toast.error(t('categories.selectStyle'));
       return;
     }
 
