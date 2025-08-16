@@ -271,67 +271,214 @@
 
 ---
 
+## 🔒 PRODUCTION ÖNCESİ GÜVENLİK KONTROLLERİ
+
+### ⚠️ Kritik Güvenlik Adımları (MUTLAKA YAPILMALI!)
+
+#### 1. Admin Şifre Güvenliği
+- [ ] **Admin şifresini değiştir:** `admin123` → güçlü şifre
+- [ ] **Şifre değiştirme komutu:**
+```sql
+-- Supabase SQL Editor'da çalıştır
+UPDATE auth.users 
+SET encrypted_password = crypt('YENİ_GÜVENLİ_ŞİFRE', gen_salt('bf'))
+WHERE email = 'admin@resim.ai';
+```
+
+#### 2. Test Dosyalarını Kaldır
+- [ ] **Kaldırılacak dosyalar:**
+  - `test-password.cjs`
+  - `check-admin.cjs`
+  - `test_gallery_api.js`
+  - `test_gallery_jobs.cjs`
+  - `test_n8n_callback.js`
+  - `test_webhook_callback.cjs`
+  - `test.txt`
+  - `create-admin-direct.sql`
+  - `update-admin-password.sql`
+
+```bash
+# Test dosyalarını kaldır
+rm test-password.cjs check-admin.cjs test_gallery_api.js test_gallery_jobs.cjs test_n8n_callback.js test_webhook_callback.cjs test.txt create-admin-direct.sql update-admin-password.sql
+```
+
+#### 3. Environment Variables Güvenliği
+- [ ] **Kontrol edilecek dosyalar:**
+  - `.env` dosyasının production'da olmaması
+  - `.env.example` dosyasında gerçek değerlerin olmaması
+  - `setup-env.cjs` dosyasının güvenliği
+
+#### 4. Debug Modlarını Kapat
+- [ ] **Kontrol edilecek ayarlar:**
+  - Console.log ifadelerini kaldır
+  - Development mode'u kapat
+  - Error stack trace'leri gizle
+  - API debug endpoint'lerini kapat
+
+#### 5. Supabase Güvenlik Kontrolleri
+- [ ] **RLS (Row Level Security) aktif mi?**
+- [ ] **Anon key yetkilerini kontrol et**
+- [ ] **Service role key güvenliği**
+- [ ] **Database backup alındı mı?**
+
+#### 6. Sunucu Güvenlik Kontrolleri
+- [ ] **Firewall ayarları**
+- [ ] **SSL sertifikası aktif**
+- [ ] **Nginx güvenlik headers**
+- [ ] **PM2 process güvenliği**
+
+---
+
 ## 🚀 DEPLOYMENT CHECKLIST
 
+### Pre-Deployment (Deployment Öncesi)
+- [ ] **Güvenlik Kontrolleri:** Yukarıdaki tüm güvenlik adımları tamamlandı
 - [x] **Local Testing:** Tüm özellikler test edildi
 - [x] **Build Success:** Production build hatasız
-- [ ] **SSH Deployment:** `ssh root@64.226.75.76 "pm2 restart all"`
+- [ ] **Test Dosyaları Kaldırıldı:** Gereksiz test dosyaları temizlendi
+- [ ] **Admin Şifre Güncellendi:** Güçlü şifre ayarlandı
+- [ ] **Environment Variables:** Production ayarları kontrol edildi
+
+### Deployment Process
+- [ ] **GitHub Commit:** Değişiklikler commit edildi
+- [ ] **GitHub Push:** Kod repository'e push edildi
+- [ ] **SSH Connection:** Sunucuya bağlantı sağlandı
+- [ ] **Git Pull:** Sunucuda kod güncellendi
+- [ ] **Dependencies:** npm install çalıştırıldı
+- [ ] **Build Process:** npm run build başarılı
+- [ ] **PM2 Restart:** Servisler yeniden başlatıldı
+
+### Post-Deployment (Deployment Sonrası)
 - [ ] **Live Testing:** http://64.226.75.76/ kontrolü
+- [ ] **Admin Panel:** Admin girişi test edildi
+- [ ] **API Endpoints:** Tüm API'ler çalışıyor
+- [ ] **Database Connection:** Veritabanı bağlantısı aktif
 - [x] **Performance Check:** Lighthouse audit
 - [x] **Cross-browser Test:** Chrome, Firefox, Safari
 - [x] **Mobile Test:** iOS, Android cihazlarda
 
 ### 📡 SSH DEPLOYMENT TALİMATLARI
 
-#### Otomatik Deployment (Önerilen)
+#### SSH Sunucu Bağlantı Bilgileri
+- **Sunucu IP:** 64.226.75.76
+- **Kullanıcı:** root
+- **Proje Dizini:** /var/www/ResimAi (NOT: stylica-ai değil!)
+- **Bağlantı Komutu:** `ssh root@64.226.75.76`
+
+#### PM2 Servis Yönetimi
 ```bash
-# 1. Projeyi build et
-npm run build
-
-# 2. SSH ile sunucuya bağlan ve deployment yap
-ssh root@64.226.75.76 << 'EOF'
-cd /var/www/stylica-ai
-git pull origin main
-npm install
-npm run build
-pm2 restart all
-EOF
-```
-
-#### Manuel Deployment Adımları
-```bash
-# 1. SSH ile sunucuya bağlan
-ssh root@64.226.75.76
-
-# 2. Proje dizinine git
-cd /var/www/stylica-ai
-
-# 3. En son değişiklikleri çek
-git pull origin main
-
-# 4. Dependencies'leri güncelle
-npm install
-
-# 5. Projeyi build et
-npm run build
-
-# 6. PM2 servislerini yeniden başlat
-pm2 restart all
-
-# 7. Servislerin durumunu kontrol et
+# Tüm servisleri listele
 pm2 status
 
-# 8. Logları kontrol et
+# Backend servisini yeniden başlat
+pm2 restart backend
+
+# Frontend servisini yeniden başlat
+pm2 restart frontend
+
+# Tüm servisleri yeniden başlat
+pm2 restart all
+
+# Logları görüntüle
 pm2 logs
+
+# Belirli servis logları
+pm2 logs backend
+pm2 logs frontend
 ```
 
-#### Deployment Sonrası Kontroller
+#### GitHub Commit ve Push Süreci
+```bash
+# 1. Değişiklikleri stage'e al
+git add .
+
+# 2. Commit mesajı ile kaydet
+git commit -m "feat: update frontend design and fix admin panel issues"
+
+# 3. GitHub'a push et
+git push origin main
+
+# 4. Local build test et
+npm run build
+
+# 5. Build başarılı ise deployment'a geç
+```
+
+#### Tek Satırlık SSH Komutları (Önerilen)
+```bash
+# 1. Projeyi local'de build et
+npm run build
+
+# 2. Git değişikliklerini çek
+ssh root@64.226.75.76 "cd /var/www/ResimAi && git pull origin main"
+
+# 3. Dependencies'leri güncelle
+ssh root@64.226.75.76 "cd /var/www/ResimAi && npm install"
+
+# 4. Projeyi sunucuda build et
+ssh root@64.226.75.76 "cd /var/www/ResimAi && npm run build"
+
+# 5. PM2 servislerini yeniden başlat
+ssh root@64.226.75.76 "cd /var/www/ResimAi && pm2 restart all"
+
+# 6. Servislerin durumunu kontrol et
+ssh root@64.226.75.76 "cd /var/www/ResimAi && pm2 status"
+
+# 7. Logları kontrol et (isteğe bağlı)
+ssh root@64.226.75.76 "cd /var/www/ResimAi && pm2 logs --lines 20"
+```
+
+**Avantajları:**
+- Her komut tek satırda çalışır, bağlantı hataları minimize olur
+- Manuel SSH bağlantısı gerektirmez
+- Daha güvenli ve hatasız deployment süreci
+- Komutlar sırayla çalıştırılabilir
+
+#### Deployment Sonrası Detaylı Kontroller
+
+##### Temel Fonksiyonellik Testleri
 - [ ] **Site Erişimi:** http://64.226.75.76/ açılıyor mu?
 - [ ] **Logo Kontrolü:** Stylica.ai logosu doğru görünüyor mu?
 - [ ] **Responsive Test:** Mobile ve desktop görünümler çalışıyor mu?
 - [ ] **Animasyonlar:** Tüm animasyonlar smooth çalışıyor mu?
 - [ ] **Navigation:** Menü ve butonlar çalışıyor mu?
 - [ ] **Performance:** Sayfa yükleme hızı kabul edilebilir mi?
+
+##### Admin Panel Testleri
+- [ ] **Admin Giriş:** http://64.226.75.76/admin/login sayfası açılıyor mu?
+- [ ] **Admin Login:** Yeni güçlü şifre ile giriş yapılabiliyor mu?
+- [ ] **Admin Dashboard:** Tüm admin özellikleri çalışıyor mu?
+- [ ] **Kategori Yönetimi:** Fashion kategorisi görünüyor mu?
+- [ ] **API Endpoints:** /api/admin/admin-settings çalışıyor mu?
+
+##### Güvenlik Doğrulamaları
+- [ ] **Test Dosyaları:** Test dosyaları sunucuda yok mu?
+- [ ] **Admin Şifre:** Eski şifre (admin123) çalışmıyor mu?
+- [ ] **Error Messages:** Detaylı hata mesajları gizleniyor mu?
+- [ ] **Debug Info:** Console'da debug bilgileri yok mu?
+
+##### Performance ve SEO Testleri
+- [ ] **Lighthouse Score:** >90 puan alıyor mu?
+- [ ] **Page Speed:** İlk yükleme <3 saniye mi?
+- [ ] **Mobile Friendly:** Google Mobile-Friendly Test geçiyor mu?
+- [ ] **SSL Certificate:** HTTPS çalışıyor mu?
+
+##### Troubleshooting (Sorun Giderme)
+```bash
+# Eğer site açılmıyorsa:
+ssh root@64.226.75.76
+pm2 status
+pm2 logs
+nginx -t
+systemctl status nginx
+
+# Eğer admin panel çalışmıyorsa:
+pm2 logs backend
+cat /var/log/nginx/error.log
+
+# Eğer veritabanı bağlantısı yoksa:
+# Supabase dashboard'dan connection string kontrol et
+```
 
 ---
 
@@ -346,8 +493,10 @@ pm2 logs
 - **Teknik İyileştirmeler:** ✅ Tamamlandı
 
 ### 🚧 KALAN GÖREVLER
-- **SSH Deployment:** Beklemede (Manuel deployment gerekli)
+- **Güvenlik Kontrolleri:** Admin şifre değiştirme ve test dosyalarını kaldırma
+- **SSH Deployment:** Manuel deployment gerekli
 - **Live Testing:** Deployment sonrası yapılacak
+- **Production Hardening:** Güvenlik ayarları ve optimizasyonlar
 
 ### 🎯 BAŞARILAR
 - **Modern Tasarım:** Stylica.ai artık profesyonel ve modern görünüme sahip

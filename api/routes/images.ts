@@ -1,6 +1,8 @@
 import { Router, Request, Response } from 'express';
 import multer from 'multer';
 import fetch from 'node-fetch';
+import fs from 'fs';
+import path from 'path';
 import { supabase } from '../config/supabase.js';
 import { auth } from '../middleware/auth.js';
 import { uploadToSupabase, deleteFromSupabase } from '../utils/storage.js';
@@ -304,8 +306,19 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
       prompt: dynamicPrompt
     });
 
+    // Get webhook URL from admin-settings.json
+    let webhookUrl = 'https://1qe4j72v.rpcld.net/webhook/cd11e789-5e4e-4dda-a86e-e1204e036c82'; // fallback
+    try {
+      const settingsPath = path.join(process.cwd(), 'admin-settings.json');
+      const settingsData = fs.readFileSync(settingsPath, 'utf8');
+      const settings = JSON.parse(settingsData);
+      webhookUrl = settings.n8n?.webhookUrl || webhookUrl;
+      console.log('🔗 [WEBHOOK URL] Using webhook URL from admin-settings:', webhookUrl);
+    } catch (error) {
+      console.warn('⚠️ [WEBHOOK URL] Could not read admin-settings.json, using fallback URL:', error);
+    }
+    
     // Send GET request to external webhook with query parameters
-    const webhookUrl = 'https://1qe4j72v.rpcld.net/webhook/cd11e789-5e4e-4dda-a86e-e1204e036c82';
     const webhookParams = new URLSearchParams({
       imageUrl: originalImageUrl || '',
       category: categoryType,
@@ -468,7 +481,17 @@ router.get('/webhook-test', async (req: Request, res: Response): Promise<void> =
     const { imageUrl } = req.query;
     console.log('🧪 [WEBHOOK TEST] Test isteği alındı', { imageUrl });
     
-    const webhookUrl = 'https://1qe4j72v.rpcld.net/webhook/cd11e789-5e4e-4dda-a86e-e1204e036c82';
+    // Get webhook URL from admin-settings.json
+    let webhookUrl = 'https://1qe4j72v.rpcld.net/webhook/cd11e789-5e4e-4dda-a86e-e1204e036c82'; // fallback
+    try {
+      const settingsPath = path.join(process.cwd(), 'admin-settings.json');
+      const settingsData = fs.readFileSync(settingsPath, 'utf8');
+      const settings = JSON.parse(settingsData);
+      webhookUrl = settings.n8n?.webhookUrl || webhookUrl;
+      console.log('🔗 [WEBHOOK TEST] Using webhook URL from admin-settings:', webhookUrl);
+    } catch (error) {
+      console.warn('⚠️ [WEBHOOK TEST] Could not read admin-settings.json, using fallback URL:', error);
+    }
     const webhookData = {
       imageUrl: imageUrl || '',
       category: 'test',
