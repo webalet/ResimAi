@@ -399,18 +399,63 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
 
 // Generate dynamic prompt based on category and style - synchronized with AdminSettings
 const generatePrompt = (category: string, style: string): string => {
+  // DEBUG: Log incoming parameters
+  console.log('🔍 [DEBUG PROMPT] Function called with parameters:', {
+    category: category,
+    style: style,
+    categoryType: typeof category,
+    styleType: typeof style
+  });
+  
+  // DEBUG: Log current working directory
+  const currentDir = process.cwd();
+  console.log('🔍 [DEBUG PROMPT] Current working directory:', currentDir);
+  
   // Load prompts from admin-settings.json
   try {
     const settingsPath = path.join(process.cwd(), 'admin-settings.json');
+    console.log('🔍 [DEBUG PROMPT] Settings file path:', settingsPath);
+    
+    // DEBUG: Check if file exists
+    const fileExists = fs.existsSync(settingsPath);
+    console.log('🔍 [DEBUG PROMPT] File exists:', fileExists);
+    
+    if (!fileExists) {
+      console.error('❌ [DEBUG PROMPT] admin-settings.json file does not exist at path:', settingsPath);
+      throw new Error('File does not exist');
+    }
+    
     const settingsData = fs.readFileSync(settingsPath, 'utf8');
+    console.log('🔍 [DEBUG PROMPT] File read successfully, data length:', settingsData.length);
+    
     const settings = JSON.parse(settingsData);
+    console.log('🔍 [DEBUG PROMPT] Settings parsed successfully');
     
     const aiPrompts = settings.aiPrompts;
+    console.log('🔍 [DEBUG PROMPT] aiPrompts object:', {
+      exists: !!aiPrompts,
+      keys: aiPrompts ? Object.keys(aiPrompts) : [],
+      categoryExists: aiPrompts && aiPrompts[category],
+      styleExists: aiPrompts && aiPrompts[category] && aiPrompts[category][style]
+    });
+    
     if (aiPrompts && aiPrompts[category] && aiPrompts[category][style]) {
-      return aiPrompts[category][style];
+      const selectedPrompt = aiPrompts[category][style];
+      console.log('✅ [DEBUG PROMPT] Found matching prompt:', {
+        category,
+        style,
+        promptLength: selectedPrompt.length,
+        promptPreview: selectedPrompt.substring(0, 100) + '...'
+      });
+      return selectedPrompt;
+    } else {
+      console.warn('⚠️ [DEBUG PROMPT] No matching prompt found in admin-settings.json for:', { category, style });
     }
   } catch (error) {
-    console.warn('⚠️ [PROMPT] Could not read admin-settings.json, using fallback prompts:', error);
+    console.error('❌ [DEBUG PROMPT] Error reading admin-settings.json:', {
+      error: error instanceof Error ? error.message : error,
+      stack: error instanceof Error ? error.stack : undefined
+    });
   }
 
   // Fallback prompts if admin-settings.json is not available
@@ -427,7 +472,16 @@ const generatePrompt = (category: string, style: string): string => {
     }
   };
 
-  return fallbackPrompts[category]?.[style] || 'professional portrait, high quality, studio lighting';
+  const fallbackPrompt = fallbackPrompts[category]?.[style] || 'professional portrait, high quality, studio lighting';
+  console.log('🔄 [DEBUG PROMPT] Using fallback prompt:', {
+    category,
+    style,
+    fallbackPrompt,
+    availableCategories: Object.keys(fallbackPrompts),
+    availableStyles: fallbackPrompts[category] ? Object.keys(fallbackPrompts[category]) : []
+  });
+  
+  return fallbackPrompt;
 };
 
 // Process image endpoint (simplified - no webhook call)
