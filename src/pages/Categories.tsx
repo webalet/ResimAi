@@ -177,6 +177,7 @@ const Categories: React.FC = () => {
       }
       
       formData.append('style', uploadState.selectedStyle);
+      formData.append('category', uploadState.selectedCategory?.type || '');
       
       console.log('🚀 [UPLOAD-AND-PROCESS] Sending request to:', '/api/images/upload-and-process');
       console.log('🚀 [UPLOAD-AND-PROCESS] FormData contents:', {
