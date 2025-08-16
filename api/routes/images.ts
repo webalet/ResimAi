@@ -123,15 +123,37 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
   });
   try {
     const userId = (req as any).userId;
-    const { style, imageUrl, category } = req.body;
+    // Handle both multipart form data and JSON requests
+    const isMultipart = req.headers['content-type']?.includes('multipart/form-data');
+    
+    let style: string;
+    let imageUrl: string;
+    let category: string;
+    
+    if (isMultipart) {
+      // For multipart requests, data comes from req.body (parsed by multer)
+      style = req.body.style;
+      imageUrl = req.body.imageUrl;
+      category = req.body.category;
+    } else {
+      // For JSON requests, data comes from req.body
+      const bodyData = req.body;
+      style = bodyData.style;
+      imageUrl = bodyData.imageUrl;
+      category = bodyData.category;
+    }
+    
     const file = req.file;
 
     console.log('🚀 [UPLOAD-AND-PROCESS] Request received:', {
       userId,
       style,
       imageUrl,
+      category,
+      isMultipart,
       fileName: file?.originalname,
       fileSize: file?.size,
+      bodyKeys: Object.keys(req.body || {}),
       body: req.body
     });
 
@@ -271,7 +293,14 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
       });
 
     // Generate dynamic prompt based on category and style
-    const dynamicPrompt = generatePrompt(category || style, style);
+    console.log('🔍 [GENERATE PROMPT DEBUG] Calling generatePrompt with:', {
+      category: category,
+      style: style,
+      categoryType: typeof category,
+      styleType: typeof style
+    });
+    
+    const dynamicPrompt = generatePrompt(category, style);
     
     // Send direct webhook request (bypass n8n)
     console.log('🎯 [UPLOAD DEBUG] Sending direct webhook request to external URL:', {
@@ -297,7 +326,7 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
     // Send POST request to external webhook with JSON body
     const webhookData = {
       imageUrl: originalImageUrl || '',
-      category: category || style,
+      category: category || 'Unknown', // Use actual category or fallback
       style: style,
       prompt: dynamicPrompt,
       userId: userId,
@@ -308,6 +337,14 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
       guidance_scale: '7.5',
       num_inference_steps: '50'
     };
+    
+    console.log('🔍 [WEBHOOK CATEGORY DEBUG] Category value being sent:', {
+      originalCategory: category,
+      finalCategory: category || 'Unknown',
+      style: style,
+      categoryType: typeof category,
+      categoryLength: category ? category.length : 0
+    });
     
     console.log('🔍 [WEBHOOK DEBUG] POST request being sent to N8N:', {
       url: webhookUrl,
