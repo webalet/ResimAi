@@ -352,7 +352,7 @@ app.get('/api/categories', async (req: Request, res: Response): Promise<void> =>
 app.post('/api/images/process', auth, upload.single('image'), async (req: Request, res: Response): Promise<void> => {
   try {
     const userId = (req as any).userId;
-    const { categoryType, style } = req.body;
+    const { style } = req.body;
     const imageFile = req.file;
 
     if (!imageFile) {
@@ -363,10 +363,10 @@ app.post('/api/images/process', auth, upload.single('image'), async (req: Reques
       return;
     }
 
-    if (!categoryType || !style) {
+    if (!style) {
       res.status(400).json({
         success: false,
-        message: 'Kategori ve stil seçimi gereklidir'
+        message: 'Stil seçimi gereklidir'
       });
       return;
     }
@@ -391,7 +391,6 @@ app.post('/api/images/process', auth, upload.single('image'), async (req: Reques
       .from('image_jobs')
       .insert({
         user_id: userId,
-        category_type: categoryType,
         style,
         status: 'processing'
       })
