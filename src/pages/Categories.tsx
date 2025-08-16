@@ -127,7 +127,11 @@ const Categories: React.FC = () => {
       }
       
       formData.append('style', uploadState.selectedStyle);
-      formData.append('category', uploadState.selectedCategory.type || uploadState.selectedCategory.name);
+      formData.append('category', uploadState.selectedCategory.name);
+      
+      // Debug log
+      console.log('Sending category:', uploadState.selectedCategory.name);
+      console.log('Selected category object:', uploadState.selectedCategory);
 
       const response = await fetch('http://64.226.75.76/api/images/upload-and-process', {
         method: 'POST',
