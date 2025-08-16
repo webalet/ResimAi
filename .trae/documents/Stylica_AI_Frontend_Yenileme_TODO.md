@@ -480,6 +480,77 @@ cat /var/log/nginx/error.log
 # Supabase dashboard'dan connection string kontrol et
 ```
 
+## 🚨 DEPLOYMENT SONRASI TESPİT EDİLEN SORUNLAR
+
+### ⚠️ Kritik Sorun 1: Node.js Versiyon Uyumsuzluğu
+**Durum:** Sunucuda Node.js v18.20.8 kullanılıyor, proje >=20 gerektiriyor
+**Hata Mesajı:**
+```
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   required: { node: '>=20' },
+npm warn EBADENGINE   current: { node: 'v18.20.8', npm: '10.8.2' }
+npm warn EBADENGINE }
+```
+
+**Çözüm Önerileri:**
+1. **Node.js Güncelleme (Önerilen):**
+```bash
+# NodeSource repository ekle
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+
+# Node.js 20.x yükle
+sudo apt-get install -y nodejs
+
+# Versiyon kontrol et
+node --version
+npm --version
+```
+
+2. **NVM ile Versiyon Yönetimi:**
+```bash
+# NVM yükle
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+
+# Terminal'i yeniden başlat veya source çalıştır
+source ~/.bashrc
+
+# Node.js 20 yükle ve kullan
+nvm install 20
+nvm use 20
+nvm alias default 20
+```
+
+### ⚠️ Kritik Sorun 2: Express Rate-Limit Trust Proxy Hatası
+**Durum:** Express 'trust proxy' ayarı false, X-Forwarded-For header mevcut
+**Hata Mesajı:**
+```
+ValidationError: The 'X-Forwarded-For' header is set but the Express 'trust proxy' setting is false (default). 
+This could indicate a misconfiguration which would prevent express-rate-limit from accurately identifying users.
+```
+
+**Çözüm:** Backend'de trust proxy ayarını aktifleştir
+```javascript
+// api/app.ts veya api/server.ts dosyasında
+app.set('trust proxy', true);
+
+// Veya daha spesifik olarak:
+app.set('trust proxy', 1); // Sadece ilk proxy'yi güven
+```
+
+### ✅ Başarılı Deployment Sonuçları
+**PM2 Servisleri:**
+- ✅ resim-ai-api: Online (PID: 192350)
+- ✅ resim-ai-frontend: Online (PID: 192360)
+- ✅ Build başarılı: 22.94s
+- ✅ Bundle boyutları optimize
+
+**Build Çıktısı:**
+```
+dist/index.html                   2.04 kB │ gzip:   0.79 kB
+dist/assets/css/index.css        63.61 kB │ gzip:  10.68 kB
+dist/assets/js/index.js         993.65 kB │ gzip: 232.58 kB
+```
+
 ---
 
 ## 📝 PROJE DURUMU
