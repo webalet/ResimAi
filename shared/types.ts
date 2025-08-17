@@ -7,6 +7,7 @@ export interface User {
   credits: number;
   stripe_customer_id?: string;
   is_admin: boolean;
+  is_banned?: boolean;
   created_at: string;
   updated_at: string;
 }

@@ -213,18 +213,28 @@ const Profile: React.FC = () => {
       <div className="bg-white rounded-xl shadow-sm border p-6">
         {activeTab === 'profile' && (
           <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-gray-900">
-                {t('profile.sections.profileInfo')}
-              </h2>
-              <button
-                onClick={() => setIsEditing(!isEditing)}
-                className="flex items-center space-x-2 px-4 py-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
-              >
-                <Edit2 className="h-4 w-4" />
-                <span>{isEditing ? t('profile.cancel') : t('profile.edit')}</span>
-              </button>
-            </div>
+            {user.is_banned ? (
+              <div className="flex flex-col items-center justify-center py-12">
+                <img 
+                  src="https://i.pinimg.com/originals/7a/b6/73/7ab673806c3dc561a56eb6fd19b45b5b.jpg" 
+                  alt="Banned User" 
+                  className="max-w-md w-full h-auto rounded-lg shadow-lg"
+                />
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-semibold text-gray-900">
+                    {t('profile.sections.profileInfo')}
+                  </h2>
+                  <button
+                    onClick={() => setIsEditing(!isEditing)}
+                    className="flex items-center space-x-2 px-4 py-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                  >
+                    <Edit2 className="h-4 w-4" />
+                    <span>{isEditing ? t('profile.cancel') : t('profile.edit')}</span>
+                  </button>
+                </div>
             
             <form onSubmit={handleProfileUpdate} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -304,6 +314,8 @@ const Profile: React.FC = () => {
                 </div>
               )}
             </form>
+              </>
+            )}
           </div>
         )}
 

@@ -390,6 +390,11 @@
       "processing": "Processing",
       "failed": "Failed",
       "pending": "Pending"
+    },
+    "error": {
+      "title": "An Error Occurred",
+      "retry": "Try Again",
+      "retryNote": "If the problem persists, please contact support team"
     }
   },
   "layout": {

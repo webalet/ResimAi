@@ -394,6 +394,11 @@
       "processing": "İşleniyor",
       "failed": "Başarısız",
       "pending": "Bekliyor"
+    },
+    "error": {
+      "title": "Bir Hata Oluştu",
+      "retry": "Tekrar Dene",
+      "retryNote": "Sorun devam ederse destek ekibi ile iletişime geçin"
     }
   },
   "layout": {
