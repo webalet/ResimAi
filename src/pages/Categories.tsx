@@ -348,7 +348,7 @@ const Categories: React.FC = () => {
                     <img
                       src={uploadState.preview}
                       alt="Preview"
-                      className="w-full h-80 object-contain rounded-lg shadow-md"
+                      className="w-full h-100 object-contain rounded-lg shadow-md"
                     />
                     <button
                       onClick={() => setUploadState(prev => ({ 
@@ -364,7 +364,7 @@ const Categories: React.FC = () => {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </div>
                 ) : (
-                  <div className="h-80 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+                  <div className="h-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
                     <div className="text-center">
                       <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3">
                         <ImageIcon className="h-8 w-8 text-gray-400" />
