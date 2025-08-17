@@ -49,36 +49,33 @@ const ImageComparison: React.FC<ImageComparisonProps> = ({
     [updateSliderPosition]
   );
 
-  // Global mouse and touch events
   useEffect(() => {
-    if (!isDragging) return;
-
     const handleMouseMove = (e: MouseEvent) => {
+      if (!isDragging) return;
       e.preventDefault();
       updateSliderPosition(e.clientX);
     };
 
     const handleTouchMove = (e: TouchEvent) => {
+      if (!isDragging) return;
       e.preventDefault();
       updateSliderPosition(e.touches[0].clientX);
     };
 
     const handleEnd = () => {
-      setIsDragging(false);
+      if (isDragging) setIsDragging(false);
     };
 
     window.addEventListener('mousemove', handleMouseMove, { passive: false });
     window.addEventListener('mouseup', handleEnd);
     window.addEventListener('touchmove', handleTouchMove, { passive: false });
     window.addEventListener('touchend', handleEnd);
-    document.body.style.userSelect = 'none';
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleEnd);
       window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('touchend', handleEnd);
-      document.body.style.userSelect = '';
     };
   }, [isDragging, updateSliderPosition]);
 
