@@ -39,7 +39,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
   className,
   width,
   height,
-  objectFit = 'contain',
+  objectFit = 'cover',
   loading = 'lazy',
   onLoad,
   onError,
@@ -49,10 +49,11 @@ const LazyImage: React.FC<LazyImageProps> = ({
   sizes = '100vw',
   decoding = 'async',
   fetchPriority = 'auto'
+  
 }) => {
   const { ref, src: imageSrc, isLoaded, isError } = useLazyImage(src, placeholder);
   const prefersReducedMotion = useReducedMotion();
-  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(true);
   
   // Determine the best image source
   const finalImageSrc = supportsWebP && webpSrc ? webpSrc : imageSrc;
@@ -113,8 +114,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
           onError={handleError}
           className={cn(
             'w-full h-full transition-opacity duration-300',
-            `object-${objectFit}`,
-            !imageLoaded && 'opacity-0'
+            `object-${objectFit}`
           )}
           {...animationProps}
         />

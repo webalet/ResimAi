@@ -423,9 +423,9 @@ const Categories: React.FC = () => {
             key={category.id}
             className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-all duration-200 overflow-hidden group"
           >
-            <div className="aspect-[3/2] relative overflow-hidden">
+            <div className="aspect-[3/2] relative overflow-hidden min-h-[200px]">
               {category.before_image_url && category.after_image_url ? (
-                <div className="w-full h-full">
+                <div className="w-full h-full min-h-[200px]">
                   {(() => {
                     // Debug image URLs before passing to ImageComparison
                     const beforeImageUrl = category.before_image_url.startsWith('http') 
@@ -448,6 +448,7 @@ const Categories: React.FC = () => {
                         afterImage={afterImageUrl}
                         beforeLabel="Öncesi"
                         afterLabel="Sonrası"
+                        style={{ height: '100%', minHeight: '200px' }}
                       />
                     );
                   })()}
