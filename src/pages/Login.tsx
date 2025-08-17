@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Link, useNavigate, useLocation, useParams } from 'react-router-dom';
-import { Eye, EyeOff, Mail, Lock, LogIn } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Eye, EyeOff, Mail, Lock, LogIn, AlertTriangle, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +14,7 @@ const Login: React.FC = () => {
   const [rateLimitError, setRateLimitError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const [errors, setErrors] = useState<{email?: string; password?: string; general?: string}>({});
+  const [showBannedModal, setShowBannedModal] = useState(false);
   
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -26,10 +27,26 @@ const Login: React.FC = () => {
   const currentLang = lang || 'tr';
   const from = location.state?.from?.pathname || `/${currentLang}/dashboard`;
 
-  // Scroll to top when component mounts
+  // Scroll to top when component mounts and check for banned status
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, []);
+    
+    // Check if user was banned (from URL param or localStorage)
+    const urlParams = new URLSearchParams(location.search);
+    const isBannedFromUrl = urlParams.get('banned') === 'true';
+    const isBannedFromStorage = localStorage.getItem('userBanned') === 'true';
+    
+    if (isBannedFromUrl || isBannedFromStorage) {
+      setShowBannedModal(true);
+      // Clear the banned flag from localStorage and URL
+      localStorage.removeItem('userBanned');
+      // Clean URL without banned parameter
+      if (isBannedFromUrl) {
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, '', newUrl);
+      }
+    }
+  }, [location.search]);
 
   // Rate limiting: minimum 2 seconds between requests
   const RATE_LIMIT_MS = 2000;
@@ -128,8 +145,97 @@ const Login: React.FC = () => {
     }, 300);
   };
 
+  const closeBannedModal = () => {
+    setShowBannedModal(false);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 flex items-center justify-center p-4">
+      {/* Banned User Modal */}
+      <AnimatePresence>
+        {showBannedModal && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            {/* Backdrop */}
+            <motion.div
+              className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={closeBannedModal}
+            />
+            
+            {/* Modal */}
+            <motion.div
+              className="relative bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4"
+              initial={{ opacity: 0, scale: 0.8, y: 50 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.8, y: 50 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              whileHover={{ scale: 1.02, y: -5 }}
+            >
+              {/* Close Button */}
+              <button
+                onClick={closeBannedModal}
+                className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-all duration-200"
+              >
+                <X className="h-5 w-5" />
+              </button>
+              
+              {/* Icon */}
+              <div className="flex justify-center mb-6">
+                <motion.div
+                  className="p-4 bg-red-100 rounded-full"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.2, type: "spring", stiffness: 300 }}
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                >
+                  <AlertTriangle className="h-8 w-8 text-red-600" />
+                </motion.div>
+              </div>
+              
+              {/* Content */}
+              <div className="text-center">
+                <motion.h3
+                  className="text-xl font-bold text-gray-900 mb-4"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  {t('auth.errors.accountBanned')}
+                </motion.h3>
+                
+                <motion.p
+                  className="text-gray-600 mb-6 leading-relaxed"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  {t('auth.errors.contactSupport')}
+                </motion.p>
+                
+                <motion.button
+                  onClick={closeBannedModal}
+                  className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-lg font-medium hover:from-red-700 hover:to-red-800 transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {t('common.understood')}
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <motion.div 
         className="max-w-md w-full space-y-8"
         initial={{ opacity: 0, y: 50 }}

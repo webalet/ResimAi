@@ -59,11 +59,12 @@ class ApiClient {
           window.location.href = '/login';
           toast.error('Oturum süreniz doldu. Lütfen tekrar giriş yapın.');
         } else if (error.response?.status === 403) {
-          // Forbidden - user is banned, clear tokens and redirect to login
+          // Forbidden - user is banned, clear tokens and redirect to login with banned flag
           localStorage.removeItem('token');
           localStorage.removeItem('adminToken');
-          window.location.href = '/login';
-          toast.error('Hesabınız yasaklanmıştır. Lütfen destek ekibi ile iletişime geçin.');
+          localStorage.setItem('userBanned', 'true');
+          window.location.href = '/login?banned=true';
+          // Don't show toast here as we'll show modal on login page
         } else if (error.response?.status === 429) {
           const retryAfter = error.response.headers['retry-after'];
           const waitTime = retryAfter ? `${retryAfter} saniye` : 'bir süre';
