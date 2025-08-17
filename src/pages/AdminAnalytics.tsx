@@ -106,12 +106,12 @@ const AdminAnalytics: React.FC = () => {
           categoryUsage: analyticsResult.data?.categoryStats || [],
           revenueData: analyticsResult.data?.revenueData || [],
           topUsers: analyticsResult.data?.topUsers || [],
-          summary: {
-            totalUsers: statsResult.data?.stats?.totalUsers || 0,
-            totalJobs: analyticsResult.data?.jobStats?.total || statsResult.data?.stats?.totalJobs || 0,
-            totalRevenue: analyticsResult.data?.revenueData?.reduce((sum: number, item: any) => sum + (item.revenue || 0), 0) || 0,
-            avgJobsPerUser: analyticsResult.data?.avgJobsPerUser || 0,
-            successRate: analyticsResult.data?.jobStats ? (analyticsResult.data.jobStats.completed / analyticsResult.data.jobStats.total * 100) : 0
+          summary: analyticsResult.data?.summary || {
+            totalUsers: 0,
+            totalJobs: 0,
+            totalRevenue: 0,
+            avgJobsPerUser: 0,
+            successRate: 0
           }
         };
         setAnalyticsData(analyticsData);
