@@ -78,8 +78,8 @@ const Categories: React.FC = () => {
       return;
     }
 
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error('Dosya boyutu 10MB\'dan küçük olmalıdır');
+    if (file.size > 50 * 1024 * 1024) {
+      toast.error('Dosya boyutu 50MB\'dan küçük olmalıdır');
       return;
     }
 
@@ -272,7 +272,7 @@ const Categories: React.FC = () => {
                     Dosyayı sürükleyin veya seçin
                   </p>
                   <p className="text-sm text-gray-500 mb-4">
-                    JPG, PNG, GIF (Max 10MB)
+                    JPG, PNG, GIF (Max 50MB)
                   </p>
                   <input
                     type="file"

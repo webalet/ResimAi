@@ -455,9 +455,162 @@ ssh root@64.226.75.76 "free -h"
 - Docker containerization
 - CI/CD pipeline kurulumu
 
-## 11. Sorun Giderme Rehberi
+## 11. Upload Mekanizması ve Kategori Senkronizasyonu
 
-### 11.1 Yaygın Sorunlar
+### 11.1 Upload İşlem Akışı
+
+#### Dosya Yükleme Süreci
+1. **Frontend Validasyon**: Categories.tsx'te dosya boyutu (50MB), tip kontrolü
+2. **Multer İşleme**: Backend'de multer middleware ile dosya alımı
+3. **Supabase Storage**: Dosya Supabase Storage'a yüklenir
+4. **Veritabanı Kaydı**: image_jobs tablosuna iş kaydı oluşturulur
+5. **n8n Webhook**: Workflow tetiklenir
+6. **FAL.AI İşleme**: AI servisi ile görsel işlenir
+7. **Sonuç Kaydetme**: İşlenmiş görsel processed_images tablosuna kaydedilir
+
+#### Upload Limitler ve Konfigürasyon
+```javascript
+// Frontend - Categories.tsx
+if (file.size > 50 * 1024 * 1024) {
+  toast.error('Dosya boyutu 50MB\'dan büyük olamaz');
+  return;
+}
+
+// Backend - server.ts
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
+
+// Backend - images.ts (Multer)
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 50 * 1024 * 1024 // 50MB
+  }
+});
+
+// Nginx Konfigürasyonu
+client_max_body_size 100M;
+```
+
+### 11.2 Kategori Senkronizasyon Sistemi
+
+#### Admin Panel → User Dashboard Senkronizasyonu
+1. **Admin Kategori Düzenleme**: AdminSettings.tsx'te kategoriler düzenlenir
+2. **Çift Kaydetme**: saveCategories fonksiyonu kategorileri hem admin-settings.json'a hem Supabase'e kaydeder
+3. **API Senkronizasyonu**: Her kategori için:
+   - Mevcut kategori kontrolü (type bazında)
+   - Varsa güncelleme (PUT /api/categories/:id)
+   - Yoksa oluşturma (POST /api/categories)
+4. **User Dashboard Yükleme**: Categories.tsx API'den kategorileri çeker (GET /api/categories)
+
+#### Kategori Veri Akışı
+```mermaid
+graph TD
+    A[Admin Panel] --> B[AdminSettings.tsx]
+    B --> C[admin-settings.json]
+    B --> D[Supabase categories table]
+    D --> E[API /categories]
+    E --> F[Categories.tsx]
+    F --> G[User Dashboard]
+```
+
+#### Kategori Veri Yapısı
+```typescript
+interface Category {
+  id: string;
+  name: string;
+  display_name_tr: string;
+  display_name_en: string;
+  type: string;
+  description: string;
+  description_en: string;
+  image_url: string;
+  styles: string[];
+  styles_en: string[];
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+```
+
+### 11.3 Disk Depolama ve Supabase Entegrasyonu
+
+#### Dosya Depolama Stratejisi
+- **Geçici Depolama**: Multer memoryStorage() kullanır
+- **Kalıcı Depolama**: Supabase Storage bucket'ları
+- **URL Yapısı**: `https://pfpaeiysshitndugrzmmb.supabase.co/storage/v1/object/public/images/...`
+
+#### Supabase Tablo İlişkileri
+```sql
+-- Ana iş kaydı
+image_jobs (
+  id UUID PRIMARY KEY,
+  user_id UUID REFERENCES users(id),
+  category_id UUID REFERENCES categories(id),
+  original_image_url VARCHAR,
+  style VARCHAR,
+  status VARCHAR,
+  n8n_execution_id VARCHAR
+)
+
+-- İşlenmiş sonuçlar
+processed_images (
+  id UUID PRIMARY KEY,
+  job_id UUID REFERENCES image_jobs(id),
+  image_url VARCHAR,
+  thumbnail_url VARCHAR
+)
+```
+
+### 11.4 n8n Workflow Entegrasyonu
+
+#### Webhook Gönderim Süreci
+```javascript
+// Backend - images.ts
+const webhookData = {
+  jobId: job.id,
+  userId: user.id,
+  imageUrl: imageUrl,
+  category: category.name,
+  style: style,
+  prompt: generatedPrompt
+};
+
+// n8n webhook'una gönderim
+const webhookResponse = await fetch(webhookUrl, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(webhookData)
+});
+```
+
+#### Callback İşleme
+```javascript
+// n8n'den gelen sonuç callback'i
+router.post('/webhook/callback', async (req, res) => {
+  const { jobId, status, resultImageUrl, error } = req.body;
+  
+  // İş durumunu güncelle
+  await supabase
+    .from('image_jobs')
+    .update({ status, error_message: error })
+    .eq('id', jobId);
+    
+  // Başarılıysa işlenmiş görseli kaydet
+  if (status === 'completed' && resultImageUrl) {
+    await supabase
+      .from('processed_images')
+      .insert({
+        job_id: jobId,
+        image_url: resultImageUrl
+      });
+  }
+});
+```
+
+## 12. Sorun Giderme Rehberi
+
+### 12.1 Yaygın Sorunlar
 
 #### "Category undefined" Hatası
 **Çözüm**: Categories.tsx'te kategori gönderim kodunu kontrol et

@@ -966,8 +966,58 @@ const AdminSettings = () => {
     }
   };
 
-  const removeCategory = (index) => {
-    setCategories(prev => prev.filter((_, i) => i !== index));
+  const removeCategory = async (index) => {
+    const categoryToDelete = categories[index];
+    if (!categoryToDelete) {
+      showMessage('error', 'Silinecek kategori bulunamadı.');
+      return;
+    }
+
+    // Onay penceresi göster
+    const confirmDelete = window.confirm(`"${categoryToDelete.display_name_tr}" kategorisini silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.`);
+    if (!confirmDelete) {
+      return;
+    }
+
+    try {
+      setSaving(true);
+      const token = localStorage.getItem('adminToken');
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76';
+
+      if (!token) {
+        showMessage('error', 'Admin token bulunamadı. Lütfen tekrar giriş yapın.');
+        return;
+      }
+
+      // Supabase'den kategoriyi sil
+      const response = await fetch(`${API_BASE_URL}/api/categories/${categoryToDelete.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Kategori silme hatası:', errorText);
+        showMessage('error', `Kategori silinirken hata oluştu: ${response.status}`);
+        return;
+      }
+
+      // Başarılı olursa local state'den de sil
+      setCategories(prev => prev.filter((_, i) => i !== index));
+      showMessage('success', `"${categoryToDelete.display_name_tr}" kategorisi başarıyla silindi.`);
+      
+      // Kategorileri kaydet (admin-settings.json'ı güncelle)
+      await saveCategories();
+      
+    } catch (error) {
+      console.error('Kategori silme hatası:', error);
+      showMessage('error', 'Kategori silinirken beklenmeyen bir hata oluştu.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const updateCategoryName = (index, newName) => {
