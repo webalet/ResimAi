@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import LazyImage from './LazyImage';
@@ -22,8 +22,18 @@ const ImageComparison: React.FC<ImageComparisonProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const updateSliderPosition = useCallback((clientX: number) => {
+    if (!containerRef.current) return;
+    
+    const rect = containerRef.current.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
+    setSliderPosition(percentage);
+  }, []);
+
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
+    e.preventDefault();
     setIsDragging(true);
   }, []);
 
@@ -32,24 +42,38 @@ const ImageComparison: React.FC<ImageComparisonProps> = ({
   }, []);
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!isDragging || !containerRef.current) return;
+    if (!isDragging) return;
     e.stopPropagation();
-    
-    const rect = containerRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
-    setSliderPosition(percentage);
-  }, [isDragging]);
+    updateSliderPosition(e.clientX);
+  }, [isDragging, updateSliderPosition]);
+
+  // Global mouse event handlers for smooth dragging
+  useEffect(() => {
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      if (!isDragging) return;
+      updateSliderPosition(e.clientX);
+    };
+
+    const handleGlobalMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    if (isDragging) {
+      document.addEventListener('mousemove', handleGlobalMouseMove);
+      document.addEventListener('mouseup', handleGlobalMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleGlobalMouseMove);
+      document.removeEventListener('mouseup', handleGlobalMouseUp);
+    };
+  }, [isDragging, updateSliderPosition]);
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (!isDragging || !containerRef.current) return;
+    if (!isDragging) return;
     e.stopPropagation();
-    
-    const rect = containerRef.current.getBoundingClientRect();
-    const x = e.touches[0].clientX - rect.left;
-    const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
-    setSliderPosition(percentage);
-  }, [isDragging]);
+    updateSliderPosition(e.touches[0].clientX);
+  }, [isDragging, updateSliderPosition]);
 
   return (
     <div 
