@@ -101,7 +101,7 @@ const ImageComparison: React.FC<ImageComparisonProps> = ({
       <LazyImage
         src={afterImage}
         alt={afterLabel}
-        className="absolute inset-0 w-full h-full object-cover"
+        className="absolute inset-0 w-full h-full object-contain"
       />
       <div className="absolute top-4 right-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm font-medium pointer-events-none z-20">
         {afterLabel}
@@ -117,7 +117,7 @@ const ImageComparison: React.FC<ImageComparisonProps> = ({
         <LazyImage
           src={beforeImage}
           alt={beforeLabel}
-          className="w-full h-full object-cover"
+          className="w-full h-full object-contain"
         />
         <div className="absolute top-4 left-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm font-medium">
           {beforeLabel}

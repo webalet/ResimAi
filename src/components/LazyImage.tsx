@@ -39,7 +39,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
   className,
   width,
   height,
-  objectFit = 'cover',
+  objectFit = 'contain',
   loading = 'lazy',
   onLoad,
   onError,

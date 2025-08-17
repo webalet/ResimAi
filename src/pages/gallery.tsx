@@ -400,12 +400,7 @@ const Gallery: React.FC = () => {
                       
                       {job.processed_images && job.processed_images.length > 0 && (
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-2">
-                            <Sparkles className="h-4 w-4 text-purple-500" />
-                            <span className="text-sm font-medium text-gray-700">
-                              {job.processed_images.length} resim
-                            </span>
-                          </div>
+
                           <div className="flex items-center space-x-2">
                             <button
                               onClick={() => {
@@ -488,14 +483,7 @@ const Gallery: React.FC = () => {
                         </div>
                       )}
                       
-                      {job.processed_images && job.processed_images.length > 0 && (
-                        <div className="flex items-center space-x-2">
-                          <Sparkles className="h-3 w-3 text-purple-500" />
-                          <span className="text-sm text-gray-600">
-                            {job.processed_images.length} resim
-                          </span>
-                        </div>
-                      )}
+                      
                     </div>
                     
                     <div className="flex items-center space-x-2 ml-4">
