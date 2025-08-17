@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, Upload as UploadIcon, Image as ImageIcon, X } from 'lucide-react';
+import { ArrowRight, Upload as UploadIcon, ImageIcon, X } from 'lucide-react';
+import { toast } from 'sonner';
 import { Category } from '../../shared/types';
 import LoadingSpinner from '../components/LoadingSpinner';
-import { toast } from 'sonner';
+import ImageComparison from '../components/ImageComparison';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -387,11 +388,22 @@ const Categories: React.FC = () => {
             }))}
           >
             <div className="aspect-[4/3] relative overflow-hidden">
-              <img
-                src={category.image_url}
-                alt={getCategoryDisplayName(category)}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-              />
+              {category.before_image_url && category.after_image_url ? (
+                <div className="w-full h-full">
+                  <ImageComparison
+                    beforeImage={category.before_image_url}
+                    afterImage={category.after_image_url}
+                    beforeLabel="Öncesi"
+                    afterLabel="Sonrası"
+                  />
+                </div>
+              ) : (
+                <img
+                  src={category.before_image_url || category.image_url}
+                  alt={getCategoryDisplayName(category)}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                />
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
               <div className="absolute bottom-2 left-3 right-3">
                 <h3 className="text-lg font-bold text-white mb-1">
