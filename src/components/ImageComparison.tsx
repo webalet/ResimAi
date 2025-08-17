@@ -21,14 +21,28 @@ const ImageComparison: React.FC<ImageComparisonProps> = ({
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const animationFrameRef = useRef<number | null>(null);
+  const lastUpdateTimeRef = useRef<number>(0);
 
   const updateSliderPosition = useCallback((clientX: number) => {
     if (!containerRef.current) return;
     
-    const rect = containerRef.current.getBoundingClientRect();
-    const x = clientX - rect.left;
-    const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
-    setSliderPosition(percentage);
+    const now = Date.now();
+    if (now - lastUpdateTimeRef.current < 16) return; // Throttle to ~60fps
+    
+    if (animationFrameRef.current) {
+      cancelAnimationFrame(animationFrameRef.current);
+    }
+    
+    animationFrameRef.current = requestAnimationFrame(() => {
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      
+      const x = clientX - rect.left;
+      const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
+      setSliderPosition(percentage);
+      lastUpdateTimeRef.current = now;
+    });
   }, []);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
@@ -44,6 +58,7 @@ const ImageComparison: React.FC<ImageComparisonProps> = ({
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!isDragging) return;
     e.stopPropagation();
+    e.preventDefault();
     updateSliderPosition(e.clientX);
   }, [isDragging, updateSliderPosition]);
 
@@ -51,21 +66,33 @@ const ImageComparison: React.FC<ImageComparisonProps> = ({
   useEffect(() => {
     const handleGlobalMouseMove = (e: MouseEvent) => {
       if (!isDragging) return;
+      e.preventDefault();
       updateSliderPosition(e.clientX);
     };
 
     const handleGlobalMouseUp = () => {
       setIsDragging(false);
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+        animationFrameRef.current = null;
+      }
     };
 
     if (isDragging) {
-      document.addEventListener('mousemove', handleGlobalMouseMove);
+      document.addEventListener('mousemove', handleGlobalMouseMove, { passive: false });
       document.addEventListener('mouseup', handleGlobalMouseUp);
+      document.body.style.userSelect = 'none';
+    } else {
+      document.body.style.userSelect = '';
     }
 
     return () => {
       document.removeEventListener('mousemove', handleGlobalMouseMove);
       document.removeEventListener('mouseup', handleGlobalMouseUp);
+      document.body.style.userSelect = '';
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
     };
   }, [isDragging, updateSliderPosition]);
 

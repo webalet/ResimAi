@@ -376,7 +376,7 @@ const Categories: React.FC = () => {
       </div>
 
       {/* Categories Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {categories.map((category) => {
           const handleCategorySelect = () => setUploadState(prev => ({
             ...prev,
@@ -389,7 +389,7 @@ const Categories: React.FC = () => {
             key={category.id}
             className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-all duration-200 overflow-hidden group"
           >
-            <div className="aspect-[4/3] relative overflow-hidden">
+            <div className="aspect-[3/2] relative overflow-hidden">
               {category.before_image_url && category.after_image_url ? (
                 <div className="w-full h-full">
                   <ImageComparison
@@ -432,7 +432,7 @@ const Categories: React.FC = () => {
               </div>
             </div>
             
-            <div className="p-4 cursor-pointer" onClick={handleCategorySelect}>
+            <div className="p-6 cursor-pointer" onClick={handleCategorySelect}>
               <p className="text-gray-600 text-sm mb-3 line-clamp-2">{getCategoryDescription(category)}</p>
               
               <div className="mb-3">
