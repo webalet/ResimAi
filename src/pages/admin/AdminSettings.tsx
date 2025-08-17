@@ -1056,9 +1056,6 @@ const AdminSettings = () => {
       setCategories(prev => prev.filter((_, i) => i !== index));
       showMessage('success', `"${categoryToDelete.display_name_tr}" kategorisi başarıyla silindi.`);
       
-      // Kategorileri kaydet (admin-settings.json'ı güncelle)
-      await saveCategories();
-      
     } catch (error) {
       console.error('Kategori silme hatası:', error);
       showMessage('error', 'Kategori silinirken beklenmeyen bir hata oluştu.');
