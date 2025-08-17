@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Settings, Key, Database, Webhook, Code, Edit2, Save, X, Plus, Trash2, ChevronDown, ChevronUp, Upload, Image } from 'lucide-react';
 import { toast } from 'sonner';
 import { Category } from '../../../shared/types';
-import ImageComparison from '../../components/ImageComparison';
 
 type ValidationErrors = Record<string, string>;
 
@@ -51,98 +50,7 @@ const AdminSettings = () => {
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
 
   // State for editable categories
-  const [categories, setCategories] = useState<Category[]>([
-    {
-      id: '1',
-      name: 'Corporate',
-      display_name_tr: 'Kurumsal Fotoğraf',
-      display_name_en: 'Corporate Photography',
-      type: 'Corporate',
-      description: 'Profesyonel iş dünyası için kurumsal fotoğraflar. Yönetici pozisyonları, şirket profilleri ve resmi toplantılar için ideal.',
-      description_en: 'Professional corporate photography for business world. Perfect for executive positions, company profiles and formal meetings.',
-      styles: ['Professional', 'Business Casual', 'Executive', 'Formal Meeting', 'Leadership', 'Corporate Headshot'],
-      styles_en: ['Professional', 'Business Casual', 'Executive', 'Formal Meeting', 'Leadership', 'Corporate Headshot'],
-      image_url: '',
-      is_active: true,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    },
-    {
-      id: '2',
-      name: 'Creative',
-      display_name_tr: 'Yaratıcı Portre',
-      display_name_en: 'Creative Portrait',
-      type: 'Creative',
-      description: 'Sanatsal ve yaratıcı portre fotoğrafları. Özgün tarzınızı yansıtan, artistik ve etkileyici görüntüler.',
-      description_en: 'Artistic and creative portrait photography. Unique images that reflect your personal style with artistic and impressive visuals.',
-      styles: ['Artistic', 'Bohemian', 'Vintage', 'Modern Art', 'Abstract', 'Dramatic'],
-      styles_en: ['Artistic', 'Bohemian', 'Vintage', 'Modern Art', 'Abstract', 'Dramatic'],
-      image_url: '',
-      is_active: true,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    },
-    {
-      id: '3',
-      name: 'Avatar',
-      display_name_tr: 'Avatar Oluşturucu',
-      display_name_en: 'Avatar Creator',
-      type: 'Avatar',
-      description: 'Dijital avatar ve karakter fotoğrafları. Sosyal medya profilleri, oyun karakterleri ve dijital kimlik için.',
-      description_en: 'Digital avatar and character photography. Perfect for social media profiles, gaming characters and digital identity.',
-      styles: ['Cartoon', 'Realistic', 'Anime', 'Fantasy', 'Superhero', 'Gaming'],
-      styles_en: ['Cartoon', 'Realistic', 'Anime', 'Fantasy', 'Superhero', 'Gaming'],
-      image_url: '',
-      is_active: true,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    },
-    {
-      id: '4',
-      name: 'Outfit',
-      display_name_tr: 'Elbise Değişimi',
-      display_name_en: 'Outfit Change',
-      type: 'Outfit',
-      description: 'AI ile kıyafet değiştirme ve stil önerileri. Farklı kıyafet kombinasyonlarını deneyimleyin.',
-      description_en: 'AI-powered outfit change and style suggestions. Experience different clothing combinations effortlessly.',
-      styles: ['Casual', 'Formal', 'Sporty', 'Trendy', 'Business', 'Evening'],
-      styles_en: ['Casual', 'Formal', 'Sporty', 'Trendy', 'Business', 'Evening'],
-      image_url: '',
-      is_active: true,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    },
-    {
-      id: '5',
-      name: 'Background',
-      display_name_tr: 'Arkaplan Değiştirme',
-      display_name_en: 'Background Change',
-      type: 'Background',
-      description: 'Profesyonel arka plan değiştirme hizmeti. Fotoğraflarınızı istediğiniz ortamda gösterin.',
-      description_en: 'Professional background change service. Showcase your photos in any environment you desire.',
-      styles: ['Office', 'Studio', 'Nature', 'Abstract', 'Urban', 'Luxury'],
-      styles_en: ['Office', 'Studio', 'Nature', 'Abstract', 'Urban', 'Luxury'],
-      image_url: '',
-      is_active: true,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    },
-    {
-      id: '6',
-      name: 'Skincare',
-      display_name_tr: 'Cilt Düzeltme',
-      display_name_en: 'Skin Enhancement',
-      type: 'Skincare',
-      description: 'AI destekli cilt düzeltme ve güzelleştirme. Doğal görünümlü, pürüzsüz ve parlak cilt.',
-      description_en: 'AI-powered skin correction and enhancement. Natural-looking, smooth and radiant skin.',
-      styles: ['Natural', 'Glowing', 'Professional', 'Fresh', 'Radiant', 'Flawless'],
-      styles_en: ['Natural', 'Glowing', 'Professional', 'Fresh', 'Radiant', 'Flawless'],
-      image_url: '',
-      is_active: true,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    }
-  ]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   // File input refs for image uploads
   const fileInputRefs = useRef({});
@@ -1593,6 +1501,11 @@ const AdminSettings = () => {
                                 (e.target as HTMLImageElement).src = '/images/ornek.jpg';
                               }}
                             />
+                            {!category.before_image_url && !category.image_url && (
+                              <div className="absolute inset-0 flex items-center justify-center bg-gray-50 rounded-lg">
+                                <p className="text-xs text-gray-500 text-center">Öncesi resmi<br/>yüklenmemiş</p>
+                              </div>
+                            )}
                             <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
                               <button
                                 onClick={() => triggerBeforeImageUpload(categoryIndex)}
@@ -1624,6 +1537,11 @@ const AdminSettings = () => {
                                 (e.target as HTMLImageElement).src = '/images/ornek.jpg';
                               }}
                             />
+                            {!category.after_image_url && (
+                              <div className="absolute inset-0 flex items-center justify-center bg-gray-50 rounded-lg">
+                                <p className="text-xs text-gray-500 text-center">Sonrası resmi<br/>yüklenmemiş</p>
+                              </div>
+                            )}
                             <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
                               <button
                                 onClick={() => triggerAfterImageUpload(categoryIndex)}
@@ -1644,70 +1562,44 @@ const AdminSettings = () => {
                         </div>
                       </div>
                     ) : (
-                      /* Before/After Comparison View */
-                      <div className="relative">
-                        {category.before_image_url && category.after_image_url ? (
-                          /* Both images available - show comparison */
-                          <div className="h-32 rounded-lg overflow-hidden border border-gray-300">
-                            <ImageComparison
-                              beforeImage={category.before_image_url}
-                              afterImage={category.after_image_url}
-                              beforeLabel="Öncesi"
-                              afterLabel="Sonrası"
+                      /* View Mode - Always show side by side layout */
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-700 mb-1">Öncesi Resmi</label>
+                          <div className="relative">
+                            <img 
+                              src={category.before_image_url || category.image_url || '/images/ornek.jpg'} 
+                              alt={`${category.name} - Öncesi`}
+                              className="w-full h-24 object-cover rounded-lg border border-gray-300"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = '/images/ornek.jpg';
+                              }}
                             />
+                            {!category.before_image_url && !category.image_url && (
+                              <div className="absolute inset-0 flex items-center justify-center bg-gray-50 rounded-lg">
+                                <p className="text-xs text-gray-500 text-center">Öncesi resmi<br/>yüklenmemiş</p>
+                              </div>
+                            )}
                           </div>
-                        ) : category.before_image_url || category.after_image_url ? (
-                          /* Only one image available - show side by side */
-                          <div className="grid grid-cols-2 gap-3">
-                            <div>
-                              <label className="block text-xs font-medium text-gray-700 mb-1">Öncesi Resmi</label>
-                              <img 
-                                src={category.before_image_url || category.image_url || '/images/ornek.jpg'} 
-                                alt={`${category.name} - Öncesi`}
-                                className="w-full h-24 object-cover rounded-lg border border-gray-300"
-                                onError={(e) => {
-                                  (e.target as HTMLImageElement).src = '/images/ornek.jpg';
-                                }}
-                              />
-                            </div>
-                            <div>
-                              <label className="block text-xs font-medium text-gray-700 mb-1">Sonrası Resmi</label>
-                              <img 
-                                src={category.after_image_url || '/images/ornek.jpg'} 
-                                alt={`${category.name} - Sonrası`}
-                                className="w-full h-24 object-cover rounded-lg border border-gray-300"
-                                onError={(e) => {
-                                  (e.target as HTMLImageElement).src = '/images/ornek.jpg';
-                                }}
-                              />
-                              {!category.after_image_url && (
-                                <p className="text-xs text-gray-500 mt-1 text-center">Sonrası resmi yüklenmemiş</p>
-                              )}
-                            </div>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-700 mb-1">Sonrası Resmi</label>
+                          <div className="relative">
+                            <img 
+                              src={category.after_image_url || '/images/ornek.jpg'} 
+                              alt={`${category.name} - Sonrası`}
+                              className="w-full h-24 object-cover rounded-lg border border-gray-300"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = '/images/ornek.jpg';
+                              }}
+                            />
+                            {!category.after_image_url && (
+                              <div className="absolute inset-0 flex items-center justify-center bg-gray-50 rounded-lg">
+                                <p className="text-xs text-gray-500 text-center">Sonrası resmi<br/>yüklenmemiş</p>
+                              </div>
+                            )}
                           </div>
-                        ) : (
-                          /* No images available - show placeholder */
-                          <div className="grid grid-cols-2 gap-3">
-                            <div>
-                              <label className="block text-xs font-medium text-gray-700 mb-1">Öncesi Resmi</label>
-                              <img 
-                                src={'/images/ornek.jpg'} 
-                                alt={`${category.name} - Öncesi`}
-                                className="w-full h-24 object-cover rounded-lg border border-gray-300"
-                              />
-                              <p className="text-xs text-gray-500 mt-1 text-center">Öncesi resmi yüklenmemiş</p>
-                            </div>
-                            <div>
-                              <label className="block text-xs font-medium text-gray-700 mb-1">Sonrası Resmi</label>
-                              <img 
-                                src={'/images/ornek.jpg'} 
-                                alt={`${category.name} - Sonrası`}
-                                className="w-full h-24 object-cover rounded-lg border border-gray-300"
-                              />
-                              <p className="text-xs text-gray-500 mt-1 text-center">Sonrası resmi yüklenmemiş</p>
-                            </div>
-                          </div>
-                        )}
+                        </div>
                       </div>
                     )}
                   </div>
