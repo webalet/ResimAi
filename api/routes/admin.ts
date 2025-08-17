@@ -664,7 +664,7 @@ router.post('/upload-image', adminAuth, upload.single('image'), async (req: Requ
     const fileName = `${type}_${timestamp}_${randomString}${fileExtension}`;
     
     // Ensure uploads directory exists
-    const uploadsDir = path.join(process.cwd(), 'public', 'images', 'uploads');
+    const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
     if (!fs.existsSync(uploadsDir)) {
       fs.mkdirSync(uploadsDir, { recursive: true });
     }
@@ -674,7 +674,7 @@ router.post('/upload-image', adminAuth, upload.single('image'), async (req: Requ
     fs.writeFileSync(filePath, file.buffer);
     
     // Return the URL path
-    const imageUrl = `/images/uploads/${fileName}`;
+    const imageUrl = `/uploads/${fileName}`;
     
     res.json({
       success: true,
