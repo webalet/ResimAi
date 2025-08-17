@@ -90,7 +90,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     if (timeSinceLastLogin < RATE_LIMIT_MS) {
       const remainingTime = Math.ceil((RATE_LIMIT_MS - timeSinceLastLogin) / 1000);
-      const errorMessage = `Çok hızlı giriş denemesi. ${remainingTime} saniye bekleyin.`;
+      const errorMessage = t('auth.errors.waitSeconds', { seconds: remainingTime });
       throw new Error(errorMessage);
     }
 
@@ -107,15 +107,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (error.response?.status === 429) {
         const retryAfter = error.response.headers['retry-after'];
         error.retryAfter = retryAfter;
-        error.userMessage = `Çok fazla giriş denemesi yapıldı. ${retryAfter ? `${retryAfter} saniye` : 'bir süre'} bekleyip tekrar deneyin.`;
+        error.userMessage = t('auth.errors.tooManyAttempts');
       } else if (error.response?.status === 401) {
-        error.userMessage = 'E-posta veya şifre hatalı.';
+        error.userMessage = t('auth.errors.invalidCredentials');
+      } else if (error.response?.status === 403) {
+        // Check if it's a banned account error
+        if (error.response?.data?.message?.includes('yasaklan') || error.response?.data?.message?.includes('banned')) {
+          error.userMessage = t('auth.errors.bannedCannotLogin');
+        } else {
+          error.userMessage = t('auth.errors.invalidCredentials');
+        }
       } else if (error.response?.status === 422) {
-        error.userMessage = 'Geçersiz giriş bilgileri.';
+        error.userMessage = t('auth.errors.invalidCredentials');
       } else if (error.response?.status >= 500) {
-        error.userMessage = 'Sunucu hatası. Lütfen daha sonra tekrar deneyin.';
+        error.userMessage = t('common.error');
       } else {
-        error.userMessage = error.message || 'Giriş yapılırken hata oluştu';
+        error.userMessage = error.message || t('auth.errors.loginFailed');
       }
       throw error;
     }
@@ -128,7 +135,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     if (timeSinceLastRegister < RATE_LIMIT_MS) {
       const remainingTime = Math.ceil((RATE_LIMIT_MS - timeSinceLastRegister) / 1000);
-      const errorMessage = `Çok hızlı kayıt denemesi. ${remainingTime} saniye bekleyin.`;
+      const errorMessage = t('auth.errors.waitSeconds', { seconds: remainingTime });
       throw new Error(errorMessage);
     }
 
@@ -145,15 +152,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (error.response?.status === 429) {
         const retryAfter = error.response.headers['retry-after'];
         error.retryAfter = retryAfter;
-        error.userMessage = `Çok fazla kayıt denemesi yapıldı. ${retryAfter ? `${retryAfter} saniye` : 'bir süre'} bekleyip tekrar deneyin.`;
+        error.userMessage = t('auth.errors.tooManyAttempts');
       } else if (error.response?.status === 409) {
         error.userMessage = 'Bu e-posta adresi zaten kullanılıyor.';
       } else if (error.response?.status === 422) {
-        error.userMessage = 'Geçersiz kayıt bilgileri.';
+        error.userMessage = t('auth.errors.fillAllFields');
       } else if (error.response?.status >= 500) {
-        error.userMessage = 'Sunucu hatası. Lütfen daha sonra tekrar deneyin.';
+        error.userMessage = t('common.error');
       } else {
-        error.userMessage = error.message || 'Kayıt olurken hata oluştu';
+        error.userMessage = error.message || t('auth.errors.fillAllFields');
       }
       throw error;
     }

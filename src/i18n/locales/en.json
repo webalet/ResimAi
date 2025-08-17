@@ -111,7 +111,10 @@
       "waitSeconds": "Please wait {{seconds}} seconds",
       "tooManyAttempts": "Too many attempts. Please try again later",
       "loginFailed": "Login failed",
-      "fillAllFields": "Please fill in all fields"
+      "fillAllFields": "Please fill in all fields",
+      "accountBanned": "Your account has been banned",
+      "bannedCannotLogin": "Cannot login because this account is banned",
+      "contactSupport": "Please contact support team"
     },
     "retrying": "Retrying... ({{current}}/{{max}})",
     "retryingShort": "Retrying..."

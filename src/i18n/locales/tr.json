@@ -115,7 +115,10 @@
       "waitSeconds": "Lütfen {{seconds}} saniye bekleyin",
       "tooManyAttempts": "Çok fazla deneme yapıldı. Lütfen daha sonra tekrar deneyin",
       "loginFailed": "Giriş başarısız oldu",
-      "fillAllFields": "Lütfen tüm alanları doldurun"
+      "fillAllFields": "Lütfen tüm alanları doldurun",
+      "accountBanned": "Hesabınız yasaklanmıştır",
+      "bannedCannotLogin": "Bu hesap yasaklı olduğu için giriş yapılamaz",
+      "contactSupport": "Destek ekibi ile iletişime geçin"
     },
     "retrying": "Tekrar deneniyor... ({{current}}/{{max}})",
     "retryingShort": "Tekrar deneniyor..."
