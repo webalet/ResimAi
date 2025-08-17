@@ -292,25 +292,67 @@ const AdminSettings = () => {
         };
         setSystemConfig(systemConfig);
         
-        // Update categories
+        // Update categories with real Supabase IDs
         if (data.data.categories) {
-          // Convert old format categories to new format if needed
-          const formattedCategories = data.data.categories.map((cat: any, index: number) => ({
-            id: cat.id || (index + 1).toString(),
-            name: cat.name,
-            display_name_tr: cat.display_name_tr || cat.name,
-            display_name_en: cat.display_name_en || cat.name,
-            type: cat.type || cat.name,
-            description: cat.description || '',
-            description_en: cat.description_en || cat.description || '',
-            image_url: cat.image_url,
-            styles: cat.styles,
-            styles_en: cat.styles_en || cat.styles || [],
-            is_active: cat.is_active !== undefined ? cat.is_active : true,
-            created_at: cat.created_at || new Date().toISOString(),
-            updated_at: cat.updated_at || new Date().toISOString()
-          }));
-          setCategories(formattedCategories);
+          try {
+            // First get categories from Supabase to get real IDs
+            const categoriesResponse = await fetch(`${API_BASE_URL}/api/categories`, {
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              }
+            });
+            
+            let supabaseCategories = [];
+            if (categoriesResponse.ok) {
+              const supabaseData = await categoriesResponse.json();
+              supabaseCategories = supabaseData.data || [];
+            }
+            
+            // Map admin-settings categories with real Supabase IDs
+            const formattedCategories = data.data.categories.map((cat: any, index: number) => {
+              // Find matching category in Supabase by type
+              const supabaseCategory = supabaseCategories.find((sc: any) => sc.type === (cat.type || cat.name));
+              
+              return {
+                id: supabaseCategory?.id || cat.id || (index + 1).toString(),
+                name: cat.name,
+                display_name_tr: cat.display_name_tr || cat.name,
+                display_name_en: cat.display_name_en || cat.name,
+                type: cat.type || cat.name,
+                description: cat.description || '',
+                description_en: cat.description_en || cat.description || '',
+                image_url: cat.image_url,
+                styles: cat.styles,
+                styles_en: cat.styles_en || cat.styles || [],
+                is_active: cat.is_active !== undefined ? cat.is_active : true,
+                created_at: cat.created_at || new Date().toISOString(),
+                updated_at: cat.updated_at || new Date().toISOString()
+              };
+            });
+            
+            console.log('Formatted categories with real IDs:', formattedCategories);
+            setCategories(formattedCategories);
+          } catch (error) {
+            console.error('Error loading Supabase categories:', error);
+            // Fallback to original method if Supabase fetch fails
+            const formattedCategories = data.data.categories.map((cat: any, index: number) => ({
+              id: cat.id || (index + 1).toString(),
+              name: cat.name,
+              display_name_tr: cat.display_name_tr || cat.name,
+              display_name_en: cat.display_name_en || cat.name,
+              type: cat.type || cat.name,
+              description: cat.description || '',
+              description_en: cat.description_en || cat.description || '',
+              image_url: cat.image_url,
+              styles: cat.styles,
+              styles_en: cat.styles_en || cat.styles || [],
+              is_active: cat.is_active !== undefined ? cat.is_active : true,
+              created_at: cat.created_at || new Date().toISOString(),
+              updated_at: cat.updated_at || new Date().toISOString()
+            }));
+            setCategories(formattedCategories);
+          }
         }
         
         // Update AI prompts
@@ -989,6 +1031,11 @@ const AdminSettings = () => {
         return;
       }
 
+      // Debug: Silinecek kategori bilgilerini logla
+      console.log('Silinecek kategori:', categoryToDelete);
+      console.log('Kategori ID:', categoryToDelete.id);
+      console.log('DELETE URL:', `${API_BASE_URL}/api/categories/${categoryToDelete.id}`);
+      
       // Supabase'den kategoriyi sil
       const response = await fetch(`${API_BASE_URL}/api/categories/${categoryToDelete.id}`, {
         method: 'DELETE',
