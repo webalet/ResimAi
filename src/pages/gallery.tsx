@@ -230,10 +230,7 @@ const Gallery: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           className="mb-12 text-center"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/60 backdrop-blur-sm rounded-full border border-white/20 shadow-lg mb-6">
-            <Sparkles className="h-5 w-5 text-purple-600" />
-            <span className="text-sm font-medium text-purple-700">AI Gallery</span>
-          </div>
+
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent mb-4">
             {t('gallery.title')}
           </h1>
@@ -495,7 +492,7 @@ const Gallery: React.FC = () => {
                         <div className="flex items-center space-x-2">
                           <Sparkles className="h-3 w-3 text-purple-500" />
                           <span className="text-sm text-gray-600">
-                            {job.processed_images.length} {t('gallery.images')}
+                            {job.processed_images.length} resim
                           </span>
                         </div>
                       )}
