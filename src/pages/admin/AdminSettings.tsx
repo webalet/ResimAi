@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Settings, Key, Database, Webhook, Code, Edit2, Save, X, Plus, Trash2, ChevronDown, ChevronUp, Upload, Image } from 'lucide-react';
 import { toast } from 'sonner';
 import { Category } from '../../../shared/types';
+import ImageComparison from '../../components/ImageComparison';
 
 type ValidationErrors = Record<string, string>;
 
@@ -145,6 +146,8 @@ const AdminSettings = () => {
 
   // File input refs for image uploads
   const fileInputRefs = useRef({});
+  const beforeImageInputRefs = useRef({});
+  const afterImageInputRefs = useRef({});
 
   // Load settings on component mount
   useEffect(() => {
@@ -883,8 +886,16 @@ const AdminSettings = () => {
     setCategories(prev => [...prev, newCategory]);
   };
 
-  // Image upload functions
-  const handleImageUpload = async (categoryIndex, file) => {
+  // Image upload functions - Before/After support
+  const handleBeforeImageUpload = async (categoryIndex, file) => {
+    await handleImageUpload(categoryIndex, file, 'before');
+  };
+
+  const handleAfterImageUpload = async (categoryIndex, file) => {
+    await handleImageUpload(categoryIndex, file, 'after');
+  };
+
+  const handleImageUpload = async (categoryIndex, file, imageType = 'before') => {
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
@@ -907,6 +918,7 @@ const AdminSettings = () => {
       const formData = new FormData();
       formData.append('image', file);
       formData.append('type', 'category');
+      formData.append('imageType', imageType);
 
       const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76';
       const response = await fetch(`${API_BASE_URL}/api/admin/upload-image`, {
@@ -932,13 +944,19 @@ const AdminSettings = () => {
         throw new Error(data.message || 'Resim yükleme başarısız');
       }
       
-      // Update category in Supabase - ÖNCE kategoryi al
+      // Update category in Supabase
       const categoryToUpdate = categories[categoryIndex];
       if (categoryToUpdate && categoryToUpdate.id) {
-        // Update category image URL in state
+        // Update category image URL in state based on imageType
+        const updateField = imageType === 'before' ? 'before_image_url' : 'after_image_url';
         setCategories(prev => prev.map((cat, i) => 
-          i === categoryIndex ? { ...cat, image_url: data.url } : cat
+          i === categoryIndex ? { ...cat, [updateField]: data.url } : cat
         ));
+        
+        const updateData = {
+          ...categoryToUpdate,
+          [updateField]: data.url
+        };
         
         const updateResponse = await fetch(`${API_BASE_URL}/api/categories/${categoryToUpdate.id}`, {
           method: 'PUT',
@@ -946,10 +964,7 @@ const AdminSettings = () => {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify({
-            ...categoryToUpdate,
-            image_url: data.url  // Yeni URL'yi manuel olarak ekle
-          })
+          body: JSON.stringify(updateData)
         });
         
         if (!updateResponse.ok) {
@@ -964,10 +979,9 @@ const AdminSettings = () => {
         }
       }
       
-      toast.success('Resim başarıyla yüklendi!');
+      toast.success(`${imageType === 'before' ? 'Öncesi' : 'Sonrası'} resim başarıyla yüklendi!`);
       
       // Categories sayfasının cache'ini temizle
-      // Eğer Categories sayfası açıksa, sayfayı yenile
       if (window.location.pathname.includes('/categories') || window.location.pathname === '/') {
         setTimeout(() => {
           window.location.reload();
@@ -983,6 +997,20 @@ const AdminSettings = () => {
 
   const triggerImageUpload = (categoryIndex) => {
     const input = fileInputRefs.current[categoryIndex];
+    if (input) {
+      input.click();
+    }
+  };
+
+  const triggerBeforeImageUpload = (categoryIndex) => {
+    const input = beforeImageInputRefs.current[categoryIndex];
+    if (input) {
+      input.click();
+    }
+  };
+
+  const triggerAfterImageUpload = (categoryIndex) => {
+    const input = afterImageInputRefs.current[categoryIndex];
     if (input) {
       input.click();
     }
@@ -1561,36 +1589,96 @@ const AdminSettings = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {categories.map((category, categoryIndex) => (
                 <div key={categoryIndex} className="bg-gray-50 border border-gray-200 rounded-lg p-5 hover:shadow-md transition-shadow">
-                  {/* Category Image */}
+                  {/* Category Image - Before/After Comparison */}
                   <div className="mb-4">
-                    <div className="relative group">
-                      <img 
-                        src={category.image_url} 
-                        alt={category.name}
-                        className="w-full h-32 object-cover rounded-lg border border-gray-300"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = '/images/ornek.jpg';
-                        }}
-                      />
-                      {editModes.categories && (
-                        <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
-                          <button
-                            onClick={() => triggerImageUpload(categoryIndex)}
-                            className="bg-white text-gray-800 px-3 py-2 rounded-lg hover:bg-gray-100 flex items-center gap-2 text-sm font-medium"
-                          >
-                            <Upload className="h-4 w-4" />
-                            Resim Değiştir
-                          </button>
+                    {editModes.categories ? (
+                      <div className="space-y-3">
+                        {/* Before Image Upload */}
+                        <div>
+                          <label className="block text-xs font-medium text-gray-700 mb-1">Öncesi Resmi</label>
+                          <div className="relative group">
+                            <img 
+                              src={category.before_image_url || category.image_url || '/images/ornek.jpg'} 
+                              alt={`${category.name} - Öncesi`}
+                              className="w-full h-24 object-cover rounded-lg border border-gray-300"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = '/images/ornek.jpg';
+                              }}
+                            />
+                            <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                              <button
+                                onClick={() => triggerBeforeImageUpload(categoryIndex)}
+                                className="bg-white text-gray-800 px-2 py-1 rounded-lg hover:bg-gray-100 flex items-center gap-1 text-xs font-medium"
+                              >
+                                <Upload className="h-3 w-3" />
+                                Öncesi
+                              </button>
+                            </div>
+                            <input
+                              ref={(el) => beforeImageInputRefs.current[categoryIndex] = el}
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleBeforeImageUpload(categoryIndex, e.target.files[0])}
+                              className="hidden"
+                            />
+                          </div>
                         </div>
-                      )}
-                      <input
-                        ref={(el) => fileInputRefs.current[categoryIndex] = el}
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleImageUpload(categoryIndex, e.target.files[0])}
-                        className="hidden"
-                      />
-                    </div>
+                        
+                        {/* After Image Upload */}
+                        <div>
+                          <label className="block text-xs font-medium text-gray-700 mb-1">Sonrası Resmi</label>
+                          <div className="relative group">
+                            <img 
+                              src={category.after_image_url || '/images/ornek.jpg'} 
+                              alt={`${category.name} - Sonrası`}
+                              className="w-full h-24 object-cover rounded-lg border border-gray-300"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = '/images/ornek.jpg';
+                              }}
+                            />
+                            <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                              <button
+                                onClick={() => triggerAfterImageUpload(categoryIndex)}
+                                className="bg-white text-gray-800 px-2 py-1 rounded-lg hover:bg-gray-100 flex items-center gap-1 text-xs font-medium"
+                              >
+                                <Upload className="h-3 w-3" />
+                                Sonrası
+                              </button>
+                            </div>
+                            <input
+                              ref={(el) => afterImageInputRefs.current[categoryIndex] = el}
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleAfterImageUpload(categoryIndex, e.target.files[0])}
+                              className="hidden"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      /* Before/After Comparison View */
+                      <div className="relative">
+                        {category.before_image_url && category.after_image_url ? (
+                          <div className="h-32 rounded-lg overflow-hidden border border-gray-300">
+                            <ImageComparison
+                              beforeImage={category.before_image_url}
+                              afterImage={category.after_image_url}
+                              beforeLabel="Öncesi"
+                              afterLabel="Sonrası"
+                            />
+                          </div>
+                        ) : (
+                          <img 
+                            src={category.before_image_url || category.image_url || '/images/ornek.jpg'} 
+                            alt={category.name}
+                            className="w-full h-32 object-cover rounded-lg border border-gray-300"
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).src = '/images/ornek.jpg';
+                            }}
+                          />
+                        )}
+                      </div>
+                    )}
                   </div>
                   
                   <div className="flex items-center justify-between mb-3">

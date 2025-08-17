@@ -20,6 +20,8 @@ export interface Category {
   description: string;
   description_en: string;
   image_url: string;
+  before_image_url?: string;
+  after_image_url?: string;
   styles: string[];
   styles_en: string[];
   is_active: boolean;

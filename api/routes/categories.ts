@@ -19,6 +19,8 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
         description,
         description_en,
         image_url,
+        before_image_url,
+        after_image_url,
         is_active,
         styles,
         styles_en,
@@ -66,6 +68,8 @@ router.get('/:id', async (req: Request, res: Response): Promise<void> => {
         description,
         description_en,
         image_url,
+        before_image_url,
+        after_image_url,
         is_active,
         styles,
         styles_en,
@@ -113,6 +117,8 @@ router.get('/type/:type', async (req: Request, res: Response): Promise<void> => 
         description,
         description_en,
         image_url,
+        before_image_url,
+        after_image_url,
         is_active,
         styles,
         styles_en,
@@ -213,7 +219,7 @@ router.post('/', adminAuth, async (req: Request, res: Response): Promise<void> =
 router.put('/:id', adminAuth, async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const { name, display_name_tr, display_name_en, type, description, description_en, image_url, styles, styles_en, is_active } = req.body;
+    const { name, display_name_tr, display_name_en, type, description, description_en, image_url, before_image_url, after_image_url, styles, styles_en, is_active } = req.body;
 
     // Check if category exists
     const { data: existingCategory } = await supabase
@@ -256,6 +262,8 @@ router.put('/:id', adminAuth, async (req: Request, res: Response): Promise<void>
     if (description !== undefined) updateData.description = description;
     if (description_en !== undefined) updateData.description_en = description_en;
     if (image_url !== undefined) updateData.image_url = image_url;
+    if (before_image_url !== undefined) updateData.before_image_url = before_image_url;
+    if (after_image_url !== undefined) updateData.after_image_url = after_image_url;
     if (styles !== undefined) updateData.styles = styles;
     if (styles_en !== undefined) updateData.styles_en = styles_en;
     if (is_active !== undefined) updateData.is_active = is_active;

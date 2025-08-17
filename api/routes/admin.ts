@@ -643,7 +643,7 @@ router.put('/settings/prompts', adminAuth, async (req: Request, res: Response): 
   }
 });
 
-// Image upload endpoint
+// Image upload endpoint - supports before/after images
 router.post('/upload-image', adminAuth, upload.single('image'), async (req: Request, res: Response): Promise<void> => {
   try {
     if (!req.file) {
@@ -654,14 +654,15 @@ router.post('/upload-image', adminAuth, upload.single('image'), async (req: Requ
       return;
     }
 
-    const { type } = req.body; // 'category' or other types
+    const { type, imageType } = req.body; // type: 'category', imageType: 'before' | 'after' | undefined
     const file = req.file;
     
-    // Generate unique filename
+    // Generate unique filename with imageType support
     const timestamp = Date.now();
     const randomString = Math.random().toString(36).substring(2, 15);
     const fileExtension = path.extname(file.originalname);
-    const fileName = `${type}_${timestamp}_${randomString}${fileExtension}`;
+    const imageTypePrefix = imageType ? `${imageType}_` : '';
+    const fileName = `${type}_${imageTypePrefix}${timestamp}_${randomString}${fileExtension}`;
     
     // Ensure uploads directory exists
     const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
@@ -679,7 +680,8 @@ router.post('/upload-image', adminAuth, upload.single('image'), async (req: Requ
     res.json({
       success: true,
       url: imageUrl,
-      message: 'Resim başarıyla yüklendi'
+      imageType: imageType || 'default',
+      message: `${imageType ? imageType.charAt(0).toUpperCase() + imageType.slice(1) + ' r' : 'R'}esim başarıyla yüklendi`
     });
   } catch (error) {
     console.error('Image upload error:', error);
