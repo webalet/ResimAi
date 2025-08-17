@@ -61,7 +61,7 @@ const AdminSettings = () => {
       description_en: 'Professional corporate photography for business world. Perfect for executive positions, company profiles and formal meetings.',
       styles: ['Professional', 'Business Casual', 'Executive', 'Formal Meeting', 'Leadership', 'Corporate Headshot'],
       styles_en: ['Professional', 'Business Casual', 'Executive', 'Formal Meeting', 'Leadership', 'Corporate Headshot'],
-      image_url: '/images/ornek.jpg',
+      image_url: '',
       is_active: true,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
@@ -76,7 +76,7 @@ const AdminSettings = () => {
       description_en: 'Artistic and creative portrait photography. Unique images that reflect your personal style with artistic and impressive visuals.',
       styles: ['Artistic', 'Bohemian', 'Vintage', 'Modern Art', 'Abstract', 'Dramatic'],
       styles_en: ['Artistic', 'Bohemian', 'Vintage', 'Modern Art', 'Abstract', 'Dramatic'],
-      image_url: '/images/ornek.jpg',
+      image_url: '',
       is_active: true,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
@@ -91,7 +91,7 @@ const AdminSettings = () => {
       description_en: 'Digital avatar and character photography. Perfect for social media profiles, gaming characters and digital identity.',
       styles: ['Cartoon', 'Realistic', 'Anime', 'Fantasy', 'Superhero', 'Gaming'],
       styles_en: ['Cartoon', 'Realistic', 'Anime', 'Fantasy', 'Superhero', 'Gaming'],
-      image_url: '/images/ornek.jpg',
+      image_url: '',
       is_active: true,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
@@ -106,7 +106,7 @@ const AdminSettings = () => {
       description_en: 'AI-powered outfit change and style suggestions. Experience different clothing combinations effortlessly.',
       styles: ['Casual', 'Formal', 'Sporty', 'Trendy', 'Business', 'Evening'],
       styles_en: ['Casual', 'Formal', 'Sporty', 'Trendy', 'Business', 'Evening'],
-      image_url: '/images/ornek.jpg',
+      image_url: '',
       is_active: true,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
@@ -121,7 +121,7 @@ const AdminSettings = () => {
       description_en: 'Professional background change service. Showcase your photos in any environment you desire.',
       styles: ['Office', 'Studio', 'Nature', 'Abstract', 'Urban', 'Luxury'],
       styles_en: ['Office', 'Studio', 'Nature', 'Abstract', 'Urban', 'Luxury'],
-      image_url: '/images/ornek.jpg',
+      image_url: '',
       is_active: true,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
@@ -136,7 +136,7 @@ const AdminSettings = () => {
       description_en: 'AI-powered skin correction and enhancement. Natural-looking, smooth and radiant skin.',
       styles: ['Natural', 'Glowing', 'Professional', 'Fresh', 'Radiant', 'Flawless'],
       styles_en: ['Natural', 'Glowing', 'Professional', 'Fresh', 'Radiant', 'Flawless'],
-      image_url: '/images/ornek.jpg',
+      image_url: '',
       is_active: true,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
