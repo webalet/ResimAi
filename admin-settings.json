@@ -14,33 +14,108 @@
   },
   "categories": [
     {
-      "id": "1",
+      "id": "5b60ea99-2b35-4979-8f3f-7a719f4dc733",
+      "name": "Background",
+      "display_name_tr": "Arkaplan Değiştirme",
+      "display_name_en": "Background Change",
+      "type": "Background",
+      "description": "Profesyonel arka plan değiştirme hizmeti. Fotoğraflarınızı istediğiniz ortamda gösterin.",
+      "description_en": "Professional background change service. Showcase your photos in any environment you desire.",
+      "image_url": "/uploads/category_1755426486844_76rfbxppjap.jpg",
+      "styles": [
+        "Office",
+        "Studio",
+        "Nature",
+        "Abstract",
+        "Urban",
+        "Luxury"
+      ],
+      "styles_en": [
+        "Office",
+        "Studio",
+        "Nature",
+        "Abstract",
+        "Urban",
+        "Luxury"
+      ],
+      "is_active": true,
+      "created_at": "2025-08-15T15:48:03.228338+00:00",
+      "updated_at": "2025-08-17T16:21:54.792Z",
+      "before_image_url": "/uploads/category_before_1755447743669_35pws9emv02.jpg",
+      "after_image_url": "/uploads/category_after_1755447747274_clm683fatl.jpg"
+    },
+    {
+      "id": "71454901-f3fe-48a5-81ff-6359bea7d7b8",
       "name": "Corporate",
       "display_name_tr": "Kurumsal Fotoğraf",
       "display_name_en": "Corporate Photography",
       "type": "Corporate",
       "description": "Profesyonel iş dünyası için kurumsal fotoğraflar. Yönetici pozisyonları, şirket profilleri ve resmi toplantılar için ideal.",
       "description_en": "Professional corporate photography for business world. Perfect for executive positions, company profiles and formal meetings.",
-      "image_url": "",
-      "styles": ["Professional", "Business Casual", "Executive", "Formal Meeting", "Leadership", "Corporate Headshot"],
-      "styles_en": ["Professional", "Business Casual", "Executive", "Formal Meeting", "Leadership", "Corporate Headshot"],
-      "is_active": true
+      "image_url": "/uploads/category_1755425867012_opoqeugp26o.jpg",
+      "styles": [
+        "Professional",
+        "Business Casual",
+        "Executive",
+        "Formal Meeting",
+        "Leadership",
+        "Corporate Headshot"
+      ],
+      "styles_en": [
+        "Professional",
+        "Business Casual",
+        "Executive",
+        "Formal Meeting",
+        "Leadership",
+        "Corporate Headshot"
+      ],
+      "is_active": true,
+      "created_at": "2025-08-15T15:48:03.228338+00:00",
+      "updated_at": "2025-08-17T16:21:54.792Z",
+      "before_image_url": "/uploads/category_before_1755447751658_wimchrth839.jpg",
+      "after_image_url": "/uploads/category_after_1755447754821_q82uojrgsy.jpg"
     },
     {
-      "id": "2",
+      "id": "0e1e1955-55f9-4c1e-b213-b3d5925f72a7",
       "name": "Creative",
       "display_name_tr": "Yaratıcı Portre",
       "display_name_en": "Creative Portrait",
       "type": "Creative",
       "description": "Sanatsal ve yaratıcı portre fotoğrafları. Özgün tarzınızı yansıtan, artistik ve etkileyici görüntüler.",
       "description_en": "Artistic and creative portrait photography. Unique images that reflect your personal style with artistic and impressive visuals.",
-      "image_url": "",
-      "styles": ["Artistic", "Bohemian", "Vintage", "Modern Art", "Abstract", "Dramatic"],
-      "styles_en": ["Artistic", "Bohemian", "Vintage", "Modern Art", "Abstract", "Dramatic"],
-      "is_active": true
+      "image_url": "/uploads/category_1755423147797_2fxjfbncjc2.jpg",
+      "styles": [
+        "Artistic",
+        "Bohemian",
+        "Vintage",
+        "Modern Art",
+        "Abstract",
+        "Dramatic"
+      ],
+      "styles_en": [
+        "Artistic",
+        "Bohemian",
+        "Vintage",
+        "Modern Art",
+        "Abstract",
+        "Dramatic"
+      ],
+      "is_active": true,
+      "created_at": "2025-08-17T09:32:39.798563+00:00",
+      "updated_at": "2025-08-17T16:21:54.792Z",
+      "before_image_url": "/uploads/category_before_1755447790123_creative_before.jpg",
+      "after_image_url": "/uploads/category_after_1755447793688_ixi4b9ziyis.jpg"
     }
   ],
   "aiPrompts": {
+    "Background": {
+      "Office": "Transform the background to a modern professional office environment with clean desk setup, contemporary furniture, soft lighting, and corporate atmosphere. Keep the person unchanged, only modify the background to create a professional workspace setting.",
+      "Studio": "Replace the background with a clean, minimalist photography studio setting with neutral backdrop, professional lighting setup, and pristine white or gray studio environment. Focus only on changing the background while preserving the person.",
+      "Nature": "Change the background to a beautiful natural outdoor setting with lush greenery, trees, natural lighting, and serene landscape. Create a harmonious connection between the person and nature while keeping the subject unchanged.",
+      "Abstract": "Transform the background into an artistic abstract composition with geometric shapes, flowing patterns, vibrant colors, and creative visual elements. Maintain the person's appearance while creating an artistic backdrop.",
+      "Urban": "Replace the background with a modern urban cityscape featuring skyscrapers, city lights, architectural elements, and metropolitan atmosphere. Keep the person intact while creating a dynamic urban environment.",
+      "Luxury": "Change the background to an elegant luxury setting with premium materials, sophisticated decor, rich textures, golden accents, and upscale ambiance. Preserve the person while creating a luxurious backdrop."
+    },
     "Corporate": {
       "Professional": "Put the person in a traditional office environment with classic wooden furniture and formal atmosphere. Also, make sure they wear a classic business suit with traditional styling and conservative colors.",
       "Business Casual": "Put the person in a modern tech office environment with glass walls, contemporary furniture, and innovative workspace design. Also, make sure they wear a sleek contemporary business suit with modern cut and trendy styling.",
@@ -56,7 +131,6 @@
       "Modern Art": "Transform the person into a modern art concept with geometric patterns, abstract elements, and contemporary artistic interpretation. Use bold colors and innovative visual techniques.",
       "Abstract": "Create an abstract artistic interpretation with surreal elements, creative distortions, and experimental visual effects while maintaining the person's recognizable features.",
       "Dramatic": "Apply dramatic lighting effects, intense shadows, and theatrical elements to create a powerful, emotionally impactful portrait with strong visual contrast."
-    
     }
   }
 }

@@ -492,7 +492,12 @@
     "deleteError": "Delete operation failed",
     "loading": "Loading jobs...",
     "loadFailed": "Jobs could not be loaded",
-    "retry": "Try Again"
+    "retry": "Try Again",
+    "empty": {
+      "title": "You have no photos yet",
+      "description": "Select a new category to start your first AI-powered photo processing.",
+      "createNew": "Process New Photo"
+    }
   },
   "subscription": {
     "title": "Credit Packages",

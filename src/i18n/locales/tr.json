@@ -496,7 +496,12 @@
     "deleteError": "Silme işlemi başarısız",
     "loading": "İşler yükleniyor...",
     "loadFailed": "İşler yüklenemedi",
-    "retry": "Tekrar Dene"
+    "retry": "Tekrar Dene",
+    "empty": {
+      "title": "Henüz fotoğrafınız yok",
+      "description": "İlk AI destekli fotoğraf işleminizi başlatmak için yeni bir kategori seçin.",
+      "createNew": "Yeni Fotoğraf İşle"
+    }
   },
   "subscription": {
     "title": "Kredi Paketleri",

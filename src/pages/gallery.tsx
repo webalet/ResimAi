@@ -288,7 +288,7 @@ const Gallery: React.FC = () => {
               <h3 className="text-2xl font-bold text-gray-900 mb-3">{t('gallery.empty.title')}</h3>
               <p className="text-gray-600 mb-8 leading-relaxed">{t('gallery.empty.description')}</p>
               <Link
-                to="/"
+                to="/categories"
                 className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-2xl hover:from-purple-700 hover:to-blue-700 transition-all duration-200 transform hover:scale-105 shadow-lg font-medium"
               >
                 <Sparkles className="h-5 w-5 mr-2" />

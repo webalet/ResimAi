@@ -643,10 +643,170 @@ ssh root@64.226.75.76 "pm2 delete all && pm2 start ecosystem.config.cjs"
 ssh root@64.226.75.76 "cd /var/www/ResimAi && git reset --hard HEAD~1"
 ```
 
+## 13. Son Güncellemeler ve Düzeltmeler (17 Ağustos 2025)
+
+### 13.1 UI/UX İyileştirmeleri
+
+#### Kategori Başlığı Z-Index Sorunu (Çözüldü)
+**Sorun**: Categories.tsx sayfasında kategori başlığı overlay div'in altında kalıyordu ve görünmüyordu.
+
+**Çözüm**: 
+- `Categories.tsx` dosyasında overlay div'e `z-40` sınıfı eklendi
+- Kategori başlığının görünürlüğü sağlandı
+- Z-index hiyerarşisi düzeltildi
+
+**Etkilenen Dosyalar**:
+- `src/pages/Categories.tsx`
+
+**Teknik Detaylar**:
+```tsx
+// Önceki kod
+<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+
+// Düzeltilmiş kod
+<div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-40">
+```
+
+#### Modal Responsive Düzeltmesi (Tamamlandı)
+**Sorun**: Gallery.tsx'teki modal penceresi mobil cihazlarda uyumsuz görünüyordu ve sabit boyutlar kullanıyordu.
+
+**Çözüm**: 
+- Sabit genişlik ve yükseklik değerleri kaldırıldı
+- Responsive sınıflar eklendi: `max-w-[90vw]`, `max-h-[80vh]`, `w-full`, `h-full`
+- Masaüstü için daha büyük boyutlar: `sm:max-w-[80vw]`, `lg:max-w-[70vw]`, `xl:max-w-[60vw]`
+- `ImageComparison` bileşeni responsive hale getirildi
+
+**Etkilenen Dosyalar**:
+- `src/pages/Gallery.tsx`
+
+**Teknik Detaylar**:
+```tsx
+// Modal container responsive sınıfları
+className="max-w-sm sm:max-w-md md:max-w-lg lg:max-w-2xl xl:max-w-4xl max-h-[70vh] lg:max-h-[85vh] w-full h-full bg-white rounded-lg overflow-hidden"
+
+// ImageComparison responsive sınıfları
+className="sm:max-w-[80vw] lg:max-w-[70vw] xl:max-w-[60vw] max-h-[70vh] lg:max-h-[85vh] w-full h-full"
+```
+
+### 13.2 Çeviri ve Yönlendirme Düzeltmeleri
+
+#### Çeviri Hataları Düzeltmesi (Çözüldü)
+**Sorun**: Gallery.tsx'te `h3`, `p` ve `a` etiketlerinde çeviri anahtarları eksikti.
+
+**Çözüm**: 
+- `tr.json` ve `en.json` dosyalarına `gallery.empty` bölümü eklendi
+- Türkçe çeviriler: "Henüz fotoğrafınız yok", "İlk AI destekli fotoğraf işleminizi başlatmak için yeni bir kategori seçin.", "Yeni Fotoğraf İşle"
+- İngilizce çeviriler: "No photos yet", "Select a new category to start your first AI-powered photo processing.", "Process New Photo"
+
+**Etkilenen Dosyalar**:
+- `src/i18n/locales/tr.json`
+- `src/i18n/locales/en.json`
+
+**Teknik Detaylar**:
+```json
+// tr.json'a eklenen bölüm
+"gallery": {
+  "empty": {
+    "title": "Henüz fotoğrafınız yok",
+    "description": "İlk AI destekli fotoğraf işleminizi başlatmak için yeni bir kategori seçin.",
+    "createNew": "Yeni Fotoğraf İşle"
+  }
+}
+```
+
+#### Yönlendirme Sorunu Düzeltmesi (Çözüldü)
+**Sorun**: Gallery.tsx'te boş durum Link bileşeni yanlış yere (ana sayfaya) yönlendiriyordu.
+
+**Çözüm**: 
+- Link bileşeninin `to` özelliği `/` yerine `/categories` olarak değiştirildi
+- Kullanıcılar artık doğrudan kategoriler sayfasına yönlendiriliyor
+
+**Etkilenen Dosyalar**:
+- `src/pages/Gallery.tsx`
+
+**Teknik Detaylar**:
+```tsx
+// Önceki kod
+<Link to="/" className="...">
+
+// Düzeltilmiş kod
+<Link to="/categories" className="...">
+```
+
+### 13.3 Bileşen Optimizasyonları
+
+#### LazyImage Bileşeni İyileştirmeleri (Tamamlandı)
+**Sorun**: LazyImage bileşeninde görsel yükleme durumu kontrolü ve opacity geçişleri sorunluydu.
+
+**Çözüm**: 
+- `imageLoaded` state kontrolü düzeltildi
+- Opacity geçiş animasyonları iyileştirildi
+- Default `objectFit` değeri `contain` yerine `cover` yapıldı
+- Görsel yükleme performansı artırıldı
+
+**Etkilenen Dosyalar**:
+- `src/components/LazyImage.tsx`
+
+**Teknik Detaylar**:
+```tsx
+// objectFit default değeri değiştirildi
+objectFit = 'cover' // önceden 'contain' idi
+
+// Opacity kontrolü iyileştirildi
+className={`transition-opacity duration-300 ${!imageLoaded ? 'opacity-0' : 'opacity-100'}`}
+```
+
+#### ImageComparison Bileşeni Güncellemeleri (Tamamlandı)
+**Sorun**: ImageComparison bileşeninde LazyImage kullanımında explicit height ve objectFit ayarları eksikti.
+
+**Çözüm**: 
+- LazyImage bileşenlerine `objectFit='cover'` prop'u eklendi
+- Explicit height değerleri tanımlandı
+- Görsel karşılaştırma deneyimi iyileştirildi
+
+**Etkilenen Dosyalar**:
+- `src/components/ImageComparison.tsx`
+- `src/pages/Categories.tsx` (ImageComparison kullanılan yerler)
+
+**Teknik Detaylar**:
+```tsx
+// LazyImage'e objectFit prop'u eklendi
+<LazyImage
+  src={beforeImage}
+  alt="Before"
+  objectFit="cover"
+  className="w-full h-full object-cover"
+/>
+```
+
+### 13.4 Performans İyileştirmeleri
+
+#### Görsel Yükleme Optimizasyonu
+- LazyImage bileşeninde loading state yönetimi iyileştirildi
+- Görsel geçiş animasyonları optimize edildi
+- Memory leak'leri önlemek için cleanup fonksiyonları eklendi
+
+#### Responsive Tasarım Geliştirmeleri
+- Modal pencereler tüm cihaz boyutlarında optimize edildi
+- Breakpoint'ler daha detaylı tanımlandı
+- Mobile-first yaklaşım benimsenip masaüstü için ek optimizasyonlar yapıldı
+
+### 13.5 Kod Kalitesi İyileştirmeleri
+
+#### TypeScript Tip Güvenliği
+- Tüm bileşenlerde prop tiplerinin doğru tanımlandığı kontrol edildi
+- Optional prop'lar için default değerler belirlendi
+- Type assertion'lar minimize edildi
+
+#### CSS Sınıf Optimizasyonu
+- Tailwind CSS sınıfları daha verimli kullanıldı
+- Responsive sınıflar sistematik hale getirildi
+- Gereksiz CSS sınıfları temizlendi
+
 ---
 
 **Son Güncelleme**: 17 Ağustos 2025  
-**Versiyon**: 1.0  
+**Versiyon**: 1.1  
 **Hazırlayan**: AI Assistant  
 **Durum**: Aktif Geliştirme
 
