@@ -573,24 +573,35 @@ const Gallery: React.FC = () => {
 
               {/* Image Container - Full Screen */}
               <div 
-                className="flex-1 flex items-center justify-center p-4"
+                className="flex-1 flex items-center justify-center p-2"
                 onClick={(e) => e.stopPropagation()}
+                style={{ minHeight: 'calc(100vh - 140px)' }}
               >
-                <div className="relative w-full h-full max-w-7xl max-h-full">
+                <div className="relative w-full h-full">
                   {selectedJob.original_image_url ? (
-                    <ImageComparison
-                      beforeImage={selectedJob.original_image_url}
-                      afterImage={selectedJob.processed_images[selectedImageIndex].image_url}
-                      beforeLabel="Öncesi"
-                      afterLabel="Sonrası"
-                      className="w-full h-full object-contain"
-                    />
+                    <div className="w-full h-full min-h-[600px] flex items-center justify-center">
+                      <div style={{ width: '90vw', height: '80vh' }}>
+                        <ImageComparison
+                          beforeImage={selectedJob.original_image_url}
+                          afterImage={selectedJob.processed_images[selectedImageIndex].image_url}
+                          beforeLabel="Öncesi"
+                          afterLabel="Sonrası"
+                          className="w-full h-full"
+                        />
+                      </div>
+                    </div>
                   ) : (
-                    <img
-                      src={selectedJob.processed_images[selectedImageIndex].image_url}
-                      alt={`Generated image ${selectedImageIndex + 1}`}
-                      className="w-full h-full object-contain"
-                    />
+                    <div className="w-full h-full min-h-[600px] flex items-center justify-center">
+                      <img
+                        src={selectedJob.processed_images[selectedImageIndex].image_url}
+                        alt={`Generated image ${selectedImageIndex + 1}`}
+                        className="object-contain"
+                        style={{ 
+                          width: '90vw', 
+                          height: '80vh'
+                        }}
+                      />
+                    </div>
                   )}
                 </div>
               </div>
