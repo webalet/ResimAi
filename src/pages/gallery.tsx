@@ -350,7 +350,7 @@ const Gallery: React.FC = () => {
                         <img
                           src={job.processed_images[0].image_url}
                           alt={`Generated image ${job.id}`}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-100 to-blue-100">
@@ -446,12 +446,12 @@ const Gallery: React.FC = () => {
                 ) : (
                   <>
                     {/* List View */}
-                    <div className="flex-shrink-0 w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl overflow-hidden mr-6 relative">
+                    <div className="flex-shrink-0 w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl overflow-hidden mr-6 relative">
                       {job.processed_images && job.processed_images.length > 0 ? (
                         <img
                           src={job.processed_images[0].image_url}
                           alt={`Generated image ${job.id}`}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-contain"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-100 to-blue-100">
@@ -587,13 +587,13 @@ const Gallery: React.FC = () => {
                         afterImage={selectedJob.processed_images[selectedImageIndex].image_url}
                         beforeLabel="Öncesi"
                         afterLabel="Sonrası"
-                        className="w-full max-h-[60vh]"
+                        className="w-full min-h-[70vh] max-h-[80vh]"
                       />
                     ) : (
                       <img
                         src={selectedJob.processed_images[selectedImageIndex].image_url}
                         alt={`Generated image ${selectedImageIndex + 1}`}
-                        className="w-full max-h-[60vh] object-contain mx-auto"
+                        className="w-full min-h-[70vh] max-h-[80vh] object-contain mx-auto"
                       />
                     )}
                   </div>
