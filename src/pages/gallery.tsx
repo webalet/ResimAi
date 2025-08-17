@@ -549,14 +549,14 @@ const Gallery: React.FC = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-2"
+              className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-2 touch-none"
               onClick={() => setSelectedJob(null)}
             >
               <motion.div 
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
-                className="bg-white/95 backdrop-blur-sm rounded-3xl max-w-[98vw] w-auto max-h-[95vh] overflow-hidden shadow-2xl border border-white/20"
+                className="bg-white/95 backdrop-blur-sm rounded-3xl w-[95vw] h-[90vh] overflow-hidden shadow-2xl border border-white/20"
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Header */}
@@ -587,13 +587,13 @@ const Gallery: React.FC = () => {
                         afterImage={selectedJob.processed_images[selectedImageIndex].image_url}
                         beforeLabel="Öncesi"
                         afterLabel="Sonrası"
-                        className="w-full h-auto max-h-[85vh] object-contain"
+                        className="w-full h-auto max-h-[80vh] object-contain"
                       />
                     ) : (
                       <img
                         src={selectedJob.processed_images[selectedImageIndex].image_url}
                         alt={`Generated image ${selectedImageIndex + 1}`}
-                        className="w-full h-auto max-h-[85vh] object-contain mx-auto"
+                        className="w-full h-auto max-h-[80vh] object-contain mx-auto"
                       />
                     )}
                   </div>
