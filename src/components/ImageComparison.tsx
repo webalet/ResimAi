@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import LazyImage from './LazyImage';
 
@@ -36,6 +36,20 @@ const ImageComparison: React.FC<ImageComparisonProps> = ({
       e.stopPropagation();
       setIsDragging(true);
       updateSliderPosition(e.clientX);
+
+      const handleMouseMove = (e: MouseEvent) => {
+        e.preventDefault();
+        updateSliderPosition(e.clientX);
+      };
+
+      const handleMouseUp = () => {
+        setIsDragging(false);
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
     },
     [updateSliderPosition]
   );
@@ -45,39 +59,23 @@ const ImageComparison: React.FC<ImageComparisonProps> = ({
       e.stopPropagation();
       setIsDragging(true);
       updateSliderPosition(e.touches[0].clientX);
+
+      const handleTouchMove = (e: TouchEvent) => {
+        e.preventDefault();
+        updateSliderPosition(e.touches[0].clientX);
+      };
+
+      const handleTouchEnd = () => {
+        setIsDragging(false);
+        document.removeEventListener('touchmove', handleTouchMove);
+        document.removeEventListener('touchend', handleTouchEnd);
+      };
+
+      document.addEventListener('touchmove', handleTouchMove, { passive: false });
+      document.addEventListener('touchend', handleTouchEnd);
     },
     [updateSliderPosition]
   );
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!isDragging) return;
-      e.preventDefault();
-      updateSliderPosition(e.clientX);
-    };
-
-    const handleTouchMove = (e: TouchEvent) => {
-      if (!isDragging) return;
-      e.preventDefault();
-      updateSliderPosition(e.touches[0].clientX);
-    };
-
-    const handleEnd = () => {
-      if (isDragging) setIsDragging(false);
-    };
-
-    window.addEventListener('mousemove', handleMouseMove, { passive: false });
-    window.addEventListener('mouseup', handleEnd);
-    window.addEventListener('touchmove', handleTouchMove, { passive: false });
-    window.addEventListener('touchend', handleEnd);
-
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleEnd);
-      window.removeEventListener('touchmove', handleTouchMove);
-      window.removeEventListener('touchend', handleEnd);
-    };
-  }, [isDragging, updateSliderPosition]);
 
   return (
     <div 
