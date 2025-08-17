@@ -534,26 +534,24 @@ const Gallery: React.FC = () => {
 
               {/* Full Size Image Container */}
               <div 
-                className="flex-1 flex items-center justify-center min-h-0"
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}
+                className="flex-1 flex items-center justify-center min-h-0 p-4"
                 onClick={(e) => e.stopPropagation()}
               >
                 {selectedJob.original_image_url ? (
-                  <div style={{ width: '550px', height: '900px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div className="w-full h-full max-w-[90vw] max-h-[80vh] flex items-center justify-center">
                     <ImageComparison
                       beforeImage={selectedJob.original_image_url}
                       afterImage={selectedJob.processed_images[selectedImageIndex].image_url}
                       beforeLabel="Öncesi"
                       afterLabel="Sonrası"
-                      className="relative overflow-hidden rounded-xl shadow-lg cursor-col-resize select-none"
-                      style={{ width: '550px', height: '900px' }}
+                      className="relative overflow-hidden rounded-xl shadow-lg cursor-col-resize select-none w-full h-full max-w-lg max-h-[70vh]"
                     />
                   </div>
                 ) : (
                   <img
                     src={selectedJob.processed_images[selectedImageIndex].image_url}
                     alt={`Generated image ${selectedImageIndex + 1}`}
-                    style={{ width: '550px', height: '900px', objectFit: 'contain' }}
+                    className="w-full h-full max-w-[90vw] max-h-[80vh] object-contain rounded-xl"
                   />
                 )}
               </div>
