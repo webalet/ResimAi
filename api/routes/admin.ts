@@ -821,10 +821,29 @@ router.get('/analytics', adminAuth, async (req: Request, res: Response) => {
     const revenueData = processRevenueData(creditUsage || [], days);
     const topUsers = processTopUsers(topUsersData || [], userJobCounts || [], userCreditUsage || []);
 
-    // Calculate average jobs per user
-    const totalUsers = userRegistrations?.length || 0;
+    // Get total user count from database
+    const { count: totalUsersCount } = await supabase
+      .from('users')
+      .select('*', { count: 'exact', head: true });
+
+    // Get payments data for real revenue calculation
+    const { data: paymentsData } = await supabase
+      .from('payments')
+      .select('amount, created_at')
+      .gte('created_at', startDate.toISOString())
+      .eq('status', 'succeeded');
+
+    // Calculate real revenue from payments
+    const totalRevenue = paymentsData?.reduce((sum, payment) => sum + (payment.amount / 100), 0) || 0; // Convert from cents to TL
+
+    // Calculate metrics
+    const totalUsers = totalUsersCount || 0;
     const totalJobs = jobCompletions?.length || 0;
     const avgJobsPerUser = totalUsers > 0 ? totalJobs / totalUsers : 0;
+    const successRate = totalJobs > 0 ? (jobStats.completed / totalJobs) * 100 : 0;
+
+    // Update revenue data with real payments
+    const realRevenueData = processRevenueDataFromPayments(paymentsData || [], days);
 
     res.json({
       success: true,
@@ -833,9 +852,15 @@ router.get('/analytics', adminAuth, async (req: Request, res: Response) => {
         jobCompletions: jobCompletionsTimeSeries,
         jobStats,
         categoryStats,
-        revenueData,
+        revenueData: realRevenueData,
         topUsers,
-        avgJobsPerUser,
+        summary: {
+          totalUsers,
+          totalJobs,
+          totalRevenue,
+          avgJobsPerUser,
+          successRate
+        },
         period: `${days} days`
       }
     });
@@ -962,6 +987,33 @@ function processTopUsers(users: any[], jobCounts: any[], creditUsage: any[]) {
   .filter(user => user.jobCount > 0) // Only users with jobs
   .sort((a, b) => b.jobCount - a.jobCount)
   .slice(0, 5);
+}
+
+function processRevenueDataFromPayments(data: any[], days: number) {
+  const result = [];
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - days);
+
+  for (let i = 0; i < days; i++) {
+    const currentDate = new Date(startDate);
+    currentDate.setDate(startDate.getDate() + i);
+    const dateStr = currentDate.toISOString().split('T')[0];
+    
+    const dayPayments = data.filter(item => 
+      item.created_at.startsWith(dateStr)
+    );
+
+    const revenue = dayPayments.reduce((sum, payment) => sum + (payment.amount / 100), 0); // Convert from cents to TL
+    const transactions = dayPayments.length;
+
+    result.push({
+      date: dateStr,
+      revenue,
+      transactions
+    });
+  }
+
+  return result;
 }
 
 function processCategoryStats(data: any[]) {
