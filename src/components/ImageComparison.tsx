@@ -101,14 +101,16 @@ const ImageComparison: React.FC<ImageComparisonProps> = ({
         alt={afterLabel}
         className="absolute inset-0 w-full h-full object-cover"
       />
-      <div className="absolute top-4 right-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm font-medium pointer-events-none">
+      <div className="absolute top-4 right-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm font-medium pointer-events-none z-20">
         {afterLabel}
       </div>
 
-      {/* Before Image (Clipped) */}
+      {/* Before Image (Clipped with clipPath) */}
       <div
-        className="absolute inset-0 overflow-hidden pointer-events-none"
-        style={{ width: `${sliderPosition}%` }}
+        className="absolute inset-0 pointer-events-none z-10"
+        style={{ 
+          clipPath: `inset(0 ${100 - sliderPosition}% 0 0)`
+        }}
       >
         <LazyImage
           src={beforeImage}
@@ -122,7 +124,7 @@ const ImageComparison: React.FC<ImageComparisonProps> = ({
 
       {/* Slider Line and Handle */}
       <div
-        className="absolute top-0 bottom-0 z-10 flex items-center justify-center"
+        className="absolute top-0 bottom-0 z-30 flex items-center justify-center"
         style={{ left: `${sliderPosition}%`, transform: 'translateX(-50%)' }}
       >
         {/* Slider Line */}
@@ -144,7 +146,7 @@ const ImageComparison: React.FC<ImageComparisonProps> = ({
       </div>
 
       {/* Instructions */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/70 text-white px-3 py-1 rounded-full text-xs font-medium opacity-75 pointer-events-none">
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/70 text-white px-3 py-1 rounded-full text-xs font-medium opacity-75 pointer-events-none z-20">
         Drag to compare
       </div>
     </div>
