@@ -98,7 +98,6 @@ const ImageComparison: React.FC<ImageComparisonProps> = ({
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     if (!isDragging) return;
-    e.stopPropagation();
     updateSliderPosition(e.touches[0].clientX);
   }, [isDragging, updateSliderPosition]);
 
@@ -111,6 +110,7 @@ const ImageComparison: React.FC<ImageComparisonProps> = ({
       onMouseLeave={handleMouseUp}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleMouseUp}
+      style={{ touchAction: 'none' }}
       onClick={(e) => e.stopPropagation()}
       onMouseDown={(e) => e.stopPropagation()}
     >
@@ -148,7 +148,7 @@ const ImageComparison: React.FC<ImageComparisonProps> = ({
         onMouseDown={handleMouseDown}
         onTouchStart={(e) => {
           e.stopPropagation();
-          handleMouseDown(e as any);
+          setIsDragging(true);
         }}
       >
         {/* Slider Handle */}
