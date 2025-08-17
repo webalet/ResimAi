@@ -58,11 +58,18 @@ const LazyImage: React.FC<LazyImageProps> = ({
   const finalImageSrc = supportsWebP && webpSrc ? webpSrc : imageSrc;
 
   const handleLoad = () => {
+    console.log('🔍 [DEBUG] LazyImage loaded successfully:', finalImageSrc);
     setImageLoaded(true);
     onLoad?.();
   };
 
   const handleError = () => {
+    console.error('🔍 [DEBUG] LazyImage load error:', {
+      src: finalImageSrc,
+      originalSrc: src,
+      webpSrc,
+      alt
+    });
     onError?.();
   };
 

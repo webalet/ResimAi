@@ -58,6 +58,20 @@ const Categories: React.FC = () => {
       if (!response.ok) throw new Error('Failed to load categories');
       
       const data = await response.json();
+      console.log('🔍 [DEBUG] API Response:', data);
+      console.log('🔍 [DEBUG] Categories Array:', data.data);
+      
+      // Debug each category's image URLs
+      if (data.data) {
+        data.data.forEach((category, index) => {
+          console.log(`🔍 [DEBUG] Category ${index + 1} (${category.name}):`, {
+            before_image_url: category.before_image_url,
+            after_image_url: category.after_image_url,
+            image_url: category.image_url
+          });
+        });
+      }
+      
       setCategories(data.data || []);
     } catch (error) {
       console.error('Error loading categories:', error);
@@ -412,18 +426,53 @@ const Categories: React.FC = () => {
             <div className="aspect-[3/2] relative overflow-hidden">
               {category.before_image_url && category.after_image_url ? (
                 <div className="w-full h-full">
-                  <ImageComparison
-                    beforeImage={category.before_image_url}
-                    afterImage={category.after_image_url}
-                    beforeLabel="Öncesi"
-                    afterLabel="Sonrası"
-                  />
+                  {(() => {
+                    // Debug image URLs before passing to ImageComparison
+                    const beforeImageUrl = category.before_image_url.startsWith('http') 
+                      ? category.before_image_url 
+                      : `${API_BASE_URL}${category.before_image_url}`;
+                    const afterImageUrl = category.after_image_url.startsWith('http') 
+                      ? category.after_image_url 
+                      : `${API_BASE_URL}${category.after_image_url}`;
+                    
+                    console.log(`🔍 [DEBUG] Category ${category.name} Image URLs:`, {
+                      original_before: category.before_image_url,
+                      original_after: category.after_image_url,
+                      full_before: beforeImageUrl,
+                      full_after: afterImageUrl
+                    });
+                    
+                    return (
+                      <ImageComparison
+                        beforeImage={beforeImageUrl}
+                        afterImage={afterImageUrl}
+                        beforeLabel="Öncesi"
+                        afterLabel="Sonrası"
+                      />
+                    );
+                  })()}
                 </div>
               ) : (
                 <img
-                  src={category.before_image_url || category.image_url}
+                  src={(() => {
+                    const imageUrl = category.before_image_url || category.image_url;
+                    const fullImageUrl = imageUrl && imageUrl.startsWith('http') 
+                      ? imageUrl 
+                      : `${API_BASE_URL}${imageUrl}`;
+                    console.log(`🔍 [DEBUG] Single Image URL for ${category.name}:`, {
+                      original: imageUrl,
+                      full: fullImageUrl
+                    });
+                    return fullImageUrl;
+                  })()}
                   alt={getCategoryDisplayName(category)}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                  onError={(e) => {
+                    console.error(`🔍 [DEBUG] Image load error for ${category.name}:`, e.currentTarget.src);
+                  }}
+                  onLoad={() => {
+                    console.log(`🔍 [DEBUG] Image loaded successfully for ${category.name}`);
+                  }}
                 />
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
