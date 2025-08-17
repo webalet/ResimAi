@@ -222,21 +222,8 @@ const Gallery: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 py-4">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 py-2">
       <div className="w-full px-2 sm:px-4">
-        {/* Header */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-12 text-center"
-        >
-
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 bg-clip-text text-transparent mb-4">
-            {t('gallery.title')}
-          </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">{t('gallery.subtitle')}</p>
-        </motion.div>
-
         {/* Controls */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -357,22 +344,6 @@ const Gallery: React.FC = () => {
                           </div>
                         </div>
                       )}
-                      
-                      {/* Status Badge */}
-                      <div className="absolute top-4 right-4">
-                        <span className={cn(
-                          'inline-flex items-center px-3 py-2 rounded-full text-xs font-semibold backdrop-blur-sm border border-white/20 shadow-lg',
-                          job.status === 'completed' && 'bg-green-500/90 text-white',
-                          job.status === 'processing' && 'bg-blue-500/90 text-white',
-                          job.status === 'failed' && 'bg-red-500/90 text-white',
-                          job.status === 'pending' && 'bg-yellow-500/90 text-white'
-                        )}>
-                          {getStatusIcon(job.status)}
-                          <span className="ml-2">{getStatusText(job.status)}</span>
-                        </span>
-                      </div>
-
-
                     </div>
 
                     {/* Content */}
@@ -400,7 +371,16 @@ const Gallery: React.FC = () => {
                       
                       {job.processed_images && job.processed_images.length > 0 && (
                         <div className="flex items-center justify-between">
-
+                          <span className={cn(
+                            'inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold',
+                            job.status === 'completed' && 'bg-green-100 text-green-800',
+                            job.status === 'processing' && 'bg-blue-100 text-blue-800',
+                            job.status === 'failed' && 'bg-red-100 text-red-800',
+                            job.status === 'pending' && 'bg-yellow-100 text-yellow-800'
+                          )}>
+                            {getStatusIcon(job.status)}
+                            <span className="ml-1">{getStatusText(job.status)}</span>
+                          </span>
                           <div className="flex items-center space-x-2">
                             <button
                               onClick={() => {
