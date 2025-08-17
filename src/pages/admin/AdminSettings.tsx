@@ -97,6 +97,8 @@ const AdminSettings = () => {
             description: cat.description || '',
             description_en: cat.description_en || cat.description || '',
             image_url: cat.image_url,
+            before_image_url: cat.before_image_url || null,
+            after_image_url: cat.after_image_url || null,
             styles: cat.styles || [],
             styles_en: cat.styles_en || cat.styles || [],
             is_active: cat.is_active !== undefined ? cat.is_active : true,
@@ -854,15 +856,12 @@ const AdminSettings = () => {
       if (categoryToUpdate && categoryToUpdate.id) {
         // Update category image URL in state based on imageType
         const updateField = imageType === 'before' ? 'before_image_url' : 'after_image_url';
-        console.log(`Updating ${updateField} with URL:`, data.url);
         
-        setCategories(prev => {
-          const updated = prev.map((cat, i) => 
+        setCategories(prev => 
+          prev.map((cat, i) => 
             i === categoryIndex ? { ...cat, [updateField]: data.url } : cat
-          );
-          console.log('Updated categories state:', updated[categoryIndex]);
-          return updated;
-        });
+          )
+        );
         
         const updateData = {
           ...categoryToUpdate,
@@ -1540,7 +1539,6 @@ const AdminSettings = () => {
                               alt={`${category.name} - Sonrası`}
                               className="w-full h-24 object-cover rounded-lg border border-gray-300"
                               onError={(e) => {
-                                console.log('Edit mode - Image load error for after_image_url:', category.after_image_url);
                                 (e.target as HTMLImageElement).src = '';
                               }}
                             />
@@ -1597,7 +1595,6 @@ const AdminSettings = () => {
                               alt={`${category.name} - Sonrası`}
                               className="w-full h-24 object-cover rounded-lg border border-gray-300"
                               onError={(e) => {
-                                console.log('View mode - Image load error for after_image_url:', category.after_image_url);
                                 (e.target as HTMLImageElement).src = '';
                               }}
                             />
