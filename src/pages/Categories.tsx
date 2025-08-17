@@ -31,9 +31,8 @@ const Categories: React.FC = () => {
     preview: null,
     isUploading: false
   });
-  
+  const { i18n, t } = useTranslation();
   const { user } = useAuth();
-  const { t, i18n } = useTranslation();
 
   // Helper functions
   const getCategoryDisplayName = (category: Category) => {
@@ -204,7 +203,7 @@ const Categories: React.FC = () => {
               className="flex items-center text-gray-600 hover:text-gray-900 transition-colors bg-white/70 backdrop-blur-sm px-3 py-2 rounded-lg border border-white/20 shadow-sm"
             >
               <ArrowRight className="h-4 w-4 rotate-180 mr-2" />
-              Kategorilere Dön
+              {t('categories.backToCategories')}
             </button>
             <div className="text-center">
               <h1 className="text-2xl font-bold text-gray-900 mb-1">
@@ -222,7 +221,7 @@ const Categories: React.FC = () => {
               <div className="bg-white/70 backdrop-blur-sm rounded-xl shadow-lg border border-white/20 p-4">
                 <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center">
                   <div className="w-2 h-6 bg-gradient-to-b from-purple-500 to-blue-500 rounded-full mr-2"></div>
-                  Stil Seçimi
+                  {t('categories.styleSelection')}
                 </h3>
                 <div className="grid grid-cols-1 gap-2">
                   {(uploadState.selectedCategory.styles || []).map((style, styleIndex) => (
@@ -245,7 +244,7 @@ const Categories: React.FC = () => {
               <div className="bg-white/70 backdrop-blur-sm rounded-xl shadow-lg border border-white/20 p-4">
                 <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center">
                   <div className="w-2 h-6 bg-gradient-to-b from-purple-500 to-blue-500 rounded-full mr-2"></div>
-                  Yükleme Yöntemi
+                  {t('categories.uploadMethod')}
                 </h3>
                 <div className="grid grid-cols-2 gap-3 mb-4">
                   <button
@@ -257,7 +256,7 @@ const Categories: React.FC = () => {
                     }`}
                   >
                     <UploadIcon className="h-5 w-5 mx-auto mb-1" />
-                    <div className="text-xs font-semibold">Dosya Yükle</div>
+                    <div className="text-xs font-semibold">{t('categories.uploadFile')}</div>
                   </button>
                   <button
                     onClick={() => setUploadState(prev => ({ ...prev, uploadMethod: 'url' }))}
@@ -268,7 +267,7 @@ const Categories: React.FC = () => {
                     }`}
                   >
                     <ImageIcon className="h-5 w-5 mx-auto mb-1" />
-                    <div className="text-xs font-semibold">URL Gir</div>
+                    <div className="text-xs font-semibold">{t('categories.enterUrl')}</div>
                   </button>
                 </div>
 
@@ -279,10 +278,10 @@ const Categories: React.FC = () => {
                       <UploadIcon className="h-6 w-6 text-white" />
                     </div>
                     <p className="text-sm font-semibold text-gray-900 mb-1">
-                      Dosyayı sürükleyin veya seçin
+                      {t('categories.dragDropText')}
                     </p>
                     <p className="text-xs text-gray-600 mb-3">
-                      JPG, PNG, GIF (Max 50MB)
+                      {t('categories.supportedFormats')}
                     </p>
                     <input
                       type="file"
@@ -301,7 +300,7 @@ const Categories: React.FC = () => {
                   <div className="space-y-3">
                     <input
                       type="url"
-                      placeholder="https://example.com/image.jpg"
+                      placeholder={t('categories.urlPlaceholder')}
                       value={uploadState.imageUrl}
                       onChange={(e) => setUploadState(prev => ({ 
                         ...prev, 
@@ -325,12 +324,12 @@ const Categories: React.FC = () => {
                 {uploadState.isUploading ? (
                   <>
                     <LoadingSpinner size="sm" className="mr-2" />
-                    İşleniyor...
+                    {t('categories.processing')}
                   </>
                 ) : (
                   <>
                     <UploadIcon className="h-4 w-4 mr-2" />
-                    Fotoğrafı İşle
+                    {t('categories.processPhoto')}
                   </>
                 )}
               </button>
@@ -342,7 +341,7 @@ const Categories: React.FC = () => {
               <div className="bg-white/70 backdrop-blur-sm rounded-xl shadow-lg border border-white/20 p-6">
                 <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                   <div className="w-2 h-6 bg-gradient-to-b from-green-500 to-emerald-500 rounded-full mr-2"></div>
-                  Yüklediğiniz Resim
+                  {t('categories.preview')}
                 </h3>
                 {uploadState.preview ? (
                   <div className="relative group">
@@ -370,8 +369,8 @@ const Categories: React.FC = () => {
                       <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3">
                         <ImageIcon className="h-8 w-8 text-gray-400" />
                       </div>
-                      <p className="text-gray-500 font-medium text-lg">Resim önizlemesi burada görünecek</p>
-                      <p className="text-gray-400 text-sm mt-2">Resim yükledikten sonra burada görüntülenecek</p>
+                      <p className="text-gray-500 font-medium text-lg">{t('categories.previewText')}</p>
+                      <p className="text-gray-400 text-sm mt-2">{t('categories.previewText')}</p>
                     </div>
                   </div>
                 )}
@@ -389,10 +388,10 @@ const Categories: React.FC = () => {
       {/* Header */}
       <div className="text-center">
         <h1 className="text-3xl font-bold text-gray-900 mb-4">
-          Kategori Seçin
+          {t('categories.title')}
         </h1>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-          Fotoğrafınızı işlemek için bir kategori seçin
+          {t('categories.subtitle')}
         </p>
       </div>
 
@@ -457,7 +456,7 @@ const Categories: React.FC = () => {
               <p className="text-gray-600 text-sm mb-3 line-clamp-2">{getCategoryDescription(category)}</p>
               
               <div className="mb-3">
-                <p className="text-xs font-medium text-gray-700 mb-1">Mevcut Stiller:</p>
+                <p className="text-xs font-medium text-gray-700 mb-1">{t('categories.availableStyles')}:</p>
                 <div className="flex flex-wrap gap-1">
                   {(category.styles || []).slice(0, 3).map((style, index) => (
                     <span
@@ -469,14 +468,14 @@ const Categories: React.FC = () => {
                   ))}
                   {(category.styles || []).length > 3 && (
                     <span className="px-2 py-0.5 bg-gray-100 text-gray-500 rounded text-xs">
-                      +{(category.styles || []).length - 3} daha
+                      +{(category.styles || []).length - 3} {t('common.more')}
                     </span>
                   )}
                 </div>
               </div>
               
               <div className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-2 px-3 rounded-md font-medium hover:from-purple-700 hover:to-blue-700 transition-all duration-200 flex items-center justify-center group text-sm">
-                Kategoriyi Seç
+                {t('categories.selectCategory')}
                 <ArrowRight className="ml-1 h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
               </div>
             </div>
