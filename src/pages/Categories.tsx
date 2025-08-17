@@ -375,61 +375,71 @@ const Categories: React.FC = () => {
       </div>
 
       {/* Categories Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {categories.map((category) => (
           <div
             key={category.id}
-            className="bg-white rounded-xl shadow-sm border hover:shadow-lg transition-all duration-200 overflow-hidden group cursor-pointer"
+            className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-all duration-200 overflow-hidden group cursor-pointer"
             onClick={() => setUploadState(prev => ({
               ...prev,
               selectedCategory: category,
               selectedStyle: (category.styles && category.styles[0]) || ''
             }))}
           >
-            <div className="aspect-square relative overflow-hidden">
+            <div className="aspect-[4/3] relative overflow-hidden">
               <img
                 src={category.image_url}
                 alt={getCategoryDisplayName(category)}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-              <div className="absolute bottom-4 left-4 right-4">
-                <h3 className="text-xl font-bold text-white mb-1">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+              <div className="absolute bottom-2 left-3 right-3">
+                <h3 className="text-lg font-bold text-white mb-1">
                   {getCategoryDisplayName(category)}
                 </h3>
                 <div className="flex flex-wrap gap-1">
-                  {(category.styles || []).slice(0, 3).map((style, index) => (
+                  {(category.styles || []).slice(0, 2).map((style, index) => (
                     <span
                       key={index}
-                      className="px-2 py-1 bg-white/20 backdrop-blur-sm rounded text-xs text-white"
+                      className="px-2 py-0.5 bg-white/25 backdrop-blur-sm rounded text-xs text-white"
                     >
                       {getStyleName(category, index)}
                     </span>
                   ))}
+                  {(category.styles || []).length > 2 && (
+                    <span className="px-2 py-0.5 bg-white/25 backdrop-blur-sm rounded text-xs text-white">
+                      +{(category.styles || []).length - 2}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
             
-            <div className="p-6">
-              <p className="text-gray-600 mb-4">{getCategoryDescription(category)}</p>
+            <div className="p-4">
+              <p className="text-gray-600 text-sm mb-3 line-clamp-2">{getCategoryDescription(category)}</p>
               
-              <div className="mb-4">
-                <p className="text-sm font-medium text-gray-700 mb-2">Mevcut Stiller:</p>
-                <div className="flex flex-wrap gap-2">
-                  {(category.styles || []).map((style, index) => (
+              <div className="mb-3">
+                <p className="text-xs font-medium text-gray-700 mb-1">Mevcut Stiller:</p>
+                <div className="flex flex-wrap gap-1">
+                  {(category.styles || []).slice(0, 3).map((style, index) => (
                     <span
                       key={index}
-                      className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
+                      className="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-xs"
                     >
                       {getStyleName(category, index)}
                     </span>
                   ))}
+                  {(category.styles || []).length > 3 && (
+                    <span className="px-2 py-0.5 bg-gray-100 text-gray-500 rounded text-xs">
+                      +{(category.styles || []).length - 3} daha
+                    </span>
+                  )}
                 </div>
               </div>
               
-              <div className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-200 flex items-center justify-center group">
+              <div className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-2 px-3 rounded-md font-medium hover:from-purple-700 hover:to-blue-700 transition-all duration-200 flex items-center justify-center group text-sm">
                 Kategoriyi Seç
-                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="ml-1 h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
               </div>
             </div>
           </div>
