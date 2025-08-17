@@ -464,6 +464,12 @@
     "filterProcessing": "İşleniyor",
     "filterFailed": "Başarısız",
     "filterPending": "Bekleyen",
+    "filter": {
+      "all": "Tümü",
+      "completed": "Tamamlanan",
+      "processing": "İşleniyor",
+      "failed": "Başarısız"
+    },
     "noJobs": "Henüz işiniz yok",
     "noJobsInStatus": "durumunda iş bulunamadı",
     "createFirstJob": "İlk fotoğrafınızı işlemek için yeni bir iş oluşturun.",

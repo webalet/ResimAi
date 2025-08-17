@@ -467,7 +467,7 @@ const Categories: React.FC = () => {
                     return fullImageUrl;
                   })()}
                   alt={getCategoryDisplayName(category)}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                  className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-200"
                   onError={(e) => {
                     console.error(`🔍 [DEBUG] Image load error for ${category.name}:`, e.currentTarget.src);
                   }}
@@ -481,7 +481,7 @@ const Categories: React.FC = () => {
                 className="absolute bottom-2 left-3 right-3 cursor-pointer z-40"
                 onClick={handleCategorySelect}
               >
-                <h3 className="text-lg font-bold text-white mb-1">
+                <h3 className="text-lg font-bold text-white mb-1" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.8)'}}>
                   {getCategoryDisplayName(category)}
                 </h3>
                 <div className="flex flex-wrap gap-1">

@@ -460,6 +460,12 @@
     "filterProcessing": "Processing",
     "filterFailed": "Failed",
     "filterPending": "Pending",
+    "filter": {
+      "all": "All",
+      "completed": "Completed",
+      "processing": "Processing",
+      "failed": "Failed"
+    },
     "noJobs": "You have no jobs yet",
     "noJobsInStatus": "no jobs found in status",
     "createFirstJob": "Create a new job to process your first photo.",
