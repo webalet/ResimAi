@@ -542,8 +542,6 @@ const Gallery: React.FC = () => {
           </motion.div>
         )}
 
-        // Gallery.tsx - Modal kısmının düzeltilmiş versiyonu
-
         {/* Enhanced Image Modal with ImageComparison */}
         <AnimatePresence>
           {selectedJob && selectedJob.processed_images && selectedJob.processed_images.length > 0 && (
@@ -551,18 +549,18 @@ const Gallery: React.FC = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+              className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-2"
               onClick={() => setSelectedJob(null)}
             >
               <motion.div 
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
-                className="bg-white/95 backdrop-blur-sm rounded-3xl max-w-[95vw] max-h-[95vh] overflow-hidden shadow-2xl border border-white/20 flex flex-col"
+                className="bg-white/95 backdrop-blur-sm rounded-3xl max-w-[92vw] w-auto max-h-[90vh] overflow-hidden shadow-2xl border border-white/20"
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Header */}
-                <div className="flex items-center justify-between px-6 py-3 border-b border-purple-200/30 bg-gradient-to-r from-purple-50/80 to-blue-50/80 backdrop-blur-sm flex-shrink-0">
+                <div className="flex items-center justify-between px-6 py-3 border-b border-purple-200/30 bg-gradient-to-r from-purple-50/80 to-blue-50/80 backdrop-blur-sm">
                   <div className="flex items-center space-x-4">
                     <div className="w-3 h-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"></div>
                     <h3 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
@@ -580,35 +578,29 @@ const Gallery: React.FC = () => {
                   </button>
                 </div>
                 
-                {/* Image Content - Düzeltilmiş kısım */}
-                <div className="flex-1 min-h-0 p-4 flex items-center justify-center">
-                  <div className="bg-gradient-to-br from-purple-50/30 to-blue-50/30 backdrop-blur-sm rounded-2xl overflow-hidden max-w-full max-h-full flex items-center justify-center">
+                {/* Image Content */}
+                <div className="p-4">
+                  <div className="bg-gradient-to-br from-purple-50/30 to-blue-50/30 backdrop-blur-sm rounded-2xl overflow-hidden flex items-center justify-center">
                     {selectedJob.original_image_url ? (
-                      <div className="w-full h-full max-w-full max-h-[calc(95vh-200px)] flex items-center justify-center">
-                        <ImageComparison
-                          beforeImage={selectedJob.original_image_url}
-                          afterImage={selectedJob.processed_images[selectedImageIndex].image_url}
-                          beforeLabel="Öncesi"
-                          afterLabel="Sonrası"
-                          className="w-auto h-auto max-w-full max-h-full object-contain"
-                        />
-                      </div>
+                      <ImageComparison
+                        beforeImage={selectedJob.original_image_url}
+                        afterImage={selectedJob.processed_images[selectedImageIndex].image_url}
+                        beforeLabel="Öncesi"
+                        afterLabel="Sonrası"
+                        className="w-full h-auto max-h-[75vh] object-contain"
+                      />
                     ) : (
                       <img
                         src={selectedJob.processed_images[selectedImageIndex].image_url}
                         alt={`Generated image ${selectedImageIndex + 1}`}
-                        className="w-auto h-auto max-w-full max-h-[calc(95vh-200px)] object-contain"
-                        style={{
-                          maxWidth: 'calc(95vw - 2rem)',
-                          maxHeight: 'calc(95vh - 200px)'
-                        }}
+                        className="w-full h-auto max-h-[75vh] object-contain mx-auto"
                       />
                     )}
                   </div>
                 </div>
                 
                 {/* Footer */}
-                <div className="flex items-center justify-between px-6 py-3 border-t border-purple-200/30 bg-gradient-to-r from-purple-50/50 to-blue-50/50 backdrop-blur-sm flex-shrink-0">
+                <div className="flex items-center justify-between px-6 py-3 border-t border-purple-200/30 bg-gradient-to-r from-purple-50/50 to-blue-50/50 backdrop-blur-sm">
                   <div className="flex items-center space-x-3">
                     {selectedJob.processed_images.length > 1 && (
                       <>
