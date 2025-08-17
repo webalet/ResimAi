@@ -472,17 +472,17 @@ router.get('/settings', adminAuth, async (req: Request, res: Response) => {
         {
           name: 'Corporate',
           styles: ['Professional', 'Business Casual', 'Executive', 'Formal Meeting'],
-          image_url: '/images/ornek.jpg'
+          image_url: ''
         },
         {
           name: 'Creative', 
           styles: ['Artistic', 'Bohemian', 'Vintage', 'Modern Art'],
-          image_url: '/images/ornek.jpg'
+          image_url: ''
         },
         {
           name: 'Avatar',
           styles: ['Cartoon', 'Realistic', 'Anime', 'Fantasy'],
-          image_url: '/images/ornek.jpg'
+          image_url: ''
         }
       ],
       aiPrompts: savedSettings.aiPrompts || {

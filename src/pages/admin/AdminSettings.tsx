@@ -783,7 +783,7 @@ const AdminSettings = () => {
       description_en: 'New category description',
       styles: ['Yeni Stil'],
       styles_en: ['New Style'],
-      image_url: '/images/ornek.jpg',
+      image_url: '',
       is_active: true,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
@@ -854,9 +854,15 @@ const AdminSettings = () => {
       if (categoryToUpdate && categoryToUpdate.id) {
         // Update category image URL in state based on imageType
         const updateField = imageType === 'before' ? 'before_image_url' : 'after_image_url';
-        setCategories(prev => prev.map((cat, i) => 
-          i === categoryIndex ? { ...cat, [updateField]: data.url } : cat
-        ));
+        console.log(`Updating ${updateField} with URL:`, data.url);
+        
+        setCategories(prev => {
+          const updated = prev.map((cat, i) => 
+            i === categoryIndex ? { ...cat, [updateField]: data.url } : cat
+          );
+          console.log('Updated categories state:', updated[categoryIndex]);
+          return updated;
+        });
         
         const updateData = {
           ...categoryToUpdate,
@@ -1494,11 +1500,11 @@ const AdminSettings = () => {
                           <label className="block text-xs font-medium text-gray-700 mb-1">Öncesi Resmi</label>
                           <div className="relative group">
                             <img 
-                              src={category.before_image_url || category.image_url || '/images/ornek.jpg'} 
+                              src={category.before_image_url || category.image_url || ''} 
                               alt={`${category.name} - Öncesi`}
                               className="w-full h-24 object-cover rounded-lg border border-gray-300"
                               onError={(e) => {
-                                (e.target as HTMLImageElement).src = '/images/ornek.jpg';
+                                (e.target as HTMLImageElement).src = '';
                               }}
                             />
                             {!category.before_image_url && !category.image_url && (
@@ -1530,11 +1536,12 @@ const AdminSettings = () => {
                           <label className="block text-xs font-medium text-gray-700 mb-1">Sonrası Resmi</label>
                           <div className="relative group">
                             <img 
-                              src={category.after_image_url || '/images/ornek.jpg'} 
+                              src={category.after_image_url || ''} 
                               alt={`${category.name} - Sonrası`}
                               className="w-full h-24 object-cover rounded-lg border border-gray-300"
                               onError={(e) => {
-                                (e.target as HTMLImageElement).src = '/images/ornek.jpg';
+                                console.log('Edit mode - Image load error for after_image_url:', category.after_image_url);
+                                (e.target as HTMLImageElement).src = '';
                               }}
                             />
                             {!category.after_image_url && (
@@ -1568,11 +1575,11 @@ const AdminSettings = () => {
                           <label className="block text-xs font-medium text-gray-700 mb-1">Öncesi Resmi</label>
                           <div className="relative">
                             <img 
-                              src={category.before_image_url || category.image_url || '/images/ornek.jpg'} 
+                              src={category.before_image_url || category.image_url || ''} 
                               alt={`${category.name} - Öncesi`}
                               className="w-full h-24 object-cover rounded-lg border border-gray-300"
                               onError={(e) => {
-                                (e.target as HTMLImageElement).src = '/images/ornek.jpg';
+                                (e.target as HTMLImageElement).src = '';
                               }}
                             />
                             {!category.before_image_url && !category.image_url && (
@@ -1586,11 +1593,12 @@ const AdminSettings = () => {
                           <label className="block text-xs font-medium text-gray-700 mb-1">Sonrası Resmi</label>
                           <div className="relative">
                             <img 
-                              src={category.after_image_url || '/images/ornek.jpg'} 
+                              src={category.after_image_url || ''} 
                               alt={`${category.name} - Sonrası`}
                               className="w-full h-24 object-cover rounded-lg border border-gray-300"
                               onError={(e) => {
-                                (e.target as HTMLImageElement).src = '/images/ornek.jpg';
+                                console.log('View mode - Image load error for after_image_url:', category.after_image_url);
+                                (e.target as HTMLImageElement).src = '';
                               }}
                             />
                             {!category.after_image_url && (
