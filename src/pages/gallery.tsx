@@ -577,20 +577,20 @@ const Gallery: React.FC = () => {
                 onClick={(e) => e.stopPropagation()}
               >
                 {selectedJob.original_image_url ? (
-                  <div className="w-full h-full">
+                  <div style={{ width: '550px', height: '900px' }}>
                     <ImageComparison
                       beforeImage={selectedJob.original_image_url}
                       afterImage={selectedJob.processed_images[selectedImageIndex].image_url}
                       beforeLabel="Öncesi"
                       afterLabel="Sonrası"
-                      className="w-full h-full object-contain"
+                      className="w-full h-full"
                     />
                   </div>
                 ) : (
                   <img
                     src={selectedJob.processed_images[selectedImageIndex].image_url}
                     alt={`Generated image ${selectedImageIndex + 1}`}
-                    className="w-full h-full object-contain"
+                    style={{ width: '550px', height: '900px', objectFit: 'contain' }}
                   />
                 )}
               </div>
