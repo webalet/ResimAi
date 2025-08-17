@@ -1043,7 +1043,7 @@ const AdminSettings = () => {
 
       if (!response.ok) {
         const errorText = await response.text();
-
+        console.error('Kategori silme hatası:', errorText);
         showMessage('error', `Kategori silinirken hata oluştu: ${response.status}`);
         return;
       }
@@ -1647,6 +1647,7 @@ const AdminSettings = () => {
                       /* Before/After Comparison View */
                       <div className="relative">
                         {category.before_image_url && category.after_image_url ? (
+                          /* Both images available - show comparison */
                           <div className="h-32 rounded-lg overflow-hidden border border-gray-300">
                             <ImageComparison
                               beforeImage={category.before_image_url}
@@ -1655,15 +1656,57 @@ const AdminSettings = () => {
                               afterLabel="Sonrası"
                             />
                           </div>
+                        ) : category.before_image_url || category.after_image_url ? (
+                          /* Only one image available - show side by side */
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 mb-1">Öncesi Resmi</label>
+                              <img 
+                                src={category.before_image_url || category.image_url || '/images/ornek.jpg'} 
+                                alt={`${category.name} - Öncesi`}
+                                className="w-full h-24 object-cover rounded-lg border border-gray-300"
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).src = '/images/ornek.jpg';
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 mb-1">Sonrası Resmi</label>
+                              <img 
+                                src={category.after_image_url || '/images/ornek.jpg'} 
+                                alt={`${category.name} - Sonrası`}
+                                className="w-full h-24 object-cover rounded-lg border border-gray-300"
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).src = '/images/ornek.jpg';
+                                }}
+                              />
+                              {!category.after_image_url && (
+                                <p className="text-xs text-gray-500 mt-1 text-center">Sonrası resmi yüklenmemiş</p>
+                              )}
+                            </div>
+                          </div>
                         ) : (
-                          <img 
-                            src={category.before_image_url || category.image_url || '/images/ornek.jpg'} 
-                            alt={category.name}
-                            className="w-full h-32 object-cover rounded-lg border border-gray-300"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).src = '/images/ornek.jpg';
-                            }}
-                          />
+                          /* No images available - show placeholder */
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 mb-1">Öncesi Resmi</label>
+                              <img 
+                                src={'/images/ornek.jpg'} 
+                                alt={`${category.name} - Öncesi`}
+                                className="w-full h-24 object-cover rounded-lg border border-gray-300"
+                              />
+                              <p className="text-xs text-gray-500 mt-1 text-center">Öncesi resmi yüklenmemiş</p>
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 mb-1">Sonrası Resmi</label>
+                              <img 
+                                src={'/images/ornek.jpg'} 
+                                alt={`${category.name} - Sonrası`}
+                                className="w-full h-24 object-cover rounded-lg border border-gray-300"
+                              />
+                              <p className="text-xs text-gray-500 mt-1 text-center">Sonrası resmi yüklenmemiş</p>
+                            </div>
+                          </div>
                         )}
                       </div>
                     )}
