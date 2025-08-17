@@ -344,7 +344,7 @@ const Gallery: React.FC = () => {
                           afterImage={job.processed_images[0].image_url}
                           beforeLabel="Öncesi"
                           afterLabel="Sonrası"
-                          className="w-full h-full"
+                          className="relative overflow-hidden rounded-xl shadow-lg cursor-col-resize select-none w-full h-full"
                         />
                       ) : job.processed_images && job.processed_images.length > 0 ? (
                         <img
@@ -375,37 +375,7 @@ const Gallery: React.FC = () => {
                         </span>
                       </div>
 
-                      {/* Overlay Actions */}
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                        <div className="flex space-x-3">
-                          <button
-                            onClick={() => {
-                              setSelectedJob(job);
-                              setSelectedImageIndex(0);
-                            }}
-                            className="p-3 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-all duration-200 transform hover:scale-110 shadow-lg"
-                            title={t('gallery.view')}
-                          >
-                            <Eye className="h-5 w-5 text-gray-700" />
-                          </button>
-                          {job.processed_images && job.processed_images.length > 0 && (
-                            <button
-                              onClick={() => handleDownload(job.processed_images[0].image_url, `image-${job.id}-1.jpg`)}
-                              className="p-3 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white transition-all duration-200 transform hover:scale-110 shadow-lg"
-                              title={t('gallery.download')}
-                            >
-                              <Download className="h-5 w-5 text-gray-700" />
-                            </button>
-                          )}
-                          <button
-                            onClick={() => handleDeleteJob(job.id)}
-                            className="p-3 bg-red-500/90 backdrop-blur-sm rounded-full hover:bg-red-600 transition-all duration-200 transform hover:scale-110 shadow-lg"
-                            title={t('gallery.delete')}
-                          >
-                            <Trash2 className="h-5 w-5 text-white" />
-                          </button>
-                        </div>
-                      </div>
+
                     </div>
 
                     {/* Content */}
@@ -436,8 +406,34 @@ const Gallery: React.FC = () => {
                           <div className="flex items-center space-x-2">
                             <Sparkles className="h-4 w-4 text-purple-500" />
                             <span className="text-sm font-medium text-gray-700">
-                              {job.processed_images.length} {t('gallery.images')}
+                              {job.processed_images.length} resim
                             </span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <button
+                              onClick={() => {
+                                setSelectedJob(job);
+                                setSelectedImageIndex(0);
+                              }}
+                              className="p-2 bg-purple-100 text-purple-600 rounded-xl hover:bg-purple-200 transition-all duration-200 transform hover:scale-110"
+                              title={t('gallery.view')}
+                            >
+                              <Eye className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDownload(job.processed_images[0].image_url, `image-${job.id}-1.jpg`)}
+                              className="p-2 bg-blue-100 text-blue-600 rounded-xl hover:bg-blue-200 transition-all duration-200 transform hover:scale-110"
+                              title={t('gallery.download')}
+                            >
+                              <Download className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteJob(job.id)}
+                              className="p-2 bg-red-100 text-red-600 rounded-xl hover:bg-red-200 transition-all duration-200 transform hover:scale-110"
+                              title={t('gallery.delete')}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
                           </div>
                         </div>
                       )}
