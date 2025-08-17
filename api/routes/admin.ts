@@ -344,6 +344,7 @@ router.get('/jobs', adminAuth, async (req: Request, res: Response) => {
         original_image_url,
         error_message,
         created_at,
+        updated_at,
         users!inner(name, email),
         processed_images(image_url)
       `, { count: 'exact' });
@@ -372,10 +373,18 @@ router.get('/jobs', adminAuth, async (req: Request, res: Response) => {
       throw error;
     }
 
+    // Transform the data to match frontend expectations
+    const transformedJobs = (jobs || []).map(job => ({
+      ...job,
+      user_name: job.users?.[0]?.name || 'Bilinmeyen Kullanıcı',
+      user_email: job.users?.[0]?.email || 'Bilinmeyen E-posta',
+      updated_at: job.updated_at || job.created_at
+    }));
+
     res.json({
       success: true,
       data: {
-        jobs: jobs || [],
+        jobs: transformedJobs,
         pagination: {
           page,
           limit,
@@ -719,17 +728,54 @@ router.get('/analytics', adminAuth, async (req: Request, res: Response) => {
       .select('category_type, status')
       .gte('created_at', startDate.toISOString());
 
+    // Get credit usage for revenue calculation
+    const { data: creditUsage } = await supabase
+      .from('credits_usage')
+      .select('created_at, credits_used')
+      .gte('created_at', startDate.toISOString())
+      .order('created_at', { ascending: true });
+
+    // Get top users with job counts
+    const { data: topUsersData } = await supabase
+      .from('users')
+      .select('id, name, email')
+      .limit(50);
+
+    // Get job counts for users
+    const { data: userJobCounts } = await supabase
+      .from('image_jobs')
+      .select('user_id')
+      .gte('created_at', startDate.toISOString());
+
+    // Get credit usage for users
+    const { data: userCreditUsage } = await supabase
+      .from('credits_usage')
+      .select('user_id, credits_used')
+      .gte('created_at', startDate.toISOString());
+
     // Process data for charts
     const userGrowth = processTimeSeriesData(userRegistrations || [], 'created_at', days);
+    const jobCompletionsTimeSeries = processJobCompletionsTimeSeries(jobCompletions || [], days);
     const jobStats = processJobStats(jobCompletions || [], days);
     const categoryStats = processCategoryStats(categoryData || []);
+    const revenueData = processRevenueData(creditUsage || [], days);
+    const topUsers = processTopUsers(topUsersData || [], userJobCounts || [], userCreditUsage || []);
+
+    // Calculate average jobs per user
+    const totalUsers = userRegistrations?.length || 0;
+    const totalJobs = jobCompletions?.length || 0;
+    const avgJobsPerUser = totalUsers > 0 ? totalJobs / totalUsers : 0;
 
     res.json({
       success: true,
       data: {
         userGrowth,
+        jobCompletions: jobCompletionsTimeSeries,
         jobStats,
         categoryStats,
+        revenueData,
+        topUsers,
+        avgJobsPerUser,
         period: `${days} days`
       }
     });
@@ -782,8 +828,85 @@ function processJobStats(data: any[], days: number) {
   };
 }
 
+function processJobCompletionsTimeSeries(data: any[], days: number) {
+  const result = [];
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - days);
+
+  for (let i = 0; i < days; i++) {
+    const currentDate = new Date(startDate);
+    currentDate.setDate(startDate.getDate() + i);
+    const dateStr = currentDate.toISOString().split('T')[0];
+    
+    const dayJobs = data.filter(item => 
+      item.created_at.startsWith(dateStr)
+    );
+
+    const completed = dayJobs.filter(job => job.status === 'completed').length;
+    const failed = dayJobs.filter(job => job.status === 'failed').length;
+
+    result.push({
+      date: dateStr,
+      completed,
+      failed
+    });
+  }
+
+  return result;
+}
+
+function processRevenueData(data: any[], days: number) {
+  const result = [];
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - days);
+  const creditPrice = 1; // 1 TL per credit
+
+  for (let i = 0; i < days; i++) {
+    const currentDate = new Date(startDate);
+    currentDate.setDate(startDate.getDate() + i);
+    const dateStr = currentDate.toISOString().split('T')[0];
+    
+    const dayCredits = data.filter(item => 
+      item.created_at.startsWith(dateStr)
+    );
+
+    const totalCredits = dayCredits.reduce((sum, item) => sum + (item.credits_used || 0), 0);
+    const revenue = totalCredits * creditPrice;
+    const transactions = dayCredits.length;
+
+    result.push({
+      date: dateStr,
+      revenue,
+      transactions
+    });
+  }
+
+  return result;
+}
+
+function processTopUsers(users: any[], jobCounts: any[], creditUsage: any[]) {
+  return users.map(user => {
+    const jobCount = jobCounts.filter(job => job.user_id === user.id).length;
+    const creditsUsed = creditUsage
+      .filter(usage => usage.user_id === user.id)
+      .reduce((sum, usage) => sum + (usage.credits_used || 0), 0);
+    
+    return {
+      id: user.id,
+      name: user.name || 'Bilinmeyen Kullanıcı',
+      email: user.email || 'Bilinmeyen E-posta',
+      jobCount,
+      creditsUsed
+    };
+  })
+  .filter(user => user.jobCount > 0) // Only users with jobs
+  .sort((a, b) => b.jobCount - a.jobCount)
+  .slice(0, 5);
+}
+
 function processCategoryStats(data: any[]) {
   const stats: any = {};
+  const total = data.length;
   
   data.forEach(job => {
     if (!stats[job.category_type]) {
@@ -802,7 +925,12 @@ function processCategoryStats(data: any[]) {
     }
   });
 
-  return stats;
+  // Convert to array format with percentages for frontend
+  return Object.entries(stats).map(([category, categoryStats]: [string, any]) => ({
+    category,
+    count: categoryStats.total,
+    percentage: total > 0 ? (categoryStats.total / total) * 100 : 0
+  }));
 }
 
 export default router;

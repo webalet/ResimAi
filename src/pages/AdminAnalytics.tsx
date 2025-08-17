@@ -100,25 +100,21 @@ const AdminAnalytics: React.FC = () => {
       
       if (analyticsResult.success && statsResult.success) {
         // API'den gelen veriyi uygun formata dönüştür
-        const mockAnalyticsData: AnalyticsData = {
+        const analyticsData: AnalyticsData = {
           userRegistrations: analyticsResult.data?.userGrowth || [],
-          jobCompletions: [],
-          categoryUsage: Object.entries(analyticsResult.data?.categoryStats || {}).map(([category, stats]: [string, any]) => ({
-            category,
-            count: stats.total || 0,
-            percentage: 0
-          })),
-          revenueData: [],
-          topUsers: [],
+          jobCompletions: analyticsResult.data?.jobCompletions || [],
+          categoryUsage: analyticsResult.data?.categoryStats || [],
+          revenueData: analyticsResult.data?.revenueData || [],
+          topUsers: analyticsResult.data?.topUsers || [],
           summary: {
-            totalUsers: statsResult.data?.totalUsers || 0,
-            totalJobs: analyticsResult.data?.jobStats?.total || statsResult.data?.totalJobs || 0,
-            totalRevenue: 0,
-            avgJobsPerUser: 0,
+            totalUsers: statsResult.data?.stats?.totalUsers || 0,
+            totalJobs: analyticsResult.data?.jobStats?.total || statsResult.data?.stats?.totalJobs || 0,
+            totalRevenue: analyticsResult.data?.revenueData?.reduce((sum: number, item: any) => sum + (item.revenue || 0), 0) || 0,
+            avgJobsPerUser: analyticsResult.data?.avgJobsPerUser || 0,
             successRate: analyticsResult.data?.jobStats ? (analyticsResult.data.jobStats.completed / analyticsResult.data.jobStats.total * 100) : 0
           }
         };
-        setAnalyticsData(mockAnalyticsData);
+        setAnalyticsData(analyticsData);
       } else {
         const errorMsg = 'API yanıtları başarısız durumda';
         setError(errorMsg);
