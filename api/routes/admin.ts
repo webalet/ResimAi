@@ -7,8 +7,27 @@ import { supabase } from '../config/supabase.js';
 import { adminAuth } from '../middleware/adminAuth.js';
 import { fileURLToPath } from 'url';
 
+// Job interface for TypeScript
+interface JobWithUser {
+  id: string;
+  user_id: string;
+  category_type: string;
+  style: string;
+  status: string;
+  original_image_url: string;
+  error_message?: string;
+  created_at: string;
+  updated_at: string;
+  users: {
+    name: string;
+    email: string;
+  }[];
+  processed_images: {
+    image_url: string;
+  }[];
+}
+
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const router = Router();
 
@@ -19,7 +38,7 @@ const upload = multer({
   limits: {
     fileSize: 5 * 1024 * 1024 // 5MB limit
   },
-  fileFilter: (req, file, cb) => {
+  fileFilter: (_req, file, cb) => {
     if (file.mimetype.startsWith('image/')) {
       cb(null, true);
     } else {
@@ -29,7 +48,7 @@ const upload = multer({
 });
 
 // Get admin settings from admin-settings.json
-router.get('/admin-settings', adminAuth, async (req: Request, res: Response) => {
+router.get('/admin-settings', adminAuth, async (_req: Request, res: Response) => {
   try {
     const settingsPath = path.join(process.cwd(), 'admin-settings.json');
     const settingsData = fs.readFileSync(settingsPath, 'utf8');
@@ -338,6 +357,7 @@ router.get('/jobs', adminAuth, async (req: Request, res: Response) => {
       .from('image_jobs')
       .select(`
         id,
+        user_id,
         category_type,
         style,
         status,
@@ -345,7 +365,7 @@ router.get('/jobs', adminAuth, async (req: Request, res: Response) => {
         error_message,
         created_at,
         updated_at,
-        users!inner(name, email),
+        users(name, email),
         processed_images(image_url)
       `, { count: 'exact' });
 
@@ -374,7 +394,7 @@ router.get('/jobs', adminAuth, async (req: Request, res: Response) => {
     }
 
     // Transform the data to match frontend expectations
-    const transformedJobs = (jobs || []).map(job => ({
+    const transformedJobs = (jobs as JobWithUser[] || []).map(job => ({
       ...job,
       user_name: job.users?.[0]?.name || 'Bilinmeyen Kullanıcı',
       user_email: job.users?.[0]?.email || 'Bilinmeyen E-posta',
