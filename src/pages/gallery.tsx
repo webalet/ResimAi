@@ -538,20 +538,20 @@ const Gallery: React.FC = () => {
                 onClick={(e) => e.stopPropagation()}
               >
                 {selectedJob.original_image_url ? (
-                  <div className="w-full h-full max-w-[90vw] max-h-[80vh] flex items-center justify-center">
+                  <div className="w-full h-full max-w-[90vw] max-h-[80vh] sm:max-w-[80vw] lg:max-w-[70vw] xl:max-w-[60vw] flex items-center justify-center">
                     <ImageComparison
                       beforeImage={selectedJob.original_image_url}
                       afterImage={selectedJob.processed_images[selectedImageIndex].image_url}
                       beforeLabel="Öncesi"
                       afterLabel="Sonrası"
-                      className="relative overflow-hidden rounded-xl shadow-lg cursor-col-resize select-none w-full h-full max-w-lg max-h-[70vh]"
+                      className="relative overflow-hidden rounded-xl shadow-lg cursor-col-resize select-none w-full h-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-2xl xl:max-w-4xl max-h-[70vh] lg:max-h-[85vh]"
                     />
                   </div>
                 ) : (
                   <img
                     src={selectedJob.processed_images[selectedImageIndex].image_url}
                     alt={`Generated image ${selectedImageIndex + 1}`}
-                    className="w-full h-full max-w-[90vw] max-h-[80vh] object-contain rounded-xl"
+                    className="w-full h-full max-w-[90vw] max-h-[80vh] sm:max-w-[80vw] lg:max-w-[70vw] xl:max-w-[60vw] object-contain rounded-xl"
                   />
                 )}
               </div>
