@@ -1006,7 +1006,14 @@ const AdminSettings = () => {
         });
         
         if (!updateResponse.ok) {
-          console.warn('Kategori resmi Supabase\'e kaydedilemedi');
+          const errorText = await updateResponse.text();
+          console.error('Kategori resmi Supabase\'e kaydedilemedi:', {
+            status: updateResponse.status,
+            statusText: updateResponse.statusText,
+            error: errorText,
+            categoryId: categoryToUpdate.id,
+            url: `${API_BASE_URL}/api/categories/${categoryToUpdate.id}`
+          });
         }
       }
       
