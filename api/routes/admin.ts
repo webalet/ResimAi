@@ -353,6 +353,7 @@ router.get('/jobs', adminAuth, async (req: Request, res: Response) => {
     const dateTo = req.query.dateTo as string;
     const offset = (page - 1) * limit;
 
+    // First get jobs without JOIN
     let query = supabase
       .from('image_jobs')
       .select(`
@@ -364,9 +365,7 @@ router.get('/jobs', adminAuth, async (req: Request, res: Response) => {
         original_image_url,
         error_message,
         created_at,
-        updated_at,
-        users(name, email),
-        processed_images(image_url)
+        updated_at
       `, { count: 'exact' });
 
     if (category) {
@@ -393,13 +392,54 @@ router.get('/jobs', adminAuth, async (req: Request, res: Response) => {
       throw error;
     }
 
+    // Get unique user IDs from jobs
+    const userIds = [...new Set(jobs?.map(job => job.user_id).filter(Boolean))];
+    
+    // Get users data separately
+    let usersMap: Record<string, any> = {};
+    if (userIds.length > 0) {
+      const { data: users } = await supabase
+        .from('users')
+        .select('id, name, email')
+        .in('id', userIds);
+      
+      if (users) {
+        usersMap = users.reduce((acc, user) => {
+          acc[user.id] = user;
+          return acc;
+        }, {} as Record<string, any>);
+      }
+    }
+
+    // Get processed images for jobs
+    const jobIds = jobs?.map(job => job.id).filter(Boolean) || [];
+    let processedImagesMap: Record<string, any[]> = {};
+    if (jobIds.length > 0) {
+      const { data: processedImages } = await supabase
+        .from('processed_images')
+        .select('job_id, image_url')
+        .in('job_id', jobIds);
+      
+      if (processedImages) {
+        processedImagesMap = processedImages.reduce((acc, img) => {
+          if (!acc[img.job_id]) acc[img.job_id] = [];
+          acc[img.job_id].push({ image_url: img.image_url });
+          return acc;
+        }, {} as Record<string, any[]>);
+      }
+    }
+
     // Transform the data to match frontend expectations
-    const transformedJobs = (jobs as JobWithUser[] || []).map(job => ({
-      ...job,
-      user_name: job.users?.[0]?.name || 'Bilinmeyen Kullanıcı',
-      user_email: job.users?.[0]?.email || 'Bilinmeyen E-posta',
-      updated_at: job.updated_at || job.created_at
-    }));
+    const transformedJobs = (jobs || []).map(job => {
+      const user = usersMap[job.user_id];
+      return {
+        ...job,
+        user_name: user?.name || 'Bilinmeyen Kullanıcı',
+        user_email: user?.email || 'Bilinmeyen E-posta',
+        processed_images: processedImagesMap[job.id] || [],
+        updated_at: job.updated_at || job.created_at
+      };
+    });
 
     res.json({
       success: true,
