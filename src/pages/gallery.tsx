@@ -573,22 +573,28 @@ const Gallery: React.FC = () => {
 
               {/* Full Size Image Container */}
               <div 
-                className="flex-1 flex items-center justify-center"
+                className="flex-1 flex items-center justify-center p-4"
                 onClick={(e) => e.stopPropagation()}
               >
                 {selectedJob.original_image_url ? (
-                  <ImageComparison
-                    beforeImage={selectedJob.original_image_url}
-                    afterImage={selectedJob.processed_images[selectedImageIndex].image_url}
-                    beforeLabel="Öncesi"
-                    afterLabel="Sonrası"
-                    className="w-full h-full"
-                  />
+                  <div className="w-full" style={{ height: 'calc(100vh - 100px)' }}>
+                    <ImageComparison
+                      beforeImage={selectedJob.original_image_url}
+                      afterImage={selectedJob.processed_images[selectedImageIndex].image_url}
+                      beforeLabel="Öncesi"
+                      afterLabel="Sonrası"
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
                 ) : (
                   <img
                     src={selectedJob.processed_images[selectedImageIndex].image_url}
                     alt={`Generated image ${selectedImageIndex + 1}`}
-                    className="w-full h-full object-contain"
+                    className="max-w-full object-contain"
+                    style={{ 
+                      height: 'calc(100vh - 100px)',
+                      width: 'auto'
+                    }}
                   />
                 )}
               </div>
