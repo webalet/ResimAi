@@ -349,7 +349,7 @@ const Categories: React.FC = () => {
                     <img
                       src={uploadState.preview}
                       alt="Preview"
-                      className="w-full h-48 object-cover rounded-lg shadow-md"
+                      className="w-full h-64 object-contain rounded-lg shadow-md"
                     />
                     <button
                       onClick={() => setUploadState(prev => ({ 
@@ -398,7 +398,7 @@ const Categories: React.FC = () => {
                     <img
                       src={uploadState.selectedCategory.before_image_url || uploadState.selectedCategory.image_url}
                       alt={getCategoryDisplayName(uploadState.selectedCategory)}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-3">
                       <div>
