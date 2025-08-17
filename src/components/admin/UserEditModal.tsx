@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Save, Shield, ShieldOff } from 'lucide-react';
+import { X, Save, Shield, ShieldOff, Ban, UserCheck } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface User {
@@ -8,6 +8,7 @@ interface User {
   email: string;
   credits: number;
   is_admin: boolean;
+  is_banned?: boolean;
   created_at: string;
 }
 
@@ -27,7 +28,8 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
   const [formData, setFormData] = useState({
     credits: user.credits,
     password: '',
-    is_admin: user.is_admin
+    is_admin: user.is_admin,
+    is_banned: user.is_banned || false
   });
   const [loading, setLoading] = useState(false);
 
@@ -51,7 +53,8 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
 
       const updateData: any = {
         credits: parseInt(formData.credits.toString()),
-        is_admin: formData.is_admin
+        is_admin: formData.is_admin,
+        is_banned: formData.is_banned
       };
 
       if (formData.password.trim()) {
@@ -75,7 +78,8 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
         const updatedUser = {
           ...user,
           credits: parseInt(formData.credits.toString()),
-          is_admin: formData.is_admin
+          is_admin: formData.is_admin,
+          is_banned: formData.is_banned
         };
         onUserUpdated(updatedUser);
         onClose();
@@ -171,6 +175,27 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
                 </label>
               </div>
 
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="is_banned"
+                  name="is_banned"
+                  checked={formData.is_banned}
+                  onChange={handleChange}
+                  className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
+                />
+                <label htmlFor="is_banned" className="ml-2 block text-sm text-gray-900">
+                  <div className="flex items-center">
+                    {formData.is_banned ? (
+                      <Ban className="h-4 w-4 text-red-600 mr-1" />
+                    ) : (
+                      <UserCheck className="h-4 w-4 text-green-500 mr-1" />
+                    )}
+                    Kullanıcıyı yasakla
+                  </div>
+                </label>
+              </div>
+
               <div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
                 <div className="flex">
                   <div className="text-sm text-yellow-800">
@@ -178,6 +203,16 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
                   </div>
                 </div>
               </div>
+
+              {formData.is_banned && (
+                <div className="bg-red-50 border border-red-200 rounded-md p-3">
+                  <div className="flex">
+                    <div className="text-sm text-red-800">
+                      <strong>Uyarı:</strong> Yasaklanan kullanıcılar sisteme giriş yapamayacak.
+                    </div>
+                  </div>
+                </div>
+              )}
             </form>
           </div>
 

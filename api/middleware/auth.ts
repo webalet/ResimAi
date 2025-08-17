@@ -47,10 +47,10 @@ export const auth = async (req: Request, res: Response, next: NextFunction): Pro
       return;
     }
 
-    // Verify user still exists in database
+    // Verify user still exists in database and is not banned
     const { data: user, error } = await supabase
       .from('users')
-      .select('id, email')
+      .select('id, email, is_banned')
       .eq('id', decoded.userId)
       .single();
 
@@ -58,6 +58,15 @@ export const auth = async (req: Request, res: Response, next: NextFunction): Pro
       res.status(401).json({
         success: false,
         message: 'Kullanici bulunamadi'
+      });
+      return;
+    }
+
+    // Check if user is banned
+    if (user.is_banned) {
+      res.status(403).json({
+        success: false,
+        message: 'Hesabınız yasaklanmıştır. Lütfen destek ekibi ile iletişime geçin.'
       });
       return;
     }
@@ -118,14 +127,14 @@ export const optionalAuth = async (req: Request, res: Response, next: NextFuncti
     ) as JwtPayload;
 
     if (decoded.userId) {
-      // Verify user still exists in database
+      // Verify user still exists in database and is not banned
       const { data: user, error } = await supabase
         .from('users')
-        .select('id, email')
+        .select('id, email, is_banned')
         .eq('id', decoded.userId)
         .single();
 
-      if (!error && user) {
+      if (!error && user && !user.is_banned) {
         // Add user info to request object
         (req as any).userId = decoded.userId;
         (req as any).userEmail = decoded.email;
@@ -153,14 +162,30 @@ export const adminAuth = async (req: Request, res: Response, next: NextFunction)
 
     const userId = (req as any).userId;
     
-    // Check if user is admin
+    // Check if user is admin and not banned
     const { data: user, error } = await supabase
       .from('users')
-      .select('is_admin')
+      .select('is_admin, is_banned')
       .eq('id', userId)
       .single();
 
-    if (error || !user || !user.is_admin) {
+    if (error || !user) {
+      res.status(403).json({
+        success: false,
+        message: 'Kullanıcı bulunamadı'
+      });
+      return;
+    }
+
+    if (user.is_banned) {
+      res.status(403).json({
+        success: false,
+        message: 'Hesabınız yasaklanmıştır'
+      });
+      return;
+    }
+
+    if (!user.is_admin) {
       res.status(403).json({
         success: false,
         message: 'Admin yetkisi gereklidir'

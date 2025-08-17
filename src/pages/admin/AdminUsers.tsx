@@ -9,6 +9,7 @@ interface User {
   email: string;
   credits: number;
   is_admin: boolean;
+  is_banned?: boolean;
   created_at: string;
 }
 
@@ -185,7 +186,9 @@ const AdminUsers: React.FC = () => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {users.map((user) => (
-                  <tr key={user.id} className="hover:bg-gray-50">
+                  <tr key={user.id} className={`hover:bg-gray-50 ${
+                    user.is_banned ? 'bg-red-50 border-red-200' : ''
+                  }`}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
                         <div className="text-sm font-medium text-gray-900">{user.name}</div>
@@ -205,7 +208,11 @@ const AdminUsers: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center space-x-2">
-                        {user.is_admin ? (
+                        {user.is_banned ? (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                            Yasaklı
+                          </span>
+                        ) : user.is_admin ? (
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                             <Shield className="h-3 w-3 mr-1" />
                             Admin

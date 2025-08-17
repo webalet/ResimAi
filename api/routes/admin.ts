@@ -184,6 +184,7 @@ router.get('/users', adminAuth, async (req: Request, res: Response) => {
         email,
         credits,
         is_admin,
+        is_banned,
         created_at,
         updated_at
       `, { count: 'exact' });
@@ -291,7 +292,7 @@ router.get('/users/:id', adminAuth, async (req: Request, res: Response): Promise
 router.put('/users/:id', adminAuth, async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
-    const { credits, password, is_admin } = req.body;
+    const { credits, password, is_admin, is_banned } = req.body;
 
     const updateData: any = {};
 
@@ -314,13 +315,17 @@ router.put('/users/:id', adminAuth, async (req: Request, res: Response): Promise
       updateData.is_admin = Boolean(is_admin);
     }
 
+    if (is_banned !== undefined) {
+      updateData.is_banned = Boolean(is_banned);
+    }
+
     updateData.updated_at = new Date().toISOString();
 
     const { data: user, error } = await supabase
       .from('users')
       .update(updateData)
       .eq('id', id)
-      .select('id, name, email, credits, is_admin, created_at, updated_at')
+      .select('id, name, email, credits, is_admin, is_banned, created_at, updated_at')
       .single();
 
     if (error) {
