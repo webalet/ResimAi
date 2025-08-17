@@ -552,63 +552,50 @@ const Gallery: React.FC = () => {
               className="fixed inset-0 bg-black/95 backdrop-blur-sm flex flex-col z-50"
               onClick={() => setSelectedJob(null)}
             >
-              {/* Top Header */}
-              <div className="flex items-center justify-between px-6 py-4 bg-black/20 backdrop-blur-sm border-b border-white/10">
-                <div className="flex items-center space-x-4">
-                  <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"></div>
-                  <h3 className="text-lg font-semibold text-white">
+              {/* Compact Top Header */}
+              <div className="flex items-center justify-between px-4 py-2 bg-black/30 backdrop-blur-sm">
+                <div className="flex items-center space-x-3">
+                  <div className="w-1.5 h-1.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"></div>
+                  <h3 className="text-sm font-medium text-white">
                     {selectedJob.category?.display_name_tr || 'AI İşlemi'}
                   </h3>
-                  <span className="text-sm text-gray-300 bg-white/10 px-3 py-1 rounded-full">
+                  <span className="text-xs text-gray-300 bg-white/10 px-2 py-1 rounded-full">
                     {selectedImageIndex + 1} / {selectedJob.processed_images.length}
                   </span>
                 </div>
                 <button
                   onClick={() => setSelectedJob(null)}
-                  className="p-2 bg-white/10 hover:bg-white/20 rounded-full transition-all duration-200"
+                  className="p-1.5 bg-white/10 hover:bg-white/20 rounded-lg transition-all duration-200"
                 >
-                  <X className="h-6 w-6 text-white" />
+                  <X className="h-4 w-4 text-white" />
                 </button>
               </div>
 
-              {/* Image Container - Full Screen */}
+              {/* Full Size Image Container */}
               <div 
-                className="flex-1 flex items-center justify-center p-2"
+                className="flex-1 flex items-center justify-center"
                 onClick={(e) => e.stopPropagation()}
-                style={{ minHeight: 'calc(100vh - 140px)' }}
               >
-                <div className="relative w-full h-full">
-                  {selectedJob.original_image_url ? (
-                    <div className="w-full h-full min-h-[600px] flex items-center justify-center">
-                      <div style={{ width: '90vw', height: '80vh' }}>
-                        <ImageComparison
-                          beforeImage={selectedJob.original_image_url}
-                          afterImage={selectedJob.processed_images[selectedImageIndex].image_url}
-                          beforeLabel="Öncesi"
-                          afterLabel="Sonrası"
-                          className="w-full h-full"
-                        />
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="w-full h-full min-h-[600px] flex items-center justify-center">
-                      <img
-                        src={selectedJob.processed_images[selectedImageIndex].image_url}
-                        alt={`Generated image ${selectedImageIndex + 1}`}
-                        className="object-contain"
-                        style={{ 
-                          width: '90vw', 
-                          height: '80vh'
-                        }}
-                      />
-                    </div>
-                  )}
-                </div>
+                {selectedJob.original_image_url ? (
+                  <ImageComparison
+                    beforeImage={selectedJob.original_image_url}
+                    afterImage={selectedJob.processed_images[selectedImageIndex].image_url}
+                    beforeLabel="Öncesi"
+                    afterLabel="Sonrası"
+                    className="w-full h-full"
+                  />
+                ) : (
+                  <img
+                    src={selectedJob.processed_images[selectedImageIndex].image_url}
+                    alt={`Generated image ${selectedImageIndex + 1}`}
+                    className="w-full h-full object-contain"
+                  />
+                )}
               </div>
 
-              {/* Bottom Controls */}
-              <div className="flex items-center justify-between px-6 py-4 bg-black/20 backdrop-blur-sm border-t border-white/10">
-                <div className="flex items-center space-x-4">
+              {/* Compact Bottom Controls */}
+              <div className="flex items-center justify-between px-4 py-2 bg-black/30 backdrop-blur-sm">
+                <div className="flex items-center space-x-2">
                   {selectedJob.processed_images.length > 1 && (
                     <>
                       <button
@@ -617,10 +604,10 @@ const Gallery: React.FC = () => {
                           setSelectedImageIndex(Math.max(0, selectedImageIndex - 1));
                         }}
                         disabled={selectedImageIndex === 0}
-                        className="flex items-center space-x-2 px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white rounded-xl hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                        className="flex items-center space-x-1 px-2 py-1 bg-white/10 backdrop-blur-sm border border-white/20 text-white rounded-lg hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 text-sm"
                       >
-                        <ChevronLeft className="h-4 w-4" />
-                        <span className="font-medium">Önceki</span>
+                        <ChevronLeft className="h-3 w-3" />
+                        <span>Önceki</span>
                       </button>
                       <button
                         onClick={(e) => {
@@ -628,21 +615,20 @@ const Gallery: React.FC = () => {
                           setSelectedImageIndex(Math.min(selectedJob.processed_images.length - 1, selectedImageIndex + 1));
                         }}
                         disabled={selectedImageIndex === selectedJob.processed_images.length - 1}
-                        className="flex items-center space-x-2 px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white rounded-xl hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                        className="flex items-center space-x-1 px-2 py-1 bg-white/10 backdrop-blur-sm border border-white/20 text-white rounded-lg hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 text-sm"
                       >
-                        <span className="font-medium">Sonraki</span>
-                        <ChevronRight className="h-4 w-4" />
+                        <span>Sonraki</span>
+                        <ChevronRight className="h-3 w-3" />
                       </button>
                     </>
                   )}
                 </div>
                 
-                <div className="flex items-center space-x-4">
-                  <div className="text-sm text-gray-300 bg-white/10 px-3 py-2 rounded-xl">
+                <div className="flex items-center space-x-2">
+                  <div className="text-xs text-gray-300 bg-white/10 px-2 py-1 rounded-lg">
                     {new Date(selectedJob.created_at).toLocaleDateString('tr-TR', {
                       day: 'numeric',
-                      month: 'long',
-                      year: 'numeric'
+                      month: 'short'
                     })}
                   </div>
                   <button
@@ -653,9 +639,9 @@ const Gallery: React.FC = () => {
                         `image-${selectedJob.id}-${selectedImageIndex + 1}.jpg`
                       );
                     }}
-                    className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-200 transform hover:scale-105 shadow-lg font-medium"
+                    className="flex items-center space-x-1 px-3 py-1.5 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-200 text-sm font-medium"
                   >
-                    <Download className="h-4 w-4" />
+                    <Download className="h-3 w-3" />
                     <span>İndir</span>
                   </button>
                 </div>
