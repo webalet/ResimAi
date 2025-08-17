@@ -989,11 +989,8 @@ const AdminSettings = () => {
       setCategories(prev => prev.map((cat, i) => 
         i === categoryIndex ? { ...cat, image_url: data.url } : cat
       ));
-
-      // Automatically save categories after image upload
-      await saveCategories();
       
-      toast.success('Resim yüklendi ve kategoriler kaydedildi!');
+      toast.success('Resim başarıyla yüklendi!');
     } catch (error) {
       console.error('Image upload error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen hata';
