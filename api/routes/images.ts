@@ -9,9 +9,27 @@ import { uploadToSupabase, deleteFromSupabase } from '../utils/storage.js';
 
 const router = Router();
 
-// Configure multer for memory storage
+// Configure multer for disk storage
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadPath = path.join(process.cwd(), 'public', 'uploads');
+    // Ensure directory exists
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
+    }
+    cb(null, uploadPath);
+  },
+  filename: (req, file, cb) => {
+    const userId = (req as any).userId;
+    const timestamp = Date.now();
+    const ext = path.extname(file.originalname);
+    const filename = `${userId}-${timestamp}${ext}`;
+    cb(null, filename);
+  }
+});
+
 const upload = multer({
-  storage: multer.memoryStorage(),
+  storage: storage,
   limits: {
     fileSize: 10 * 1024 * 1024, // 10MB limit
   },
@@ -43,14 +61,18 @@ router.post('/upload', auth, upload.single('image'), async (req: Request, res: R
       userId,
       filename: file.originalname,
       size: file.size,
-      mimetype: file.mimetype
+      mimetype: file.mimetype,
+      localPath: file.path
     });
 
-    // Just upload the file to storage without processing
-
-    // Upload image to Supabase Storage
+    // File is now saved to disk, also upload to Supabase Storage
+    // Read the file from disk and upload to Supabase
+    const fileBuffer = fs.readFileSync(file.path);
     const imagePath = `uploads/${userId}/${Date.now()}-${file.originalname}`;
-    const imageUrl = await uploadToSupabase(file.buffer, imagePath, file.mimetype);
+    const imageUrl = await uploadToSupabase(fileBuffer, imagePath, file.mimetype);
+    
+    // Create local URL for the file
+    const localImageUrl = `/uploads/${file.filename}`;
 
     if (!imageUrl) {
       res.status(500).json({
@@ -62,13 +84,15 @@ router.post('/upload', auth, upload.single('image'), async (req: Request, res: R
 
     console.log('✅ [UPLOAD] File uploaded successfully:', {
       userId,
-      imageUrl: imageUrl.substring(0, 50) + '...'
+      supabaseUrl: imageUrl.substring(0, 50) + '...',
+      localUrl: localImageUrl
     });
 
-    // Return the uploaded image URL
+    // Return both URLs
     res.status(200).json({
       success: true,
-      url: imageUrl,
+      url: imageUrl, // Supabase URL for n8n workflow
+      localUrl: localImageUrl, // Local URL for serving
       message: 'Görsel başarıyla yüklendi'
     });
   } catch (error) {
@@ -244,9 +268,16 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
     let originalImagePath: string | null = null;
 
     if (file) {
-      // Handle file upload
+      // Handle file upload - read from disk since we're using disk storage
+      const fileBuffer = fs.readFileSync(file.path);
       originalImagePath = `originals/${userId}/${Date.now()}-${file.originalname}`;
-      originalImageUrl = await uploadToSupabase(file.buffer, originalImagePath, file.mimetype);
+      originalImageUrl = await uploadToSupabase(fileBuffer, originalImagePath, file.mimetype);
+      
+      console.log('📁 [UPLOAD-AND-PROCESS] File processed:', {
+        localPath: file.path,
+        supabasePath: originalImagePath,
+        supabaseUrl: originalImageUrl?.substring(0, 50) + '...'
+      });
     } else if (imageUrl) {
       // Handle URL upload - download and upload to Supabase
       console.log('📥 [UPLOAD-AND-PROCESS] Downloading image from URL:', imageUrl);

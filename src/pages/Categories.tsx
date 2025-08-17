@@ -6,6 +6,8 @@ import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76';
+
 interface UploadState {
   selectedCategory: Category | null;
   selectedStyle: string;
@@ -52,7 +54,7 @@ const Categories: React.FC = () => {
   // Load categories from API
   const loadCategories = async () => {
     try {
-      const response = await fetch('http://64.226.75.76/api/categories');
+      const response = await fetch(`${API_BASE_URL}/api/categories`);
       if (!response.ok) throw new Error('Failed to load categories');
       
       const data = await response.json();
@@ -133,7 +135,7 @@ const Categories: React.FC = () => {
       console.log('Sending category:', uploadState.selectedCategory.name);
       console.log('Selected category object:', uploadState.selectedCategory);
 
-      const response = await fetch('http://64.226.75.76/api/images/upload-and-process', {
+      const response = await fetch(`${API_BASE_URL}/api/images/upload-and-process`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
