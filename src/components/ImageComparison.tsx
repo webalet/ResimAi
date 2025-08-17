@@ -22,7 +22,8 @@ const ImageComparison: React.FC<ImageComparisonProps> = ({
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const handleMouseDown = useCallback(() => {
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
     setIsDragging(true);
   }, []);
 
@@ -32,6 +33,7 @@ const ImageComparison: React.FC<ImageComparisonProps> = ({
 
   const handleMouseMove = useCallback((e: React.MouseEvent) => {
     if (!isDragging || !containerRef.current) return;
+    e.stopPropagation();
     
     const rect = containerRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -41,6 +43,7 @@ const ImageComparison: React.FC<ImageComparisonProps> = ({
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     if (!isDragging || !containerRef.current) return;
+    e.stopPropagation();
     
     const rect = containerRef.current.getBoundingClientRect();
     const x = e.touches[0].clientX - rect.left;
@@ -57,6 +60,8 @@ const ImageComparison: React.FC<ImageComparisonProps> = ({
       onMouseLeave={handleMouseUp}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleMouseUp}
+      onClick={(e) => e.stopPropagation()}
+      onMouseDown={(e) => e.stopPropagation()}
     >
       {/* Before Image */}
       <div className="absolute inset-0">
@@ -90,7 +95,10 @@ const ImageComparison: React.FC<ImageComparisonProps> = ({
         className="absolute top-0 bottom-0 w-1 bg-white shadow-lg cursor-col-resize z-10"
         style={{ left: `${sliderPosition}%` }}
         onMouseDown={handleMouseDown}
-        onTouchStart={handleMouseDown}
+        onTouchStart={(e) => {
+          e.stopPropagation();
+          handleMouseDown(e as any);
+        }}
       >
         {/* Slider Handle */}
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center">
