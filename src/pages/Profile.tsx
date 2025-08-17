@@ -173,6 +173,21 @@ const Profile: React.FC = () => {
     );
   }
 
+  // If user is banned, show only the image
+  if (user.is_banned) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="max-w-4xl w-full p-8">
+          <img 
+            src="https://i.pinimg.com/originals/7a/b6/73/7ab673806c3dc561a56eb6fd19b45b5b.jpg" 
+            alt="Banned User" 
+            className="w-full h-auto rounded-lg shadow-2xl"
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full space-y-6">
       {/* Header */}

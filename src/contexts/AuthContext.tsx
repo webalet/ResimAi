@@ -72,11 +72,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       
       if (token) {
-        const userData = await authService.getCurrentUser();
-        setUser(userData);
+        try {
+          const userData = await authService.getCurrentUser();
+          setUser(userData);
+        } catch (error: any) {
+          // If 403 error, user is banned - logout immediately
+          if (error.response?.status === 403) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('adminToken');
+            setUser(null);
+            toast.error(t('auth.errors.accountBanned'));
+          } else {
+            localStorage.removeItem('token');
+          }
+          throw error;
+        }
       }
     } catch (error) {
-      localStorage.removeItem('token');
       console.error('Auth check failed:', error);
     } finally {
       setLoading(false);
@@ -181,7 +193,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const userData = await authService.getCurrentUser();
       setUser(userData);
-    } catch (error) {
+    } catch (error: any) {
+      // If 403 error, user is banned - logout immediately
+      if (error.response?.status === 403) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('adminToken');
+        setUser(null);
+        toast.error(t('auth.errors.accountBanned'));
+      }
       console.error('User refresh failed:', error);
     }
   };
