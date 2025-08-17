@@ -59,7 +59,11 @@ class ApiClient {
           window.location.href = '/login';
           toast.error('Oturum süreniz doldu. Lütfen tekrar giriş yapın.');
         } else if (error.response?.status === 403) {
-          toast.error('Bu işlem için yetkiniz bulunmuyor.');
+          // Forbidden - user is banned, clear tokens and redirect to login
+          localStorage.removeItem('token');
+          localStorage.removeItem('adminToken');
+          window.location.href = '/login';
+          toast.error('Hesabınız yasaklanmıştır. Lütfen destek ekibi ile iletişime geçin.');
         } else if (error.response?.status === 429) {
           const retryAfter = error.response.headers['retry-after'];
           const waitTime = retryAfter ? `${retryAfter} saniye` : 'bir süre';

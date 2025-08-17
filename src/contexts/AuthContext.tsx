@@ -84,8 +84,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             toast.error(t('auth.errors.accountBanned'));
           } else {
             localStorage.removeItem('token');
+            setUser(null);
           }
-          throw error;
+          // Don't throw error, just clean up and continue
         }
       }
     } catch (error) {
