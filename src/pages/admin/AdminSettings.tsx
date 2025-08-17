@@ -152,7 +152,7 @@ const AdminSettings = () => {
     loadCategoriesAndPrompts();
   }, []);
 
-  // Load categories and prompts from admin-settings.json
+  // Load categories directly from Supabase and prompts from admin-settings.json
   const loadCategoriesAndPrompts = async () => {
     try {
       const token = localStorage.getItem('adminToken');
@@ -162,8 +162,45 @@ const AdminSettings = () => {
       }
       
       const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76';
-      console.log('Loading categories and prompts from:', `${API_BASE_URL}/api/admin/admin-settings`);
       
+      // Load categories directly from Supabase
+      console.log('Loading categories from Supabase:', `${API_BASE_URL}/api/categories`);
+      const categoriesResponse = await fetch(`${API_BASE_URL}/api/categories`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (categoriesResponse.ok) {
+        const categoriesResult = await categoriesResponse.json();
+        console.log('Loaded categories from Supabase:', categoriesResult);
+        
+        if (categoriesResult.success && categoriesResult.data) {
+          const formattedCategories = categoriesResult.data.map((cat: any) => ({
+            id: cat.id,
+            name: cat.name,
+            display_name_tr: cat.display_name_tr || cat.name,
+            display_name_en: cat.display_name_en || cat.name,
+            type: cat.type || cat.name,
+            description: cat.description || '',
+            description_en: cat.description_en || cat.description || '',
+            image_url: cat.image_url,
+            styles: cat.styles || [],
+            styles_en: cat.styles_en || cat.styles || [],
+            is_active: cat.is_active !== undefined ? cat.is_active : true,
+            created_at: cat.created_at || new Date().toISOString(),
+            updated_at: cat.updated_at || new Date().toISOString()
+          }));
+          setCategories(formattedCategories);
+        }
+      } else {
+        console.error('Failed to load categories from Supabase:', categoriesResponse.status);
+        toast.error('Kategoriler yüklenirken hata oluştu.');
+      }
+      
+      // Load AI prompts from admin-settings.json
+      console.log('Loading AI prompts from:', `${API_BASE_URL}/api/admin/admin-settings`);
       const response = await fetch(`${API_BASE_URL}/api/admin/admin-settings`, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -171,74 +208,46 @@ const AdminSettings = () => {
         }
       });
       
-      console.log('Response status:', response.status, response.statusText);
-      
-      if (!response.ok) {
-        if (response.status === 401) {
-          toast.error('Yetkilendirme hatası. Lütfen tekrar giriş yapın.');
-          localStorage.removeItem('adminToken');
-          return;
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Loaded admin settings:', result);
+        
+        if (result.success && result.data) {
+          const data = result.data;
+          if (data.aiPrompts) {
+            setAiPrompts(data.aiPrompts);
+          }
+          
+          // Update system config from admin-settings.json
+          if (data.supabase) {
+            setSystemConfig(prev => ({
+              ...prev,
+              supabase: {
+                url: data.supabase.url || '',
+                anonKey: data.supabase.anonKey || '',
+                serviceRoleKey: data.supabase.serviceRoleKey || ''
+              }
+            }));
+          }
+          if (data.n8n) {
+            setSystemConfig(prev => ({
+              ...prev,
+              n8n: {
+                webhookUrl: data.n8n.webhookUrl || '',
+                apiKey: data.n8n.apiKey || ''
+              }
+            }));
+          }
+          if (data.jwt) {
+            setSystemConfig(prev => ({
+              ...prev,
+              jwt: {
+                secret: data.jwt.secretKey || '',
+                expiresIn: data.jwt.tokenExpiry || '24h'
+              }
+            }));
+          }
         }
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-      
-      const result = await response.json();
-      console.log('Loaded admin settings:', result);
-      
-      if (!result.success) {
-        throw new Error(result.message || 'Veri yükleme başarısız');
-      }
-      
-      const data = result.data;
-      if (data.categories) {
-        // Convert old format categories to new format if needed
-        const formattedCategories = data.categories.map((cat: any, index: number) => ({
-          id: cat.id || (index + 1).toString(),
-          name: cat.name,
-          display_name_tr: cat.display_name_tr || cat.name,
-          display_name_en: cat.display_name_en || cat.name,
-          type: cat.type || cat.name,
-          description: cat.description || '',
-          description_en: cat.description_en || cat.description || '',
-          image_url: cat.image_url,
-          styles: cat.styles,
-          styles_en: cat.styles_en || cat.styles || [],
-          is_active: cat.is_active !== undefined ? cat.is_active : true,
-          created_at: cat.created_at || new Date().toISOString(),
-          updated_at: cat.updated_at || new Date().toISOString()
-        }));
-        setCategories(formattedCategories);
-      }
-      if (data.aiPrompts) {
-        setAiPrompts(data.aiPrompts);
-      }
-      if (data.supabase) {
-         setSystemConfig(prev => ({
-           ...prev,
-           supabase: {
-             url: data.supabase.url || '',
-             anonKey: data.supabase.anonKey || '',
-             serviceRoleKey: data.supabase.serviceRoleKey || ''
-           }
-         }));
-      }
-      if (data.n8n) {
-        setSystemConfig(prev => ({
-          ...prev,
-          n8n: {
-            webhookUrl: data.n8n.webhookUrl || '',
-            apiKey: data.n8n.apiKey || ''
-          }
-        }));
-      }
-      if (data.jwt) {
-        setSystemConfig(prev => ({
-          ...prev,
-          jwt: {
-            secret: data.jwt.secretKey || '',
-            expiresIn: data.jwt.tokenExpiry || '24h'
-          }
-        }));
       }
     } catch (error) {
       console.error('Error loading categories and prompts:', error);
@@ -1018,6 +1027,15 @@ const AdminSettings = () => {
       }
       
       toast.success('Resim başarıyla yüklendi!');
+      
+      // Categories sayfasının cache'ini temizle
+      // Eğer Categories sayfası açıksa, sayfayı yenile
+      if (window.location.pathname.includes('/categories') || window.location.pathname === '/') {
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      }
+      
     } catch (error) {
       console.error('Image upload error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen hata';
