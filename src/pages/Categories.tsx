@@ -195,166 +195,224 @@ const Categories: React.FC = () => {
   // Upload interface when category is selected
   if (uploadState.selectedCategory) {
     return (
-      <div className="max-w-4xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <button
-            onClick={resetSelection}
-            className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
-          >
-            <ArrowRight className="h-4 w-4 rotate-180 mr-2" />
-            Kategorilere Dön
-          </button>
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900">
-              {getCategoryDisplayName(uploadState.selectedCategory)}
-            </h1>
-            <p className="text-gray-600">{getCategoryDescription(uploadState.selectedCategory)}</p>
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-8">
+            <button
+              onClick={resetSelection}
+              className="flex items-center text-gray-600 hover:text-gray-900 transition-colors bg-white/70 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/20 shadow-sm"
+            >
+              <ArrowRight className="h-4 w-4 rotate-180 mr-2" />
+              Kategorilere Dön
+            </button>
+            <div className="text-center">
+              <h1 className="text-4xl font-bold text-gray-900 mb-2">
+                {getCategoryDisplayName(uploadState.selectedCategory)}
+              </h1>
+              <p className="text-lg text-gray-600">{getCategoryDescription(uploadState.selectedCategory)}</p>
+            </div>
+            <div className="w-32"></div>
           </div>
-          <div></div>
-        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left Column - Upload */}
-          <div className="space-y-6">
-            {/* Style Selection */}
-            <div className="bg-white rounded-xl shadow-sm border p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Stil Seçimi</h3>
-              <div className="grid grid-cols-2 gap-3">
-                {(uploadState.selectedCategory.styles || []).map((style, styleIndex) => (
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+            {/* Left Column - Upload Controls */}
+            <div className="xl:col-span-1 space-y-6">
+              {/* Style Selection */}
+              <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
+                <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                  <div className="w-2 h-8 bg-gradient-to-b from-purple-500 to-blue-500 rounded-full mr-3"></div>
+                  Stil Seçimi
+                </h3>
+                <div className="grid grid-cols-1 gap-4">
+                  {(uploadState.selectedCategory.styles || []).map((style, styleIndex) => (
+                    <button
+                      key={style}
+                      onClick={() => setUploadState(prev => ({ ...prev, selectedStyle: style }))}
+                      className={`p-4 rounded-xl border-2 transition-all duration-300 text-left ${
+                        uploadState.selectedStyle === style
+                          ? 'border-purple-500 bg-gradient-to-r from-purple-50 to-blue-50 text-purple-700 shadow-lg transform scale-105'
+                          : 'border-gray-200 hover:border-purple-300 bg-white/50 hover:bg-white/80 hover:shadow-md'
+                      }`}
+                    >
+                      <div className="font-semibold">{getStyleName(uploadState.selectedCategory, styleIndex)}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Upload Method */}
+              <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
+                <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                  <div className="w-2 h-8 bg-gradient-to-b from-purple-500 to-blue-500 rounded-full mr-3"></div>
+                  Yükleme Yöntemi
+                </h3>
+                <div className="grid grid-cols-2 gap-4 mb-6">
                   <button
-                    key={style}
-                    onClick={() => setUploadState(prev => ({ ...prev, selectedStyle: style }))}
-                    className={`p-3 rounded-lg border-2 transition-all ${
-                      uploadState.selectedStyle === style
-                        ? 'border-purple-500 bg-purple-50 text-purple-700'
-                        : 'border-gray-200 hover:border-gray-300'
+                    onClick={() => setUploadState(prev => ({ ...prev, uploadMethod: 'file' }))}
+                    className={`p-4 rounded-xl border-2 transition-all duration-300 ${
+                      uploadState.uploadMethod === 'file'
+                        ? 'border-purple-500 bg-gradient-to-r from-purple-50 to-blue-50 text-purple-700 shadow-lg'
+                        : 'border-gray-200 hover:border-purple-300 bg-white/50 hover:bg-white/80'
                     }`}
                   >
-                    {getStyleName(uploadState.selectedCategory, styleIndex)}
+                    <UploadIcon className="h-6 w-6 mx-auto mb-2" />
+                    <div className="text-sm font-semibold">Dosya Yükle</div>
                   </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Upload Method */}
-            <div className="bg-white rounded-xl shadow-sm border p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Yükleme Yöntemi</h3>
-              <div className="flex space-x-4 mb-4">
-                <button
-                  onClick={() => setUploadState(prev => ({ ...prev, uploadMethod: 'file' }))}
-                  className={`flex-1 p-3 rounded-lg border-2 transition-all ${
-                    uploadState.uploadMethod === 'file'
-                      ? 'border-purple-500 bg-purple-50 text-purple-700'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <UploadIcon className="h-5 w-5 mx-auto mb-1" />
-                  Dosya Yükle
-                </button>
-                <button
-                  onClick={() => setUploadState(prev => ({ ...prev, uploadMethod: 'url' }))}
-                  className={`flex-1 p-3 rounded-lg border-2 transition-all ${
-                    uploadState.uploadMethod === 'url'
-                      ? 'border-purple-500 bg-purple-50 text-purple-700'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <ImageIcon className="h-5 w-5 mx-auto mb-1" />
-                  URL Gir
-                </button>
-              </div>
-
-              {/* File Upload */}
-              {uploadState.uploadMethod === 'file' && (
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                  <UploadIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-lg font-medium text-gray-900 mb-2">
-                    Dosyayı sürükleyin veya seçin
-                  </p>
-                  <p className="text-sm text-gray-500 mb-4">
-                    JPG, PNG, GIF (Max 50MB)
-                  </p>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) handleFileSelect(file);
-                    }}
-                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
-                  />
-                </div>
-              )}
-
-              {/* URL Input */}
-              {uploadState.uploadMethod === 'url' && (
-                <div className="space-y-4">
-                  <input
-                    type="url"
-                    placeholder="https://example.com/image.jpg"
-                    value={uploadState.imageUrl}
-                    onChange={(e) => setUploadState(prev => ({ 
-                      ...prev, 
-                      imageUrl: e.target.value,
-                      preview: e.target.value 
-                    }))}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  />
-                </div>
-              )}
-            </div>
-
-            {/* Upload Button */}
-            <button
-              onClick={handleUpload}
-              disabled={uploadState.isUploading || !uploadState.selectedStyle || 
-                       (uploadState.uploadMethod === 'file' && !uploadState.file) ||
-                       (uploadState.uploadMethod === 'url' && !uploadState.imageUrl)}
-              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-4 px-6 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-            >
-              {uploadState.isUploading ? (
-                <>
-                  <LoadingSpinner size="sm" className="mr-2" />
-                  İşleniyor...
-                </>
-              ) : (
-                'Fotoğrafı İşle'
-              )}
-            </button>
-          </div>
-
-          {/* Right Column - Preview */}
-          <div className="space-y-6">
-            <div className="bg-white rounded-xl shadow-sm border p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Önizleme</h3>
-              {uploadState.preview ? (
-                <div className="relative">
-                  <img
-                    src={uploadState.preview}
-                    alt="Preview"
-                    className="w-full h-64 object-cover rounded-lg"
-                  />
                   <button
-                    onClick={() => setUploadState(prev => ({ 
-                      ...prev, 
-                      preview: null, 
-                      file: null, 
-                      imageUrl: '' 
-                    }))}
-                    className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
+                    onClick={() => setUploadState(prev => ({ ...prev, uploadMethod: 'url' }))}
+                    className={`p-4 rounded-xl border-2 transition-all duration-300 ${
+                      uploadState.uploadMethod === 'url'
+                        ? 'border-purple-500 bg-gradient-to-r from-purple-50 to-blue-50 text-purple-700 shadow-lg'
+                        : 'border-gray-200 hover:border-purple-300 bg-white/50 hover:bg-white/80'
+                    }`}
                   >
-                    <X className="h-4 w-4" />
+                    <ImageIcon className="h-6 w-6 mx-auto mb-2" />
+                    <div className="text-sm font-semibold">URL Gir</div>
                   </button>
                 </div>
-              ) : (
-                <div className="h-64 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
-                  <div className="text-center">
-                    <ImageIcon className="h-12 w-12 text-gray-400 mx-auto mb-2" />
-                    <p className="text-gray-500">Resim önizlemesi burada görünecek</p>
+
+                {/* File Upload */}
+                {uploadState.uploadMethod === 'file' && (
+                  <div className="border-2 border-dashed border-purple-300 rounded-xl p-12 text-center bg-gradient-to-br from-purple-50/50 to-blue-50/50 hover:from-purple-50 hover:to-blue-50 transition-all duration-300">
+                    <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <UploadIcon className="h-8 w-8 text-white" />
+                    </div>
+                    <p className="text-xl font-semibold text-gray-900 mb-2">
+                      Dosyayı sürükleyin veya seçin
+                    </p>
+                    <p className="text-sm text-gray-600 mb-6">
+                      JPG, PNG, GIF (Max 50MB)
+                    </p>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleFileSelect(file);
+                      }}
+                      className="block w-full text-sm text-gray-600 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-gradient-to-r file:from-purple-500 file:to-blue-500 file:text-white hover:file:from-purple-600 hover:file:to-blue-600 file:shadow-lg file:transition-all file:duration-300"
+                    />
                   </div>
-                </div>
-              )}
+                )}
+
+                {/* URL Input */}
+                {uploadState.uploadMethod === 'url' && (
+                  <div className="space-y-4">
+                    <input
+                      type="url"
+                      placeholder="https://example.com/image.jpg"
+                      value={uploadState.imageUrl}
+                      onChange={(e) => setUploadState(prev => ({ 
+                        ...prev, 
+                        imageUrl: e.target.value,
+                        preview: e.target.value 
+                      }))}
+                      className="w-full p-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-300 bg-white/80 backdrop-blur-sm"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Upload Button */}
+              <button
+                onClick={handleUpload}
+                disabled={uploadState.isUploading || !uploadState.selectedStyle || 
+                         (uploadState.uploadMethod === 'file' && !uploadState.file) ||
+                         (uploadState.uploadMethod === 'url' && !uploadState.imageUrl)}
+                className="w-full bg-gradient-to-r from-purple-600 via-purple-700 to-blue-600 text-white py-6 px-8 rounded-2xl font-bold text-lg hover:from-purple-700 hover:via-purple-800 hover:to-blue-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-2xl hover:shadow-purple-500/25 transform hover:scale-105 disabled:transform-none"
+              >
+                {uploadState.isUploading ? (
+                  <>
+                    <LoadingSpinner size="sm" className="mr-3" />
+                    İşleniyor...
+                  </>
+                ) : (
+                  <>
+                    <UploadIcon className="h-5 w-5 mr-3" />
+                    Fotoğrafı İşle
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* Right Columns - Preview & Example */}
+            <div className="xl:col-span-2 grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* User Preview */}
+              <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
+                <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                  <div className="w-2 h-8 bg-gradient-to-b from-green-500 to-emerald-500 rounded-full mr-3"></div>
+                  Yüklediğiniz Resim
+                </h3>
+                {uploadState.preview ? (
+                  <div className="relative group">
+                    <img
+                      src={uploadState.preview}
+                      alt="Preview"
+                      className="w-full h-80 object-cover rounded-xl shadow-lg"
+                    />
+                    <button
+                      onClick={() => setUploadState(prev => ({ 
+                        ...prev, 
+                        preview: null, 
+                        file: null, 
+                        imageUrl: '' 
+                      }))}
+                      className="absolute top-3 right-3 bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors shadow-lg opacity-0 group-hover:opacity-100"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  </div>
+                ) : (
+                  <div className="h-80 border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+                    <div className="text-center">
+                      <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <ImageIcon className="h-8 w-8 text-gray-400" />
+                      </div>
+                      <p className="text-gray-500 font-medium">Resim önizlemesi burada görünecek</p>
+                      <p className="text-gray-400 text-sm mt-2">Resim yükledikten sonra burada görüntülenecek</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Category Example */}
+              <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8">
+                <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                  <div className="w-2 h-8 bg-gradient-to-b from-orange-500 to-red-500 rounded-full mr-3"></div>
+                  Kategori Örneği
+                </h3>
+                {uploadState.selectedCategory.before_image_url && uploadState.selectedCategory.after_image_url ? (
+                  <div className="h-80 rounded-xl overflow-hidden shadow-lg">
+                    <ImageComparison
+                      beforeImage={uploadState.selectedCategory.before_image_url}
+                      afterImage={uploadState.selectedCategory.after_image_url}
+                      beforeLabel="Öncesi"
+                      afterLabel="Sonrası"
+                      className="h-full"
+                    />
+                  </div>
+                ) : (
+                  <div className="h-80 rounded-xl overflow-hidden shadow-lg">
+                    <img
+                      src={uploadState.selectedCategory.before_image_url || uploadState.selectedCategory.image_url}
+                      alt={getCategoryDisplayName(uploadState.selectedCategory)}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-6">
+                      <div>
+                        <h4 className="text-white font-bold text-lg mb-1">
+                          {getCategoryDisplayName(uploadState.selectedCategory)}
+                        </h4>
+                        <p className="text-white/80 text-sm">
+                          Bu kategoride böyle sonuçlar elde edebilirsiniz
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
