@@ -542,109 +542,113 @@ const Gallery: React.FC = () => {
           </motion.div>
         )}
 
-        {/* Enhanced Image Modal with ImageComparison */}
+        {/* Full Screen Image Modal */}
         <AnimatePresence>
           {selectedJob && selectedJob.processed_images && selectedJob.processed_images.length > 0 && (
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-2 touch-none"
+              className="fixed inset-0 bg-black/95 backdrop-blur-sm flex flex-col z-50"
               onClick={() => setSelectedJob(null)}
             >
-              <motion.div 
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                className="bg-white/95 backdrop-blur-sm rounded-3xl w-[95vw] h-[90vh] overflow-hidden shadow-2xl border border-white/20"
+              {/* Top Header */}
+              <div className="flex items-center justify-between px-6 py-4 bg-black/20 backdrop-blur-sm border-b border-white/10">
+                <div className="flex items-center space-x-4">
+                  <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"></div>
+                  <h3 className="text-lg font-semibold text-white">
+                    {selectedJob.category?.display_name_tr || 'AI İşlemi'}
+                  </h3>
+                  <span className="text-sm text-gray-300 bg-white/10 px-3 py-1 rounded-full">
+                    {selectedImageIndex + 1} / {selectedJob.processed_images.length}
+                  </span>
+                </div>
+                <button
+                  onClick={() => setSelectedJob(null)}
+                  className="p-2 bg-white/10 hover:bg-white/20 rounded-full transition-all duration-200"
+                >
+                  <X className="h-6 w-6 text-white" />
+                </button>
+              </div>
+
+              {/* Image Container - Full Screen */}
+              <div 
+                className="flex-1 flex items-center justify-center p-4"
                 onClick={(e) => e.stopPropagation()}
               >
-                {/* Header */}
-                <div className="flex items-center justify-between px-6 py-3 border-b border-purple-200/30 bg-gradient-to-r from-purple-50/80 to-blue-50/80 backdrop-blur-sm">
-                  <div className="flex items-center space-x-4">
-                    <div className="w-3 h-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"></div>
-                    <h3 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                      {selectedJob.category?.display_name_tr || 'AI İşlemi'}
-                    </h3>
-                    <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-                      {selectedImageIndex + 1}/{selectedJob.processed_images.length}
-                    </span>
+                <div className="relative w-full h-full max-w-7xl max-h-full">
+                  {selectedJob.original_image_url ? (
+                    <ImageComparison
+                      beforeImage={selectedJob.original_image_url}
+                      afterImage={selectedJob.processed_images[selectedImageIndex].image_url}
+                      beforeLabel="Öncesi"
+                      afterLabel="Sonrası"
+                      className="w-full h-full object-contain"
+                    />
+                  ) : (
+                    <img
+                      src={selectedJob.processed_images[selectedImageIndex].image_url}
+                      alt={`Generated image ${selectedImageIndex + 1}`}
+                      className="w-full h-full object-contain"
+                    />
+                  )}
+                </div>
+              </div>
+
+              {/* Bottom Controls */}
+              <div className="flex items-center justify-between px-6 py-4 bg-black/20 backdrop-blur-sm border-t border-white/10">
+                <div className="flex items-center space-x-4">
+                  {selectedJob.processed_images.length > 1 && (
+                    <>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedImageIndex(Math.max(0, selectedImageIndex - 1));
+                        }}
+                        disabled={selectedImageIndex === 0}
+                        className="flex items-center space-x-2 px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white rounded-xl hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                        <span className="font-medium">Önceki</span>
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedImageIndex(Math.min(selectedJob.processed_images.length - 1, selectedImageIndex + 1));
+                        }}
+                        disabled={selectedImageIndex === selectedJob.processed_images.length - 1}
+                        className="flex items-center space-x-2 px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 text-white rounded-xl hover:bg-white/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                      >
+                        <span className="font-medium">Sonraki</span>
+                        <ChevronRight className="h-4 w-4" />
+                      </button>
+                    </>
+                  )}
+                </div>
+                
+                <div className="flex items-center space-x-4">
+                  <div className="text-sm text-gray-300 bg-white/10 px-3 py-2 rounded-xl">
+                    {new Date(selectedJob.created_at).toLocaleDateString('tr-TR', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric'
+                    })}
                   </div>
                   <button
-                    onClick={() => setSelectedJob(null)}
-                    className="p-2 bg-gray-100 hover:bg-gray-200 rounded-full transition-all duration-200 transform hover:scale-110"
-                  >
-                    <X className="h-5 w-5 text-gray-600" />
-                  </button>
-                </div>
-                
-                {/* Image Content */}
-                <div className="p-4">
-                  <div className="bg-gradient-to-br from-purple-50/30 to-blue-50/30 backdrop-blur-sm rounded-2xl overflow-hidden flex items-center justify-center">
-                    {selectedJob.original_image_url ? (
-                      <ImageComparison
-                        beforeImage={selectedJob.original_image_url}
-                        afterImage={selectedJob.processed_images[selectedImageIndex].image_url}
-                        beforeLabel="Öncesi"
-                        afterLabel="Sonrası"
-                        className="w-full h-auto max-h-[80vh] object-contain"
-                      />
-                    ) : (
-                      <img
-                        src={selectedJob.processed_images[selectedImageIndex].image_url}
-                        alt={`Generated image ${selectedImageIndex + 1}`}
-                        className="w-full h-auto max-h-[80vh] object-contain mx-auto"
-                      />
-                    )}
-                  </div>
-                </div>
-                
-                {/* Footer */}
-                <div className="flex items-center justify-between px-6 py-3 border-t border-purple-200/30 bg-gradient-to-r from-purple-50/50 to-blue-50/50 backdrop-blur-sm">
-                  <div className="flex items-center space-x-3">
-                    {selectedJob.processed_images.length > 1 && (
-                      <>
-                        <button
-                          onClick={() => setSelectedImageIndex(Math.max(0, selectedImageIndex - 1))}
-                          disabled={selectedImageIndex === 0}
-                          className="flex items-center space-x-2 px-4 py-2 bg-white/70 backdrop-blur-sm border border-white/20 text-gray-700 rounded-xl hover:bg-white/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg"
-                        >
-                          <ChevronLeft className="h-4 w-4" />
-                          <span className="font-medium">Önceki</span>
-                        </button>
-                        <button
-                          onClick={() => setSelectedImageIndex(Math.min(selectedJob.processed_images.length - 1, selectedImageIndex + 1))}
-                          disabled={selectedImageIndex === selectedJob.processed_images.length - 1}
-                          className="flex items-center space-x-2 px-4 py-2 bg-white/70 backdrop-blur-sm border border-white/20 text-gray-700 rounded-xl hover:bg-white/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg"
-                        >
-                          <span className="font-medium">Sonraki</span>
-                          <ChevronRight className="h-4 w-4" />
-                        </button>
-                      </>
-                    )}
-                  </div>
-                  
-                  <div className="flex items-center space-x-3">
-                    <div className="text-sm text-gray-600 bg-white/50 px-3 py-2 rounded-xl">
-                      {new Date(selectedJob.created_at).toLocaleDateString('tr-TR', {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric'
-                      })}
-                    </div>
-                    <button
-                      onClick={() => handleDownload(
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDownload(
                         selectedJob.processed_images[selectedImageIndex].image_url,
                         `image-${selectedJob.id}-${selectedImageIndex + 1}.jpg`
-                      )}
-                      className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-200 transform hover:scale-105 shadow-lg font-medium"
-                    >
-                      <Download className="h-4 w-4" />
-                      <span>İndir</span>
-                    </button>
-                  </div>
+                      );
+                    }}
+                    className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all duration-200 transform hover:scale-105 shadow-lg font-medium"
+                  >
+                    <Download className="h-4 w-4" />
+                    <span>İndir</span>
+                  </button>
                 </div>
-              </motion.div>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
