@@ -167,7 +167,7 @@ const AdminSettings = () => {
       const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76';
       
       // Load categories directly from Supabase
-      console.log('Loading categories from Supabase:', `${API_BASE_URL}/api/categories`);
+
       const categoriesResponse = await fetch(`${API_BASE_URL}/api/categories`, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -177,7 +177,7 @@ const AdminSettings = () => {
       
       if (categoriesResponse.ok) {
         const categoriesResult = await categoriesResponse.json();
-        console.log('Loaded categories from Supabase:', categoriesResult);
+
         
         if (categoriesResult.success && categoriesResult.data) {
           const formattedCategories = categoriesResult.data.map((cat: any) => ({
@@ -198,12 +198,12 @@ const AdminSettings = () => {
           setCategories(formattedCategories);
         }
       } else {
-        console.error('Failed to load categories from Supabase:', categoriesResponse.status);
+
         toast.error('Kategoriler yüklenirken hata oluştu.');
       }
       
       // Load AI prompts from admin-settings.json
-      console.log('Loading AI prompts from:', `${API_BASE_URL}/api/admin/admin-settings`);
+
       const response = await fetch(`${API_BASE_URL}/api/admin/admin-settings`, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -213,7 +213,7 @@ const AdminSettings = () => {
       
       if (response.ok) {
         const result = await response.json();
-        console.log('Loaded admin settings:', result);
+
         
         if (result.success && result.data) {
           const data = result.data;
@@ -253,7 +253,7 @@ const AdminSettings = () => {
         }
       }
     } catch (error) {
-      console.error('Error loading categories and prompts:', error);
+
       const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen hata';
       toast.error(`Kategoriler ve prompt'lar yüklenirken hata oluştu: ${errorMessage}`);
     }
@@ -288,10 +288,7 @@ const AdminSettings = () => {
 
       const data = await response.json();
       
-      // Debug: API'den gelen veriyi kontrol et
-      console.log('API Response Data:', data);
-      console.log('Data type:', typeof data);
-      console.log('Data keys:', Object.keys(data || {}));
+
       
       // API direkt admin-settings.json içeriğini döndürüyor
       if (data) {
@@ -311,7 +308,7 @@ const AdminSettings = () => {
         }
       }
     } catch (error) {
-      console.error('Load settings error:', error);
+
       const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen hata';
       toast.error(`Ayarlar yüklenirken hata oluştu: ${errorMessage}`);
     } finally {
@@ -648,7 +645,7 @@ const AdminSettings = () => {
       toggleEditMode(section);
       showMessage('success', `${section} konfigürasyonu başarıyla kaydedildi!`);
     } catch (error) {
-      console.error('Save config error:', error);
+
       const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen hata';
       showMessage('error', `Kaydetme sırasında bir hata oluştu: ${errorMessage}`);
     } finally {
@@ -764,7 +761,7 @@ const AdminSettings = () => {
             });
             
             if (!updateResponse.ok) {
-              console.warn(`Kategori güncelleme hatası (${category.name}):`, updateResponse.statusText);
+  
             }
           } else {
             // Category doesn't exist, create it
@@ -790,20 +787,20 @@ const AdminSettings = () => {
             
             if (!createResponse.ok) {
               const errorText = await createResponse.text();
-              console.warn(`Kategori oluşturma hatası (${category.name}):`, errorText);
+
             } else {
-              console.log(`Kategori başarıyla oluşturuldu: ${category.name}`);
+
             }
           }
         } catch (categoryError) {
-          console.warn(`Kategori kaydetme hatası (${category.name}):`, categoryError);
+
         }
       }
       
       toggleEditMode('categories');
       showMessage('success', 'Kategoriler hem admin ayarlarına hem de veritabanına başarıyla kaydedildi!');
     } catch (error) {
-      console.error('Save categories error:', error);
+
       const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen hata';
       showMessage('error', `Kaydetme sırasında bir hata oluştu: ${errorMessage}`);
     } finally {
@@ -859,7 +856,7 @@ const AdminSettings = () => {
       toggleEditMode('prompts', categoryName);
       showMessage('success', `${categoryName} prompt'ları başarıyla kaydedildi!`);
     } catch (error) {
-      console.error('Save prompts error:', error);
+
       const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen hata';
       showMessage('error', `Kaydetme sırasında bir hata oluştu: ${errorMessage}`);
     } finally {
@@ -969,13 +966,7 @@ const AdminSettings = () => {
         
         if (!updateResponse.ok) {
           const errorText = await updateResponse.text();
-          console.error('Kategori resmi Supabase\'e kaydedilemedi:', {
-            status: updateResponse.status,
-            statusText: updateResponse.statusText,
-            error: errorText,
-            categoryId: categoryToUpdate.id,
-            url: `${API_BASE_URL}/api/categories/${categoryToUpdate.id}`
-          });
+
         }
       }
       
@@ -989,7 +980,7 @@ const AdminSettings = () => {
       }
       
     } catch (error) {
-      console.error('Image upload error:', error);
+
       const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen hata';
       toast.error(`Resim yüklenirken hata oluştu: ${errorMessage}`);
     }
@@ -1039,10 +1030,7 @@ const AdminSettings = () => {
         return;
       }
 
-      // Debug: Silinecek kategori bilgilerini logla
-      console.log('Silinecek kategori:', categoryToDelete);
-      console.log('Kategori ID:', categoryToDelete.id);
-      console.log('DELETE URL:', `${API_BASE_URL}/api/categories/${categoryToDelete.id}`);
+
       
       // Supabase'den kategoriyi sil
       const response = await fetch(`${API_BASE_URL}/api/categories/${categoryToDelete.id}`, {
@@ -1055,7 +1043,7 @@ const AdminSettings = () => {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('Kategori silme hatası:', errorText);
+
         showMessage('error', `Kategori silinirken hata oluştu: ${response.status}`);
         return;
       }
@@ -1065,7 +1053,7 @@ const AdminSettings = () => {
       showMessage('success', `"${categoryToDelete.display_name_tr}" kategorisi başarıyla silindi.`);
       
     } catch (error) {
-      console.error('Kategori silme hatası:', error);
+
       showMessage('error', 'Kategori silinirken beklenmeyen bir hata oluştu.');
     } finally {
       setSaving(false);

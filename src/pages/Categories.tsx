@@ -58,20 +58,6 @@ const Categories: React.FC = () => {
       if (!response.ok) throw new Error('Failed to load categories');
       
       const data = await response.json();
-      console.log('🔍 [DEBUG] API Response:', data);
-      console.log('🔍 [DEBUG] Categories Array:', data.data);
-      
-      // Debug each category's image URLs
-      if (data.data) {
-        data.data.forEach((category, index) => {
-          console.log(`🔍 [DEBUG] Category ${index + 1} (${category.name}):`, {
-            before_image_url: category.before_image_url,
-            after_image_url: category.after_image_url,
-            image_url: category.image_url
-          });
-        });
-      }
-      
       setCategories(data.data || []);
     } catch (error) {
       console.error('Error loading categories:', error);
@@ -145,9 +131,7 @@ const Categories: React.FC = () => {
       formData.append('style', uploadState.selectedStyle);
       formData.append('category', uploadState.selectedCategory.name);
       
-      // Debug log
-      console.log('Sending category:', uploadState.selectedCategory.name);
-      console.log('Selected category object:', uploadState.selectedCategory);
+
 
       const response = await fetch(`${API_BASE_URL}/api/images/upload-and-process`, {
         method: 'POST',
@@ -435,12 +419,7 @@ const Categories: React.FC = () => {
                       ? category.after_image_url 
                       : `${API_BASE_URL}${category.after_image_url}`;
                     
-                    console.log(`🔍 [DEBUG] Category ${category.name} Image URLs:`, {
-                      original_before: category.before_image_url,
-                      original_after: category.after_image_url,
-                      full_before: beforeImageUrl,
-                      full_after: afterImageUrl
-                    });
+
                     
                     return (
                       <ImageComparison
@@ -460,20 +439,12 @@ const Categories: React.FC = () => {
                     const fullImageUrl = imageUrl && imageUrl.startsWith('http') 
                       ? imageUrl 
                       : `${API_BASE_URL}${imageUrl}`;
-                    console.log(`🔍 [DEBUG] Single Image URL for ${category.name}:`, {
-                      original: imageUrl,
-                      full: fullImageUrl
-                    });
+
                     return fullImageUrl;
                   })()}
                   alt={getCategoryDisplayName(category)}
                   className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-200"
-                  onError={(e) => {
-                    console.error(`🔍 [DEBUG] Image load error for ${category.name}:`, e.currentTarget.src);
-                  }}
-                  onLoad={() => {
-                    console.log(`🔍 [DEBUG] Image loaded successfully for ${category.name}`);
-                  }}
+
                 />
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />

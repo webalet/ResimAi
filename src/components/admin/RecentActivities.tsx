@@ -99,10 +99,20 @@ const RecentActivities: React.FC<RecentActivitiesProps> = ({ activities }) => {
               <span className="truncate">{activity.users.name}</span>
               <span className="mx-2 flex-shrink-0">•</span>
               <span className="whitespace-nowrap">
-                {formatDistanceToNow(new Date(activity.created_at), {
-                  addSuffix: true,
-                  locale: tr
-                })}
+                {(() => {
+                  try {
+                    if (!activity.created_at) return 'Tarih belirtilmemiş';
+                    const date = new Date(activity.created_at);
+                    if (isNaN(date.getTime())) return 'Geçersiz tarih';
+                    return formatDistanceToNow(date, {
+                      addSuffix: true,
+                      locale: tr
+                    });
+                  } catch (error) {
+                    
+                    return 'Tarih formatlanamadı';
+                  }
+                })()}
               </span>
             </div>
           </div>

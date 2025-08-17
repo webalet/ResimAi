@@ -47,7 +47,7 @@ const AdminLogin: React.FC = () => {
         toast.error(data.message || 'Giriş başarısız');
       }
     } catch (error) {
-      console.error('Login error:', error);
+
       toast.error('Bir hata oluştu');
     } finally {
       setLoading(false);

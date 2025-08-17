@@ -72,7 +72,7 @@ const AdminUsers: React.FC = () => {
         totalPages: data.data.totalPages
       });
     } catch (error) {
-      console.error('Error fetching users:', error);
+
     } finally {
       setLoading(false);
     }
@@ -105,14 +105,28 @@ const AdminUsers: React.FC = () => {
     setSelectedUser(null);
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('tr-TR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+  const formatDate = (dateString: string | null | undefined) => {
+    if (!dateString) {
+      return 'Tarih belirtilmemiş';
+    }
+    
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return 'Geçersiz tarih';
+      }
+      
+      return date.toLocaleDateString('tr-TR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch (error) {
+      
+      return 'Tarih formatlanamadı';
+    }
   };
 
   return (

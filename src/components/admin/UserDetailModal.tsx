@@ -76,7 +76,7 @@ const UserDetailModal: React.FC<UserDetailModalProps> = ({
       setJobs(data.data.jobs || []);
       setCreditUsage(data.data.creditUsage || []);
     } catch (error) {
-      console.error('Fetch user details error:', error);
+
     } finally {
       setLoading(false);
     }

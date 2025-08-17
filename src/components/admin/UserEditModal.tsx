@@ -83,7 +83,7 @@ const UserEditModal: React.FC<UserEditModalProps> = ({
         toast.error(data.message || 'Güncelleme başarısız');
       }
     } catch (error) {
-      console.error('Update user error:', error);
+
       toast.error('Kullanıcı güncellenirken hata oluştu');
     } finally {
       setLoading(false);

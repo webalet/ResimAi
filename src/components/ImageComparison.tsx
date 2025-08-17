@@ -22,13 +22,7 @@ const ImageComparison: React.FC<ImageComparisonProps> = ({
   const [sliderPosition, setSliderPosition] = useState(50);
   const containerRef = useRef<HTMLDivElement>(null);
   
-  // Debug image URLs
-  console.log('🔍 [DEBUG] ImageComparison Props:', {
-    beforeImage,
-    afterImage,
-    beforeLabel,
-    afterLabel
-  });
+
 
   const updateSliderPosition = useCallback((clientX: number) => {
     if (!containerRef.current) return;
