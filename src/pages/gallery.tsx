@@ -573,11 +573,12 @@ const Gallery: React.FC = () => {
 
               {/* Full Size Image Container */}
               <div 
-                className="flex-1 flex items-center justify-center"
+                className="flex-1 flex items-center justify-center min-h-0"
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}
                 onClick={(e) => e.stopPropagation()}
               >
                 {selectedJob.original_image_url ? (
-                  <div style={{ width: '550px', height: '900px' }}>
+                  <div style={{ width: '550px', height: '900px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <ImageComparison
                       beforeImage={selectedJob.original_image_url}
                       afterImage={selectedJob.processed_images[selectedImageIndex].image_url}
