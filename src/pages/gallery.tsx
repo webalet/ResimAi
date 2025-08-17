@@ -222,8 +222,8 @@ const Gallery: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 py-4">
+      <div className="w-full px-2 sm:px-4">
         {/* Header */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -316,7 +316,7 @@ const Gallery: React.FC = () => {
             transition={{ delay: 0.3 }}
             className={cn(
               viewMode === 'grid'
-                ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8'
+                ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6'
                 : 'space-y-6'
             )}
           >
@@ -334,7 +334,7 @@ const Gallery: React.FC = () => {
                 {viewMode === 'grid' ? (
                   <>
                     {/* Image Section with ImageComparison */}
-                    <div className="aspect-[4/3] bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden">
+                    <div className="aspect-[3/4] bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden">
                       {job.processed_images && job.processed_images.length > 0 && job.original_image_url ? (
                         <ImageComparison
                           beforeImage={job.original_image_url}
