@@ -18,7 +18,6 @@ const ImageComparison: React.FC<ImageComparisonProps> = ({
   className = '',
 }) => {
   const [sliderPosition, setSliderPosition] = useState(50);
-  const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const updateSliderPosition = useCallback((clientX: number) => {
@@ -34,16 +33,17 @@ const ImageComparison: React.FC<ImageComparisonProps> = ({
     (e: React.MouseEvent) => {
       e.preventDefault();
       e.stopPropagation();
-      setIsDragging(true);
       updateSliderPosition(e.clientX);
 
       const handleMouseMove = (e: MouseEvent) => {
         e.preventDefault();
+        e.stopPropagation();
         updateSliderPosition(e.clientX);
       };
 
-      const handleMouseUp = () => {
-        setIsDragging(false);
+      const handleMouseUp = (e: MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
         document.removeEventListener('mousemove', handleMouseMove);
         document.removeEventListener('mouseup', handleMouseUp);
       };
@@ -56,23 +56,34 @@ const ImageComparison: React.FC<ImageComparisonProps> = ({
 
   const handleTouchStart = useCallback(
     (e: React.TouchEvent) => {
+      e.preventDefault();
       e.stopPropagation();
-      setIsDragging(true);
       updateSliderPosition(e.touches[0].clientX);
 
       const handleTouchMove = (e: TouchEvent) => {
         e.preventDefault();
+        e.stopPropagation();
         updateSliderPosition(e.touches[0].clientX);
       };
 
-      const handleTouchEnd = () => {
-        setIsDragging(false);
+      const handleTouchEnd = (e: TouchEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
         document.removeEventListener('touchmove', handleTouchMove);
         document.removeEventListener('touchend', handleTouchEnd);
       };
 
       document.addEventListener('touchmove', handleTouchMove, { passive: false });
-      document.addEventListener('touchend', handleTouchEnd);
+      document.addEventListener('touchend', handleTouchEnd, { passive: false });
+    },
+    [updateSliderPosition]
+  );
+
+  const handleContainerClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      updateSliderPosition(e.clientX);
     },
     [updateSliderPosition]
   );
@@ -82,7 +93,7 @@ const ImageComparison: React.FC<ImageComparisonProps> = ({
       ref={containerRef} 
       className={`relative w-full h-64 md:h-80 lg:h-96 overflow-hidden rounded-xl shadow-lg cursor-col-resize select-none ${className}`}
       style={{ touchAction: 'none' }}
-      onClick={(e) => e.stopPropagation()}
+      onClick={handleContainerClick}
     >
       {/* After Image (Background) */}
       <LazyImage
@@ -90,13 +101,13 @@ const ImageComparison: React.FC<ImageComparisonProps> = ({
         alt={afterLabel}
         className="absolute inset-0 w-full h-full object-cover"
       />
-      <div className="absolute top-4 right-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm font-medium">
+      <div className="absolute top-4 right-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm font-medium pointer-events-none">
         {afterLabel}
       </div>
 
       {/* Before Image (Clipped) */}
       <div
-        className="absolute inset-0 overflow-hidden"
+        className="absolute inset-0 overflow-hidden pointer-events-none"
         style={{ width: `${sliderPosition}%` }}
       >
         <LazyImage
@@ -109,25 +120,31 @@ const ImageComparison: React.FC<ImageComparisonProps> = ({
         </div>
       </div>
 
-      {/* Slider */}
+      {/* Slider Line and Handle */}
       <div
-        className="absolute top-0 bottom-0 z-10"
-        style={{ left: `${sliderPosition}%` }}
+        className="absolute top-0 bottom-0 z-10 flex items-center justify-center"
+        style={{ left: `${sliderPosition}%`, transform: 'translateX(-50%)' }}
       >
+        {/* Slider Line */}
         <div
           className="w-1 bg-white shadow-lg cursor-col-resize h-full"
           onMouseDown={handleMouseDown}
           onTouchStart={handleTouchStart}
         />
+        
         {/* Slider Handle */}
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center cursor-col-resize">
+        <div 
+          className="absolute w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center cursor-col-resize"
+          onMouseDown={handleMouseDown}
+          onTouchStart={handleTouchStart}
+        >
           <ChevronLeft className="w-3 h-3 text-gray-600 -ml-0.5" />
           <ChevronRight className="w-3 h-3 text-gray-600 -mr-0.5" />
         </div>
       </div>
 
       {/* Instructions */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/70 text-white px-3 py-1 rounded-full text-xs font-medium opacity-75">
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/70 text-white px-3 py-1 rounded-full text-xs font-medium opacity-75 pointer-events-none">
         Drag to compare
       </div>
     </div>
