@@ -336,11 +336,11 @@ const Categories: React.FC = () => {
               </button>
             </div>
 
-            {/* Right Columns - Preview & Example */}
-            <div className="xl:col-span-2 grid grid-cols-1 gap-4">
+            {/* Right Column - Preview */}
+            <div className="xl:col-span-2">
               {/* User Preview */}
-              <div className="bg-white/70 backdrop-blur-sm rounded-xl shadow-lg border border-white/20 p-4">
-                <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center">
+              <div className="bg-white/70 backdrop-blur-sm rounded-xl shadow-lg border border-white/20 p-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                   <div className="w-2 h-6 bg-gradient-to-b from-green-500 to-emerald-500 rounded-full mr-2"></div>
                   Yüklediğiniz Resim
                 </h3>
@@ -349,7 +349,7 @@ const Categories: React.FC = () => {
                     <img
                       src={uploadState.preview}
                       alt="Preview"
-                      className="w-full h-64 object-contain rounded-lg shadow-md"
+                      className="w-full h-80 object-contain rounded-lg shadow-md"
                     />
                     <button
                       onClick={() => setUploadState(prev => ({ 
@@ -365,50 +365,13 @@ const Categories: React.FC = () => {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </div>
                 ) : (
-                  <div className="h-48 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+                  <div className="h-80 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
                     <div className="text-center">
-                      <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-2">
-                        <ImageIcon className="h-6 w-6 text-gray-400" />
+                      <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <ImageIcon className="h-8 w-8 text-gray-400" />
                       </div>
-                      <p className="text-gray-500 font-medium text-sm">Resim önizlemesi burada görünecek</p>
-                      <p className="text-gray-400 text-xs mt-1">Resim yükledikten sonra burada görüntülenecek</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Category Example */}
-              <div className="bg-white/70 backdrop-blur-sm rounded-xl shadow-lg border border-white/20 p-4">
-                <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center">
-                  <div className="w-2 h-6 bg-gradient-to-b from-orange-500 to-red-500 rounded-full mr-2"></div>
-                  Kategori Örneği
-                </h3>
-                {uploadState.selectedCategory.before_image_url && uploadState.selectedCategory.after_image_url ? (
-                  <div className="h-48 rounded-lg overflow-hidden shadow-md">
-                    <ImageComparison
-                      beforeImage={uploadState.selectedCategory.before_image_url}
-                      afterImage={uploadState.selectedCategory.after_image_url}
-                      beforeLabel="Öncesi"
-                      afterLabel="Sonrası"
-                      className="h-full"
-                    />
-                  </div>
-                ) : (
-                  <div className="h-48 rounded-lg overflow-hidden shadow-md relative">
-                    <img
-                      src={uploadState.selectedCategory.before_image_url || uploadState.selectedCategory.image_url}
-                      alt={getCategoryDisplayName(uploadState.selectedCategory)}
-                      className="w-full h-full object-contain"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-3">
-                      <div>
-                        <h4 className="text-white font-bold text-sm mb-1">
-                          {getCategoryDisplayName(uploadState.selectedCategory)}
-                        </h4>
-                        <p className="text-white/80 text-xs">
-                          Bu kategoride böyle sonuçlar elde edebilirsiniz
-                        </p>
-                      </div>
+                      <p className="text-gray-500 font-medium text-lg">Resim önizlemesi burada görünecek</p>
+                      <p className="text-gray-400 text-sm mt-2">Resim yükledikten sonra burada görüntülenecek</p>
                     </div>
                   </div>
                 )}
