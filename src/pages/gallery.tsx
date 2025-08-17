@@ -584,7 +584,8 @@ const Gallery: React.FC = () => {
                       afterImage={selectedJob.processed_images[selectedImageIndex].image_url}
                       beforeLabel="Öncesi"
                       afterLabel="Sonrası"
-                      className="w-full h-full"
+                      className="relative overflow-hidden rounded-xl shadow-lg cursor-col-resize select-none"
+                      style={{ width: '550px', height: '900px' }}
                     />
                   </div>
                 ) : (

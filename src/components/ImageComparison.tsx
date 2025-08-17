@@ -8,6 +8,7 @@ interface ImageComparisonProps {
   beforeLabel?: string;
   afterLabel?: string;
   className?: string;
+  style?: React.CSSProperties;
 }
 
 const ImageComparison: React.FC<ImageComparisonProps> = ({
@@ -16,6 +17,7 @@ const ImageComparison: React.FC<ImageComparisonProps> = ({
   beforeLabel = 'Before',
   afterLabel = 'After',
   className = '',
+  style,
 }) => {
   const [sliderPosition, setSliderPosition] = useState(50);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -91,8 +93,8 @@ const ImageComparison: React.FC<ImageComparisonProps> = ({
   return (
     <div 
       ref={containerRef} 
-      className={`relative w-full h-64 md:h-80 lg:h-96 overflow-hidden rounded-xl shadow-lg cursor-col-resize select-none ${className}`}
-      style={{ touchAction: 'none' }}
+      className={`relative overflow-hidden rounded-xl shadow-lg cursor-col-resize select-none ${className}`}
+      style={{ touchAction: 'none', ...style }}
       onClick={handleContainerClick}
     >
       {/* After Image (Background) */}
