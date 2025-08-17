@@ -990,6 +990,26 @@ const AdminSettings = () => {
         i === categoryIndex ? { ...cat, image_url: data.url } : cat
       ));
       
+      // Update category in Supabase
+      const categoryToUpdate = categories[categoryIndex];
+      if (categoryToUpdate && categoryToUpdate.id) {
+        const updateResponse = await fetch(`${API_BASE_URL}/api/categories/${categoryToUpdate.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            ...categoryToUpdate,
+            image_url: data.url
+          })
+        });
+        
+        if (!updateResponse.ok) {
+          console.warn('Kategori resmi Supabase\'e kaydedilemedi');
+        }
+      }
+      
       toast.success('Resim başarıyla yüklendi!');
     } catch (error) {
       console.error('Image upload error:', error);
