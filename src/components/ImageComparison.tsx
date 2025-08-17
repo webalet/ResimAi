@@ -109,7 +109,7 @@ const ImageComparison: React.FC<ImageComparisonProps> = ({
       <LazyImage
         src={afterImage}
         alt={afterLabel}
-        className="absolute inset-0 w-full h-full"
+        className="absolute inset-0 w-full h-full z-10"
         objectFit="cover"
       />
       <div className="absolute top-4 right-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm font-medium pointer-events-none z-20">
