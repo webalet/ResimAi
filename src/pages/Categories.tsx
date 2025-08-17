@@ -337,7 +337,7 @@ const Categories: React.FC = () => {
             </div>
 
             {/* Right Columns - Preview & Example */}
-            <div className="xl:col-span-2 grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="xl:col-span-2 grid grid-cols-1 gap-4">
               {/* User Preview */}
               <div className="bg-white/70 backdrop-blur-sm rounded-xl shadow-lg border border-white/20 p-4">
                 <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center">
