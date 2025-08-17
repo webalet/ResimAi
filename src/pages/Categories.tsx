@@ -377,15 +377,17 @@ const Categories: React.FC = () => {
 
       {/* Categories Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {categories.map((category) => (
+        {categories.map((category) => {
+          const handleCategorySelect = () => setUploadState(prev => ({
+            ...prev,
+            selectedCategory: category,
+            selectedStyle: (category.styles && category.styles[0]) || ''
+          }));
+          
+          return (
           <div
             key={category.id}
-            className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-all duration-200 overflow-hidden group cursor-pointer"
-            onClick={() => setUploadState(prev => ({
-              ...prev,
-              selectedCategory: category,
-              selectedStyle: (category.styles && category.styles[0]) || ''
-            }))}
+            className="bg-white rounded-lg shadow-sm border hover:shadow-md transition-all duration-200 overflow-hidden group"
           >
             <div className="aspect-[4/3] relative overflow-hidden">
               {category.before_image_url && category.after_image_url ? (
@@ -405,7 +407,10 @@ const Categories: React.FC = () => {
                 />
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-              <div className="absolute bottom-2 left-3 right-3">
+              <div 
+                className="absolute bottom-2 left-3 right-3 cursor-pointer"
+                onClick={handleCategorySelect}
+              >
                 <h3 className="text-lg font-bold text-white mb-1">
                   {getCategoryDisplayName(category)}
                 </h3>
@@ -427,7 +432,7 @@ const Categories: React.FC = () => {
               </div>
             </div>
             
-            <div className="p-4">
+            <div className="p-4 cursor-pointer" onClick={handleCategorySelect}>
               <p className="text-gray-600 text-sm mb-3 line-clamp-2">{getCategoryDescription(category)}</p>
               
               <div className="mb-3">
@@ -455,7 +460,8 @@ const Categories: React.FC = () => {
               </div>
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
