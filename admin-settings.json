@@ -99,7 +99,7 @@
       "type": "Fashion Photography",
       "description": "Profesyonel moda fotoğrafçılığı ve stil çekimleri. Trend kıyafetler, aksesuar kombinasyonları ve moda dünyasına uygun pozlar.",
       "description_en": "Professional fashion photography and style shoots. Trendy outfits, accessory combinations and poses suitable for the fashion world.",
-      "image_url": "/images/ornek.jpg",
+      "image_url": "",
       "styles": ["High Fashion", "Street Style", "Editorial", "Commercial", "Avant-garde", "Minimalist Fashion"],
       "styles_en": ["High Fashion", "Street Style", "Editorial", "Commercial", "Avant-garde", "Minimalist Fashion"],
       "is_active": true
