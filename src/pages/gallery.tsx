@@ -556,11 +556,11 @@ const Gallery: React.FC = () => {
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
-                className="bg-white/95 backdrop-blur-sm rounded-3xl max-w-6xl max-h-[90vh] overflow-hidden shadow-2xl border border-white/20"
+                className="bg-white/95 backdrop-blur-sm rounded-3xl max-w-[95vw] max-h-[95vh] w-auto h-auto overflow-hidden shadow-2xl border border-white/20"
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Header */}
-                <div className="flex items-center justify-between p-6 border-b border-gray-200/50">
+                <div className="flex items-center justify-between p-6 border-b border-purple-200/30 bg-gradient-to-r from-purple-50/80 to-blue-50/80 backdrop-blur-sm">
                   <div className="flex items-center space-x-4">
                     <div className="w-3 h-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"></div>
                     <h3 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
@@ -580,27 +580,27 @@ const Gallery: React.FC = () => {
                 
                 {/* Image Content */}
                 <div className="p-6">
-                  <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl overflow-hidden">
+                  <div className="bg-gradient-to-br from-purple-50/30 to-blue-50/30 backdrop-blur-sm rounded-2xl overflow-hidden">
                     {selectedJob.original_image_url ? (
                       <ImageComparison
                         beforeImage={selectedJob.original_image_url}
                         afterImage={selectedJob.processed_images[selectedImageIndex].image_url}
                         beforeLabel="Öncesi"
                         afterLabel="Sonrası"
-                        className="w-full min-h-[70vh] max-h-[80vh]"
+                        className="w-auto h-auto max-h-[75vh] object-contain"
                       />
                     ) : (
                       <img
                         src={selectedJob.processed_images[selectedImageIndex].image_url}
                         alt={`Generated image ${selectedImageIndex + 1}`}
-                        className="w-full min-h-[70vh] max-h-[80vh] object-contain mx-auto"
+                        className="w-auto h-auto max-h-[75vh] object-contain mx-auto"
                       />
                     )}
                   </div>
                 </div>
                 
                 {/* Footer */}
-                <div className="flex items-center justify-between p-6 border-t border-gray-200/50 bg-gradient-to-r from-gray-50/50 to-white/50">
+                <div className="flex items-center justify-between p-6 border-t border-purple-200/30 bg-gradient-to-r from-purple-50/50 to-blue-50/50 backdrop-blur-sm">
                   <div className="flex items-center space-x-3">
                     {selectedJob.processed_images.length > 1 && (
                       <>
