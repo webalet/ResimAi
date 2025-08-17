@@ -985,14 +985,14 @@ const AdminSettings = () => {
         throw new Error(data.message || 'Resim yükleme başarısız');
       }
       
-      // Update category image URL
-      setCategories(prev => prev.map((cat, i) => 
-        i === categoryIndex ? { ...cat, image_url: data.url } : cat
-      ));
-      
-      // Update category in Supabase
+      // Update category in Supabase - ÖNCE kategoryi al
       const categoryToUpdate = categories[categoryIndex];
       if (categoryToUpdate && categoryToUpdate.id) {
+        // Update category image URL in state
+        setCategories(prev => prev.map((cat, i) => 
+          i === categoryIndex ? { ...cat, image_url: data.url } : cat
+        ));
+        
         const updateResponse = await fetch(`${API_BASE_URL}/api/categories/${categoryToUpdate.id}`, {
           method: 'PUT',
           headers: {
@@ -1001,7 +1001,7 @@ const AdminSettings = () => {
           },
           body: JSON.stringify({
             ...categoryToUpdate,
-            image_url: data.url
+            image_url: data.url  // Yeni URL'yi manuel olarak ekle
           })
         });
         
