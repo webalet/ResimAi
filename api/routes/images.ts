@@ -9,7 +9,6 @@ import { uploadToSupabase, deleteFromSupabase } from '../utils/storage.js';
 import { 
   validateFileComprehensive,
   generateSecureFilename,
-  validateFileMagicNumber,
   validateFileExtension,
   validateAndSanitizePath,
   createSecureUploadDirectory

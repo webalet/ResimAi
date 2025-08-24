@@ -5,7 +5,7 @@ import { adminAuth } from '../middleware/adminAuth.js';
 const router = Router();
 
 // Test endpoint to verify routes are working
-router.get('/test', (req, res) => {
+router.get('/test', (_, res) => {
   res.json({ message: 'Analytics routes are working!', timestamp: new Date().toISOString() });
 });
 
