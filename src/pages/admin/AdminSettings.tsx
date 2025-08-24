@@ -11,24 +11,11 @@ const AdminSettings = () => {
   
   // Helper function to get full image URL
   const getFullImageUrl = (imageUrl: string | null | undefined): string => {
-    console.log('🔍 getFullImageUrl called with:', { imageUrl, type: typeof imageUrl });
-    
-    if (!imageUrl) {
-      console.log('❌ Image URL is empty/null/undefined');
-      return '';
-    }
-    
-    if (imageUrl.startsWith('http')) {
-      console.log('✅ Image URL already has protocol:', imageUrl);
-      return imageUrl;
-    }
+    if (!imageUrl) return '';
+    if (imageUrl.startsWith('http')) return imageUrl;
     
     const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://64.226.75.76';
-    const fullUrl = `${API_BASE_URL}${imageUrl}`;
-    console.log('🖼️ Converting relative URL:', imageUrl, 'to full URL:', fullUrl);
-    console.log('🌐 API_BASE_URL:', API_BASE_URL);
-    
-    return fullUrl;
+    return `${API_BASE_URL}${imageUrl}`;
   };
   
   // State for editable configuration
@@ -130,14 +117,7 @@ const AdminSettings = () => {
               updated_at: cat.updated_at || new Date().toISOString()
             };
             
-            console.log(`📋 Category loaded: ${cat.name}`);
-            console.log('- before_image_url:', cat.before_image_url);
-            console.log('- after_image_url:', cat.after_image_url);
-            console.log('- image_url:', cat.image_url);
-            
-            if (!cat.before_image_url && !cat.after_image_url && !cat.image_url) {
-              console.log('⚠️ No images found for category:', cat.name);
-            }
+
             
             return formatted;
           });
@@ -882,35 +862,22 @@ const AdminSettings = () => {
       }
 
       const data = await response.json();
-      console.log('✅ Image upload response:', data);
       
       if (!data.success) {
         throw new Error(data.message || 'Resim yükleme başarısız');
       }
-      
-      console.log('🔄 Updating category with new image URL:', data.url, 'for imageType:', imageType);
       
       // Update category in Supabase
       const categoryToUpdate = categories[categoryIndex];
       if (categoryToUpdate && categoryToUpdate.id) {
         // Update category image URL in state based on imageType
         const updateField = imageType === 'before' ? 'before_image_url' : 'after_image_url';
-        console.log('📝 Updating field:', updateField, 'with URL:', data.url);
         
-        setCategories(prev => {
-          const updatedCategories = prev.map((cat, i) => 
+        setCategories(prev => 
+          prev.map((cat, i) => 
             i === categoryIndex ? { ...cat, [updateField]: data.url } : cat
-          );
-          
-          console.log('📊 Category state updated:');
-          console.log('- Category index:', categoryIndex);
-          console.log('- Update field:', updateField);
-          console.log('- New URL:', data.url);
-          console.log('- Updated category:', updatedCategories[categoryIndex]);
-          console.log('- All categories:', updatedCategories);
-          
-          return updatedCategories;
-        });
+          )
+        );
         
         const updateData = {
           ...categoryToUpdate,
@@ -928,18 +895,14 @@ const AdminSettings = () => {
         
         if (!updateResponse.ok) {
           const errorText = await updateResponse.text();
-          console.log('❌ Category update failed:', errorText);
-        } else {
-          console.log('✅ Category updated in database successfully');
+          console.error('Category update failed:', errorText);
         }
       }
       
       toast.success(`${imageType === 'before' ? 'Öncesi' : 'Sonrası'} resim başarıyla yüklendi!`);
       
       // Kategorileri yeniden yükle
-      console.log('🔄 Reloading categories after image upload...');
       await loadCategoriesAndPrompts();
-      console.log('✅ Categories reloaded successfully');
       
       // Categories sayfasının cache'ini temizle
       if (window.location.pathname.includes('/categories') || window.location.pathname === '/') {
@@ -1559,7 +1522,6 @@ const AdminSettings = () => {
                               alt={`${category.name} - Öncesi`}
                               className="w-full h-24 object-cover rounded-lg border border-gray-300"
                               onError={(e) => {
-                                console.log('❌ Image load error for before image:', category.before_image_url || category.image_url);
                                 (e.target as HTMLImageElement).src = '';
                               }}
                             />
@@ -1596,7 +1558,6 @@ const AdminSettings = () => {
                               alt={`${category.name} - Sonrası`}
                               className="w-full h-24 object-cover rounded-lg border border-gray-300"
                               onError={(e) => {
-                                console.log('❌ Image load error for after image:', category.after_image_url);
                                 (e.target as HTMLImageElement).src = '';
                               }}
                             />
@@ -1635,7 +1596,6 @@ const AdminSettings = () => {
                               alt={`${category.name} - Öncesi`}
                               className="w-full h-24 object-cover rounded-lg border border-gray-300"
                               onError={(e) => {
-                                console.log('❌ Image load error for before image (view mode):', category.before_image_url || category.image_url);
                                 (e.target as HTMLImageElement).src = '';
                               }}
                             />
@@ -1654,7 +1614,6 @@ const AdminSettings = () => {
                               alt={`${category.name} - Sonrası`}
                               className="w-full h-24 object-cover rounded-lg border border-gray-300"
                               onError={(e) => {
-                                console.log('❌ Image load error for after image (view mode):', category.after_image_url);
                                 (e.target as HTMLImageElement).src = '';
                               }}
                             />
