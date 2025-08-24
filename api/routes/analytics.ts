@@ -15,6 +15,10 @@ let analyticsDataClient: BetaAnalyticsDataClient;
 // Initialize GA4 client with service account
 const initializeGA4Client = () => {
   try {
+    console.log('🔍 [GA4 DEBUG] Initializing GA4 client...');
+    console.log('🔍 [GA4 DEBUG] GA4_PROPERTY_ID:', process.env.GA4_PROPERTY_ID);
+    console.log('🔍 [GA4 DEBUG] GOOGLE_APPLICATION_CREDENTIALS:', process.env.GOOGLE_APPLICATION_CREDENTIALS);
+    
     if (!process.env.GA4_PROPERTY_ID || !process.env.GOOGLE_APPLICATION_CREDENTIALS) {
       console.warn('🔶 GA4 credentials not configured. Analytics will use mock data.');
       console.warn('🔶 Missing: GA4_PROPERTY_ID or GOOGLE_APPLICATION_CREDENTIALS');
@@ -26,9 +30,11 @@ const initializeGA4Client = () => {
     });
     
     console.log('✅ GA4 client initialized successfully');
+    console.log('🔍 [GA4 DEBUG] Client object created:', !!analyticsDataClient);
     return analyticsDataClient;
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ Failed to initialize GA4 client:', error);
+    console.error('🔍 [GA4 DEBUG] Error details:', error.message);
     return null;
   }
 };
@@ -44,7 +50,12 @@ const formatGA4Date = (date: Date): string => {
 // Get basic analytics data
 router.get('/overview', adminAuth, async (req, res) => {
   try {
+    console.log('🔍 [GA4 DEBUG] Overview endpoint called');
+    console.log('🔍 [GA4 DEBUG] analyticsDataClient exists:', !!analyticsDataClient);
+    console.log('🔍 [GA4 DEBUG] GA4_PROPERTY_ID:', process.env.GA4_PROPERTY_ID);
+    
     if (!analyticsDataClient || !process.env.GA4_PROPERTY_ID) {
+      console.warn('🔶 [GA4 DEBUG] Using mock data - client or property ID missing');
       // Return mock data if GA4 not configured
       return res.json({
         totalUsers: 1250,
@@ -60,6 +71,10 @@ router.get('/overview', adminAuth, async (req, res) => {
     const endDate = new Date();
     const startDate = new Date();
     startDate.setDate(endDate.getDate() - 30); // Last 30 days
+
+    console.log('🔍 [GA4 DEBUG] Making API call to GA4...');
+    console.log('🔍 [GA4 DEBUG] Property:', `properties/${propertyId}`);
+    console.log('🔍 [GA4 DEBUG] Date range:', formatGA4Date(startDate), 'to', formatGA4Date(endDate));
 
     const [response] = await analyticsDataClient.runReport({
       property: `properties/${propertyId}`,
@@ -79,6 +94,9 @@ router.get('/overview', adminAuth, async (req, res) => {
       ],
     });
 
+    console.log('🔍 [GA4 DEBUG] API response received');
+    console.log('🔍 [GA4 DEBUG] Response rows count:', response.rows?.length || 0);
+
     const row = response.rows?.[0];
     if (!row) {
       return res.status(404).json({ error: 'No data returned from GA4' });
@@ -96,11 +114,16 @@ router.get('/overview', adminAuth, async (req, res) => {
     return res.json(data);
   } catch (error: any) {
     console.error('❌ Error fetching overview data:', error);
+    console.error('🔍 [GA4 DEBUG] Error code:', error.code);
+    console.error('🔍 [GA4 DEBUG] Error message:', error.message);
+    console.error('🔍 [GA4 DEBUG] Error details:', error.details);
+    console.error('🔍 [GA4 DEBUG] Full error object:', JSON.stringify(error, null, 2));
     
     // Check if it's a permission error
     if (error.code === 7 || error.message?.includes('PERMISSION_DENIED')) {
       console.warn('🔶 GA4 Permission denied - returning mock data instead');
       console.warn('🔶 Service account may not have access to GA4 property:', process.env.GA4_PROPERTY_ID);
+      console.warn('🔶 Service account email:', 'stylica-org@n8nprojesi-467914.iam.gserviceaccount.com');
       
       // Return mock data instead of error
       return res.json({
