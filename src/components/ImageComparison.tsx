@@ -106,7 +106,10 @@ const ImageComparison: React.FC<ImageComparisonProps> = ({
         className="absolute inset-0 w-full h-full z-10"
         objectFit="contain"
       />
-      <div className="absolute top-4 right-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm font-medium pointer-events-none z-20">
+      <div 
+        className="absolute top-4 right-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm font-medium pointer-events-none z-20 transition-opacity duration-300"
+        style={{ opacity: sliderPosition > 50 ? 1 : 0.3 }}
+      >
         {afterLabel}
       </div>
 
@@ -123,7 +126,10 @@ const ImageComparison: React.FC<ImageComparisonProps> = ({
           className="w-full h-full"
           objectFit="contain"
         />
-        <div className="absolute top-4 left-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm font-medium">
+        <div 
+          className="absolute top-4 left-4 bg-black/70 text-white px-3 py-1 rounded-full text-sm font-medium transition-opacity duration-300"
+          style={{ opacity: sliderPosition < 50 ? 1 : 0.3 }}
+        >
           {beforeLabel}
         </div>
       </div>

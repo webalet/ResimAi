@@ -60,7 +60,11 @@ const Login: React.FC = () => {
       
       await login(email, password);
       setRetryCount(0);
-      navigate(from, { replace: true });
+      // Show success message and then navigate
+      toast.success(t('auth.success.login'));
+      setTimeout(() => {
+        navigate(from, { replace: true });
+      }, 1000); // Wait 1 second to show success message
     } catch (error: any) {
       if (error.response?.status === 429) {
         setRateLimitError(true);
@@ -89,9 +93,8 @@ const Login: React.FC = () => {
         
         // Show user-friendly error message from AuthContext
         const errorMessage = error.userMessage || error.message || t('auth.errors.loginFailed');
-        toast.error(errorMessage);
         
-        // Set form-level error for display
+        // Set form-level error for display (don't show toast, keep user on page)
         setErrors({ general: errorMessage });
       }
     }
@@ -106,7 +109,6 @@ const Login: React.FC = () => {
     if (!email || !password) {
       const errorMessage = t('auth.errors.fillAllFields');
       setErrors({ general: errorMessage });
-      toast.error(errorMessage);
       return;
     }
 
@@ -118,7 +120,6 @@ const Login: React.FC = () => {
       const remainingTime = Math.ceil((RATE_LIMIT_MS - timeSinceLastSubmit) / 1000);
       const errorMessage = t('auth.errors.waitSeconds', { seconds: remainingTime });
       setErrors({ general: errorMessage });
-      toast.error(errorMessage);
       return;
     }
 

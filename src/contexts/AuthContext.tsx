@@ -113,7 +113,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const response = await authService.login(email, password);
       localStorage.setItem('token', response.token);
       setUser(response.user);
-      toast.success(t('auth.success.login'));
+      // Don't show toast here - let the calling component handle success message
     } catch (error: any) {
       // Don't show toast messages here - let the calling component handle it
       // Just throw the error with enhanced information
