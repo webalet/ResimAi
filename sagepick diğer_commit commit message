@@ -1,0 +1,235 @@
+[33m53c9bb9[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m Add google-service-account.json to .gitignore
+[33m76dabf7[m fix(auth): improve error handling and navigation flow in login
+[33m0a8480a[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m feat(analytics): integrate google analytics 4 tracking
+[33m22a5e32[m feat(analytics): enhance admin analytics with web traffic metrics
+[33m754096d[m refactor(auth): move 401/403 handling to AuthContext and improve image comparison labels
+[33m22ca9d6[m refactor: improve auth flow and UI interactions
+[33m903029c[m chore: update API
+[33m66c1b2a[m fix: update API base U
+[33me658dcc[m fix: update all http URLs to https for security
+[33m5a9c367[m feat(auth): add banned
+[33m29f8e32[m fix(auth): handle banned user state and c
+[33mdc10fd2[m feat(auth): handle banned users in profile and auth context
+[33m2d5c773[m feat(auth): add user ban functionality with UI handling
+[33ma390632[m feat(auth): add banned account handling and i18n error messages
+[33m9d6059f[m feat(admin): add user banning functionality
+[33m9d20418[m fix(AdminAnalytics): us
+[33m23e9dea[m feat(analytics): improve admin analytics
+[33m0df7112[m perf(admin): optimize jobs
+[33m4868038[m refactor(admin): improve type safety and query s
+[33m087a013[m feat(analytics): enhance admin anal
+[33m9024e79[m refactor(AdminSettings): remove de
+[33ma47dee7[m fix(admin): remove default image URLs and improve image error handling
+[33m88adfce[m refactor(AdminSettings): simplify image display logic and rem
+[33m9fd46b0[m feat(AdminSettings): improve im
+[33m76276f8[m refactor: remove debug logs and improve error handling
+[33m4fed422[m feat(i18n): add empty state translation
+[33m3d0a592[m style(gallery):
+[33m5813c6a[m 555151551515
+[33m0414e20[m feat(i18n): add nested filter t
+[33m0cf3b14[m fix(ui): add z-index to ima
+[33m67c7faf[m feat(images): improve image display consistency and loading behavior
+[33m0c1fb3b[m feat(debugging): add debug
+[33m34e2e97[m refactor(gallery): simpli
+[33me320d0f[m style(gallery): adjust respon
+[33m942a244[m refactor(images): change de
+[33m2597b99[m 555555
+[33mcd55489[m refactor(gallery): improve image
+[33m12ee886[m le
+[33m3b6cc33[m mndd
+[33m9794f3a[m tttt1111
+[33m3fe7956[m seeee
+[33m07c23ab[m fulful
+[33m2e47667[m kzgn
+[33m917be16[m 6565
+[33m561ba4b[m 515151
+[33m157c836[m 1144444
+[33mb29ee57[m 6611
+[33mafcc3bf[m refactor(gallery): improve
+[33mf7b45d4[m test
+[33m370d712[m byt
+[33m916f5d0[m ttttt
+[33m60868bf[m style(gallery): change image object
+[33m7e599f1[m feat(gallery): enhance UI with animati
+[33md5e1ee5[m style(Categories): increase previ
+[33m160f787[m feat(i18n): update translation strings and improve consistency
+[33m34538ca[m refactor(Categories): imp
+[33mb2b8b0a[m 123
+[33md28f095[m 1
+[33md54da28[m style(Categor
+[33m1a050c8[m haydaaa
+[33m006de3d[m 55
+[33m8242b6c[m 61616
+[33m7d11eb2[m 551
+[33mef21af8[m 55
+[33me104ca7[m 12333
+[33mc474b98[m 123
+[33mabc9b6a[m refactor(ImageComparis
+[33m6a2abbd[m fix(ImageComparison): remove event pr
+[33m49b674f[m perf(ImageCompar
+[33me6ff2bd[m feat(ImageComparison): improve slider dragging with global mouse events
+[33maaf23dd[m refactor(Categories): extract category selection handler and adjust click targets
+[33m1222899[m fix(ImageComparison): prevent event pr
+[33m46355e5[m feat(categories): add image comparison
+[33m67c65fb[m feat(categories): add before/after image comparison functionality
+[33m33bd2fc[m Kategori kartları tasarımını iyileştir - daha kompakt ve modern görünüm
+[33m08bb72a[m refactor(admin): remove redundant category mapping logic
+[33md841e91[m refactor(admin): load categories directly from supabase instead of settings
+[33m009bb6b[m fix(AdminSettings): improve error logging for category image upload
+[33m89f211f[m refactor(settings): remove unused image urls and deprecated categories
+[33mf9d9177[m fix: clear default image_url in fashion photography settings
+[33mc29fb55[m feat(server): add uploads static f
+[33mf4019b3[m refactor(AdminSettings): reorder cate
+[33m8263063[m düzeltme
+[33m35d0876[m feat(AdminSettings): add Supabase category image update on upload
+[33ma860a25[m fix(AdminSettings): rem
+[33m38a4964[m refactor(AdminSettings): remove redundant saveCategories call after deletion
+[33m4ae4dc7[m feat(admin-settings): update category handling with real Supabase IDs
+[33m053e0c0[m feat(upload): increase file size limit to 50MB across stack
+[33m57daeb4[m feat(api): implement local file storage for uploads alongside Supabase
+[33m2f817d5[m refactor(images): sim
+[33m2f6f4f2[m fix(Categories): simplify category data submission and add debug logs
+[33md200933[m feat(admin): update and expand AI prompt
+[33ma88ba8e[m fix(images): improve category and style validation logic
+[33m5b49281[m fix(images): update webhook URL format and parameters
+[33mf799118[m refactor(images): improve category and style handling with dynamic defaults
+[33mffff6ac[m refactor(Categories): simplify component by removing unused code and
+[33m07beba7[m fix: use environment variable for API base URL in categories fetch
+[33m77c15a7[m fix(backend): resolve undefined category and prompt generation issues
+[33m65c0a2d[m fix(api): ensure category is always set to Av
+[33mc72f465[m fix(images): add debug logs for cate
+[33maa2e2f2[m fix(images): improve category handling to preserve
+[33m6025645[m fix(webhook): change POST to GET method for N8N com
+[33m9e082de[m refactor(images): make request fields optional for multipart handling
+[33m9bfefbe[m Fix TypeScript type errors for category, style, and imageUrl variables
+[33m85dc918[m Fix category undefined issue: Handle multipart form data correctly in backend
+[33mb54d4bb[m Fix category undefined issue and add debug logging for prompt selection
+[33m2538ad7[m Fix category and prompt generation issues: Update generatePrompt function to accept category parameter, fix frontend category undefined issue, improve prompt selection logic
+[33mf737e27[m fix(Categories): includ
+[33m62f04bd[m fix(images): add missing category_type field to image upload
+[33m108c7d8[m feat(server): add de
+[33me5350a9[m Fix: Remove category validation from backend - only style validation required
+[33mc1e7624[m Fix: Restore category selection functionality - keep categories in frontend but remove from N8N payload
+[33m85fb0f7[m Fix: Remove category validation from frontend - only style validation required
+[33m6c6572b[m fix: improve generatePrompt function to use admin-settings.json prompts based on style
+[33m7fc3131[m Fix TypeScript error: Remove category parameter from generatePrompt function calls
+[33m33fa934[m fix: resolve category undefined issue in images.ts - use categoryParam instead of category
+[33m96bef5e[m refactor(images): use consiste
+[33m410696e[m feat(images): add debug logging to prompt generation function
+[33m2b4b243[m Fix webhook to use POST method with JSON body for proper prompt delivery
+[33m6fd30b0[m Fix N8N webhook to use GET request instead of POST
+[33mef18a50[m Add detailed webhook payload logging for N8N debug
+[33m37e53b7[m Fix backend log message and N8N JSON parameters
+[33mf99c129[m Fix N8N webhook integration: Update prompt system and change to POST request format
+[33me5899f3[m fix: webhook categoryType undefined sorunu düzeltildi - categoryParam kullanılıyor
+[33mc86328d[m feat: remove Vercel files, clean test files, fix N8N webhook format for SSH deployment
+[33m4fabdff[m Fix Turkish character encoding in admin-settings.json
+[33m85110bf[m Fix N8N webhook URL dynamic loading from admin-settings.json
+[33m3653591[m Fix port configuration for production deployment
+[33m2f9f321[m Remove admin-settings.json from .gitignore to allow deployment
+[33mf7fa346[m Fix Fashion category visibility in admin panel
+[33ma6a8b65[m Fix admin login endpoint and categories API - Add admin login route to auth.ts, fix adminAuth imports in categories.ts, update AdminSettings saveCategories function
+[33m346723b[m fix: admin panel senkronizasyon sorunları çözüldü - kategoriler hem admin-settings.json'a hem Supabase'e kaydediliyor, ngilizce stil düzenleme düzeltildi, eksik resim dosyaları eklendi
+[33ma2b2652[m fix: resim yüklendikten sonra kategorileri otomatik kaydet
+[33me8f0a8d[m fix: Gallery.tsx category display and processed_images integration
+[33m6e260be[m feat: add missing Gallery.tsx file
+[33m4873584[m fix: remove .tsx extension from Gallery import
+[33m9c71005[m fix: correct Gallery import path in App.tsx
+[33m6054b00[m feat: Update categories with detailed multilingual data and styles
+[33m10ff9a3[m fix(Categories): add null checks for category styles array
+[33m3483823[m ee
+[33mac84079[m Fix Categories.tsx to use real API instead of mock data
+[33m12cb598[m fix: Add missing description_en and styles_en fields to default categories
+[33m143fd7e[m feat: Add multilingual support for category styles and descriptions
+[33m573dbca[m feat: Add multilingual support for categories
+[33m9d0b4c1[m fix: Remove fetchpriority prop from motion.img component
+[33mfab8a4e[m fix: Change fetchPriority to fetchpriority in LazyImage component
+[33m3705e86[m feat: Improve UI/UX with animations, fix examples, and add auto-scroll to forms
+[33ma7b7def[m Fix fetchPriority prop warning in LazyImage component
+[33m21af594[m fix: Change API PORT from 80 to 3001 in ecosystem.config.cjs
+[33m57c4759[m fix: Change frontend port from 5173 to 4173 in ecosystem.config.cjs
+[33md9e954e[m fix: Change default PORT from 80 to 3001 in server.ts
+[33me9f4dbb[m fix: Remove all hardcoded ports - make site work without port numbers
+[33md63f19d[m fix: Update port configuration from 3001 to 80
+[33m60bc43f[m fix: Add CORS support for port 4173 and portless access
+[33m103698b[m fix: Configure API for reverse proxy setup
+[33m75cb2f0[m fix: Update API configuration for port 5173
+[33m6f1b969[m feat: Stylica.ai rebrand - Modern UI, animations, responsive design
+[33m9b0e7fe[m refactor(AdminLayout): remove mobile header and add overflow-x-hidden
+[33ma1dde6e[m Fix admin panel mobile layout and sidebar design
+[33mf2a8854[m Fix home page buttons: show login/register buttons for non-authenticated users
+[33m92bae82[m Fix double header issue and mobile scrolling in admin panel
+[33maa189eb[m Fix admin panel syntax errors and update modal components
+[33m2cb3d94[m Fix mobile layout issues and optimize responsive design
+[33m7778a09[m Admin panel mobile optimizations and UI improvements
+[33m39a9289[m Fix: Remove React.StrictMode to prevent duplicate header rendering in mobile view
+[33me1de1ae[m Fix admin layout: Add mobile menu button and remove duplicate headers
+[33m96c42fb[m Fix admin layout: remove mobile sidebar, add proper headers for mobile and desktop
+[33mc0e80e6[m Fix: Remove duplicate desktop header in AdminLayout - mobile version now shows single menu
+[33mbab14c7[m Fix: Remove duplicate Admin Panel headers from sidebar
+[33mf2384bf[m Admin paneli header ve boşluk düzeltmeleri
+[33m7b7e512[m Admin panelindeki yinelenen başlıkları kaldır - AdminUsers ve AdminSettings sayfalarındaki h1 başlıkları kaldırıldı
+[33mc6934c2[m Fix admin panel layout issues - remove duplicate header and improve responsive design
+[33mdc1909d[m Fix duplicate JSON keys in translation files
+[33m63e0637[m Update App.tsx - fix translation and routing issues
+[33mc573454[m Fix login redirect to home page
+[33md58a743[m Fix routing: redirect /tr/login to home page
+[33mad9a35f[m Fix final Register page translation keys: add auth.hasAccount and auth.login.link
+[33mf6d2f74[m Fix Register page translation keys: add auth.fields.fullName and auth.fields.confirmPassword
+[33m095ea27[m Fix Register page translation keys - Add missing translation keys for Register page placeholders, buttons, and labels
+[33m05a48df[m feat: Toast bildirimlerini sağ alta taşı ve çok dilli destek ekle
+[33meeaf148[m Fix login translation keys and language persistence
+[33m25453a0[m fix: i18n config import'unu main.tsx'e ekle - çeviri sistemi düzeltmesi
+[33m095cc10[m Update translation files and fix missing keys
+[33mbdca349[m Fix JSON translation files and duplicate keys
+[33md7cdd32[m Fix: Replace hardcoded Turkish texts with i18n translations in Categories page
+[33mac729f1[m Fix i18n translations for Categories, Gallery pages and sidebar subscription text
+[33m3f54bc6[m Fix translation errors and sidebar navigation language preservation
+[33m8a67896[m feat: Add i18n support to all pages and sidebar - Categories, Gallery, Subscription, Profile pages now support Turkish/English - Layout sidebar and user info are multilingual - Language prefix preserved in URLs when switching languages
+[33m873ec2a[m fix: Fix JSON syntax errors in translation files
+[33m3aa75b9[m feat: Add multilingual support to Dashboard component
+[33m9d865d4[m Fix Gallery import case sensitivity issue in App.tsx
+[33m949ce89[m Fiyatlandırma düzeltmeleri ve çok dilli destek implementasyonu
+[33med6fe75[m Fix admin settings data consistency: sync default values and remove hardcoded data
+[33m65393f1[m Fix: Update loadSettings to use data.data structure for API response
+[33m4c3846c[m Fix: Add server property to systemConfig in loadSettings function
+[33md4b4086[m Debug: Add console.log to loadSettings function to debug API response
+[33m8652c5a[m feat: AdminSettings sayfası Faz 2 iyileştirmeleri - Authentication token yönetimi, API çağrıları, form validasyonları, loading states ve UI/UX iyileştirmeleri
+[33m706c336[m fix(AdminSettings): add API_BASE_URL and useEffect for data loading
+[33mf3acb34[m feat(admin): implement prompt synchronization and admin settings management
+[33m90a483d[m style(admin):
+[33m5ba2306[m style(Profile): adjust
+[33m696d888[m refactor
+[33mae7cc92[m fix(Layout): adjust padd
+[33m35bfa40[m harbidenbayabibossun
+[33mabb068c[m eyw
+[33m8ad5ea8[m fix
+[33m28dbe1e[m feat(gallery): redesign modal to full-screen minimalist layout
+[33m35278ba[m feat(gallery): modernize modal and image display UI
+[33m5352895[m feat(gallery): add delete button for all job states and prevent image right-click
+[33m15643b2[m feat: improve gallery layout and remove proxy system
+[33mb3661a4[m feat(images): add CORS support for proxy endpoint
+[33m5ef60d6[m fix(gallery): map categories in jobs response and update proxy URL
+[33m9f73b3b[m feat(gallery): add delete job functionality and image proxy
+[33m7121897[m feat(gallery): improve processed images display logic
+[33m1536464[m - Add SQL migration to grant permissions and set RLS policies for processed_images - Extend processed_images type definition with new columns - Update n8n workflow configuration with proper HTTP request parameters
+[33m050f8ed[m feat: add processed image result component and update database schema
+[33m4d5342c[m Fix frontend API URL: Use full API base URL instead of relative path
+[33mc76be74[m Fix webhook integration: Change from POST to GET method for n8n webhook
+[33m55ddb20[m Update webhook URLs to use correct n8n webhook endpoint
+[33mb5bd7d2[m chore: update import paths and TODO.md tasks
+[33mfb765b4[m fix(ecosystem): correct server.js path in pm2 config
+[33m99e5697[m fix(subscriptions): add missing return statements in route handlers
+[33m3007d88[m chore: update configuration for server deployment
+[33m93a8df8[m fix: vite.config.ts production VITE_API_URL configuration - Fixed empty string issue in production mode
+[33m5806646[m Fix production API configuration2
+[33mb76d32f[m Fix production API configuration1
+[33m67a8d08[m Fix production API configuration
+[33me83fd2e[m Fix API build issues and update PM2 configuration
+[33md38339a[m Add comprehensive server deployment guide
+[33me60228b[m Fix IPv6/IPv4 proxy issues and update project for production deployment
+[33m98b813b[m Update tsconfig.json with correct include paths for rootDir
+[33madb9b8a[m Fix TypeScript rootDir to include shared folder
+[33mb093f67[m Fix TypeScript compilation paths - remove double api folder structure
+[33mae71a4d[m Fix API tsconfig outDir and add node-fetch dependency
+[33mc2c4d1d[m Fix TypeScript errors in subscriptions.ts and update ecosystem config

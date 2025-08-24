@@ -10,11 +10,11 @@ const getApiBaseUrl = () => {
   
   // Development mode kontrolü
   if (import.meta.env.DEV) {
-    return 'https://stylica.org';
+    return 'http://64.226.75.76';
   }
   
   // Production default
-  return 'https://stylica.org';
+  return 'http://64.226.75.76';
 };
 
 const API_BASE_URL = getApiBaseUrl();
@@ -53,9 +53,19 @@ class ApiClient {
     this.client.interceptors.response.use(
       (response) => response,
       (error) => {
-        // Don't handle 401/403 here during login - let AuthContext handle it
-        // Only handle network and server errors
-        if (error.response?.status === 429) {
+        if (error.response?.status === 401) {
+          // Unauthorized - clear token and redirect to login
+          localStorage.removeItem('token');
+          window.location.href = '/login';
+          toast.error('Oturum süreniz doldu. Lütfen tekrar giriş yapın.');
+        } else if (error.response?.status === 403) {
+          // Forbidden - user is banned, clear tokens and redirect to login with banned flag
+          localStorage.removeItem('token');
+          localStorage.removeItem('adminToken');
+          localStorage.setItem('userBanned', 'true');
+          window.location.href = '/login?banned=true';
+          // Don't show toast here as we'll show modal on login page
+        } else if (error.response?.status === 429) {
           const retryAfter = error.response.headers['retry-after'];
           const waitTime = retryAfter ? `${retryAfter} saniye` : 'bir süre';
           toast.error(`Çok fazla istek gönderildi. Lütfen ${waitTime} bekleyip tekrar deneyin.`, {

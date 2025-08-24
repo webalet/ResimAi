@@ -1,9 +1,10 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, useParams } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, useParams, useLocation } from "react-router-dom";
 import { Toaster } from "sonner";
 import { AuthProvider } from "./contexts/AuthContext";
 import { useTranslation } from 'react-i18next';
 import './i18n/config'; // i18n konfigürasyonunu import et
 import React, { useEffect } from 'react';
+import { initializeGA, trackPageView } from './utils/analytics';
 
 // Pages
 import Home from "./pages/Home";
@@ -31,6 +32,18 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
 import PublicLayout from "./components/PublicLayout";
 import AdminLayout from "./components/admin/AdminLayout";
+
+// Analytics tracking component'i
+const AnalyticsTracker: React.FC = () => {
+  const location = useLocation();
+  
+  useEffect(() => {
+    // Her route değişiminde page view track et
+    trackPageView(document.title, window.location.href);
+  }, [location]);
+  
+  return null;
+};
 
 // Dil bazlı routing component'i
 const LanguageRoutes: React.FC = () => {
@@ -107,9 +120,15 @@ const LanguageRoutes: React.FC = () => {
 };
 
 export default function App() {
+  // Google Analytics'i initialize et
+  useEffect(() => {
+    initializeGA();
+  }, []);
+  
   return (
     <AuthProvider>
       <Router>
+        <AnalyticsTracker />
         <div className="min-h-screen bg-gray-50">
           <Routes>
             {/* Varsayılan dil yönlendirmesi */}

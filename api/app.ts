@@ -47,6 +47,9 @@ if (!supabaseUrl || !supabaseKey) {
 import { createClient } from '@supabase/supabase-js';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+// Import routes
+import analyticsRoutes from './routes/analytics.js';
+
 // Auth middleware
 const auth = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
@@ -516,6 +519,11 @@ app.get('/api/subscriptions/plans', async (req: Request, res: Response): Promise
     return;
   }
 });
+
+/**
+ * ANALYTICS ROUTES
+ */
+app.use('/api/analytics', analyticsRoutes);
 
 /**
  * ADMIN ROUTES

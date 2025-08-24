@@ -26,6 +26,26 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    
+    <!-- Google Analytics 4 -->
+    <!-- VITE_GA_MEASUREMENT_ID environment variable'ını .env dosyasında ayarlayın -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      
+      // Environment variable'dan Measurement ID alınacak
+      // Production'da bu değer otomatik olarak değiştirilecek
+      const measurementId = 'GA_MEASUREMENT_ID'; // Bu değeri kendi Measurement ID'nizle değiştirin (örn: G-XXXXXXXXXX)
+      
+      if (measurementId && measurementId !== 'GA_MEASUREMENT_ID') {
+        gtag('config', measurementId, {
+          page_title: document.title,
+          page_location: window.location.href
+        });
+      }
+    </script>
     <script type="module">
       if (import.meta.hot?.on) {
         import.meta.hot.on('vite:error', (error) => {

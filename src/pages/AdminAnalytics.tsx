@@ -5,6 +5,83 @@ import { format, subDays, startOfDay, endOfDay } from 'date-fns';
 import { tr } from 'date-fns/locale';
 import { toast } from 'sonner';
 
+/*
+ * Google Analytics Gerçek Veri Entegrasyonu
+ * 
+ * Şu anda mock data kullanılıyor. Gerçek Google Analytics verilerini almak için:
+ * 
+ * 1. Google Analytics Reporting API v4 kullanın
+ * 2. Service Account oluşturun ve JSON key dosyası indirin
+ * 3. Backend'de @google-analytics/data paketini kurun:
+ *    npm install @google-analytics/data
+ * 
+ * 4. Backend'de API endpoint'i oluşturun:
+ * 
+ * const { BetaAnalyticsDataClient } = require('@google-analytics/data');
+ * 
+ * const analyticsDataClient = new BetaAnalyticsDataClient({
+ *   keyFilename: 'path/to/service-account-key.json'
+ * });
+ * 
+ * router.get('/analytics/ga-data', async (req, res) => {
+ *   try {
+ *     const [response] = await analyticsDataClient.runReport({
+ *       property: 'properties/YOUR_PROPERTY_ID',
+ *       dateRanges: [{
+ *         startDate: req.query.startDate || '30daysAgo',
+ *         endDate: req.query.endDate || 'today'
+ *       }],
+ *       dimensions: [
+ *         { name: 'country' },
+ *         { name: 'source' },
+ *         { name: 'pagePath' }
+ *       ],
+ *       metrics: [
+ *         { name: 'activeUsers' },
+ *         { name: 'sessions' },
+ *         { name: 'pageviews' },
+ *         { name: 'bounceRate' }
+ *       ]
+ *     });
+ * 
+ *     // Veriyi işle ve frontend formatına dönüştür
+ *     const processedData = {
+ *       trafficStats: {
+ *         totalVisits: response.rows?.length || 0,
+ *         uniqueVisitors: response.metricHeaders?.[0]?.name || 0,
+ *         pageViews: response.metricHeaders?.[2]?.name || 0,
+ *         bounceRate: response.metricHeaders?.[3]?.name || 0
+ *       },
+ *       referrerSources: response.rows?.map(row => ({
+ *         source: row.dimensionValues?.[1]?.value || 'Unknown',
+ *         count: parseInt(row.metricValues?.[1]?.value || '0'),
+ *         percentage: 0 // Hesaplanacak
+ *       })) || [],
+ *       countryStats: response.rows?.map(row => ({
+ *         country: row.dimensionValues?.[0]?.value || 'Unknown',
+ *         visits: parseInt(row.metricValues?.[0]?.value || '0'),
+ *         flag: getCountryFlag(row.dimensionValues?.[0]?.value)
+ *       })) || [],
+ *       pageViews: response.rows?.map(row => ({
+ *         url: row.dimensionValues?.[2]?.value || '/',
+ *         views: parseInt(row.metricValues?.[2]?.value || '0'),
+ *         uniqueVisitors: parseInt(row.metricValues?.[0]?.value || '0')
+ *       })) || []
+ *     };
+ * 
+ *     res.json({ success: true, data: processedData });
+ *   } catch (error) {
+ *     console.error('GA API Error:', error);
+ *     res.status(500).json({ success: false, error: error.message });
+ *   }
+ * });
+ * 
+ * 5. Frontend'de gerçek API'yi çağırın:
+ *    const response = await fetch(`${API_BASE_URL}/api/admin/analytics/ga-data?startDate=${startDate}&endDate=${endDate}`);
+ * 
+ * Not: Şu anda güvenlik ve basitlik için mock data kullanılıyor.
+ */
+
 interface AnalyticsData {
   userRegistrations: {
     date: string;
@@ -64,6 +141,45 @@ interface WebAnalytics {
     bounceRate: number;
   };
 }
+
+// Helper function to get country flag emoji
+const getCountryFlag = (countryName: string): string => {
+  const countryFlags: { [key: string]: string } = {
+    'Turkey': '🇹🇷',
+    'Türkiye': '🇹🇷',
+    'United States': '🇺🇸',
+    'Germany': '🇩🇪',
+    'Almanya': '🇩🇪',
+    'United Kingdom': '🇬🇧',
+    'İngiltere': '🇬🇧',
+    'France': '🇫🇷',
+    'Fransa': '🇫🇷',
+    'Netherlands': '🇳🇱',
+    'Hollanda': '🇳🇱',
+    'Spain': '🇪🇸',
+    'İspanya': '🇪🇸',
+    'Italy': '🇮🇹',
+    'İtalya': '🇮🇹',
+    'Canada': '🇨🇦',
+    'Kanada': '🇨🇦',
+    'Australia': '🇦🇺',
+    'Avustralya': '🇦🇺',
+    'Japan': '🇯🇵',
+    'Japonya': '🇯🇵',
+    'South Korea': '🇰🇷',
+    'Güney Kore': '🇰🇷',
+    'Brazil': '🇧🇷',
+    'Brezilya': '🇧🇷',
+    'India': '🇮🇳',
+    'Hindistan': '🇮🇳',
+    'China': '🇨🇳',
+    'Çin': '🇨🇳',
+    'Russia': '🇷🇺',
+    'Rusya': '🇷🇺'
+  };
+  
+  return countryFlags[countryName] || '🌍';
+};
 
 const AdminAnalytics: React.FC = () => {
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
@@ -173,26 +289,27 @@ const AdminAnalytics: React.FC = () => {
         endDate: dateRange.endDate
       });
 
-      const [trafficResponse, referrersResponse, countriesResponse, pagesResponse] = await Promise.all([
-        fetch(`${API_BASE_URL}/api/admin/analytics/traffic?${params}`, {
+      // Gerçek Google Analytics 4 API çağrıları
+      const [overviewResponse, trafficSourcesResponse, countriesResponse, pageViewsResponse] = await Promise.all([
+        fetch(`${API_BASE_URL}/api/analytics/overview?${params}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         }),
-        fetch(`${API_BASE_URL}/api/admin/analytics/referrers?${params}`, {
+        fetch(`${API_BASE_URL}/api/analytics/traffic-sources?${params}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         }),
-        fetch(`${API_BASE_URL}/api/admin/analytics/countries?${params}`, {
+        fetch(`${API_BASE_URL}/api/analytics/countries?${params}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
         }),
-        fetch(`${API_BASE_URL}/api/admin/analytics/pages?${params}`, {
+        fetch(`${API_BASE_URL}/api/analytics/page-views?${params}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -200,69 +317,49 @@ const AdminAnalytics: React.FC = () => {
         })
       ]);
 
-      // Eğer API endpoint'leri henüz mevcut değilse, mock data kullan
-      if (trafficResponse.status === 404 || referrersResponse.status === 404) {
-        // Mock data
-        const mockWebAnalytics: WebAnalytics = {
-          trafficStats: {
-            totalVisits: 12450,
-            uniqueVisitors: 8320,
-            pageViews: 18750,
-            bounceRate: 42.5
-          },
-          referrerSources: [
-            { source: 'Google', count: 5200, percentage: 41.8 },
-            { source: 'Direct', count: 3100, percentage: 24.9 },
-            { source: 'YouTube', count: 1850, percentage: 14.9 },
-            { source: 'Facebook', count: 1200, percentage: 9.6 },
-            { source: 'Instagram', count: 800, percentage: 6.4 },
-            { source: 'Diğer', count: 300, percentage: 2.4 }
-          ],
-          countryStats: [
-            { country: 'Türkiye', visits: 7200, flag: '🇹🇷' },
-            { country: 'Almanya', visits: 1800, flag: '🇩🇪' },
-            { country: 'ABD', visits: 1200, flag: '🇺🇸' },
-            { country: 'İngiltere', visits: 900, flag: '🇬🇧' },
-            { country: 'Fransa', visits: 650, flag: '🇫🇷' },
-            { country: 'Hollanda', visits: 450, flag: '🇳🇱' },
-            { country: 'Diğer', visits: 250, flag: '🌍' }
-          ],
-          pageViews: [
-            { url: '/', views: 4200, uniqueVisitors: 3100 },
-            { url: '/pricing', views: 2800, uniqueVisitors: 2200 },
-            { url: '/categories', views: 2100, uniqueVisitors: 1800 },
-            { url: '/login', views: 1900, uniqueVisitors: 1600 },
-            { url: '/register', views: 1500, uniqueVisitors: 1300 },
-            { url: '/about', views: 1200, uniqueVisitors: 1000 },
-            { url: '/contact', views: 800, uniqueVisitors: 650 },
-            { url: '/terms', views: 400, uniqueVisitors: 350 }
-          ]
-        };
-        setWebAnalytics(mockWebAnalytics);
-      } else {
-        // Gerçek API yanıtlarını işle
-        const [trafficResult, referrersResult, countriesResult, pagesResult] = await Promise.all([
-          trafficResponse.json(),
-          referrersResponse.json(),
-          countriesResponse.json(),
-          pagesResponse.json()
-        ]);
-
-        const webAnalyticsData: WebAnalytics = {
-          trafficStats: trafficResult.data || {
-            totalVisits: 0,
-            uniqueVisitors: 0,
-            pageViews: 0,
-            bounceRate: 0
-          },
-          referrerSources: referrersResult.data || [],
-          countryStats: countriesResult.data || [],
-          pageViews: pagesResult.data || []
-        };
-        setWebAnalytics(webAnalyticsData);
+      // API yanıtlarını kontrol et
+      if (!overviewResponse.ok || !trafficSourcesResponse.ok || !countriesResponse.ok || !pageViewsResponse.ok) {
+        throw new Error(`GA4 API hatası: ${overviewResponse.status}`);
       }
+
+      const [overviewData, trafficSourcesData, countriesData, pageViewsData] = await Promise.all([
+        overviewResponse.json(),
+        trafficSourcesResponse.json(),
+        countriesResponse.json(),
+        pageViewsResponse.json()
+      ]);
+
+      // GA4 verilerini frontend formatına dönüştür
+      const webAnalyticsData: WebAnalytics = {
+        trafficStats: {
+          totalVisits: overviewData.totalSessions || 0,
+          uniqueVisitors: overviewData.totalUsers || 0,
+          pageViews: overviewData.totalPageViews || 0,
+          bounceRate: overviewData.bounceRate || 0
+        },
+        referrerSources: trafficSourcesData.map((item: any) => ({
+          source: item.source || 'Unknown',
+          count: item.sessions || 0,
+          percentage: item.percentage || 0
+        })),
+        countryStats: countriesData.map((item: any) => ({
+          country: item.country || 'Unknown',
+          visits: item.sessions || 0,
+          flag: getCountryFlag(item.country)
+        })),
+        pageViews: pageViewsData.map((item: any) => ({
+          url: item.date || '/',
+          views: item.pageViews || 0,
+          uniqueVisitors: item.uniquePageViews || 0
+        }))
+      };
+
+      setWebAnalytics(webAnalyticsData);
+      console.log('GA4 Analytics Data:', webAnalyticsData);
     } catch (error) {
-      console.error('Fetch web analytics error:', error);
+      console.error('GA4 Analytics Error:', error);
+      toast.error('Google Analytics verileri alınamadı, mock data kullanılıyor');
+      
       // Hata durumunda mock data kullan
       const mockWebAnalytics: WebAnalytics = {
         trafficStats: {
