@@ -131,8 +131,11 @@ interface WebAnalytics {
   }[];
   pageViews: {
     url: string;
+    title?: string;
     views: number;
     uniqueVisitors: number;
+    avgTimeOnPage?: number;
+    bounceRate?: number;
   }[];
   trafficStats: {
     totalVisits: number;
@@ -290,7 +293,7 @@ const AdminAnalytics: React.FC = () => {
       });
 
       // Gerçek Google Analytics 4 API çağrıları
-      const [overviewResponse, trafficSourcesResponse, countriesResponse, pageViewsResponse] = await Promise.all([
+      const [overviewResponse, trafficSourcesResponse, countriesResponse, pageViewsResponse, pageAnalyticsResponse] = await Promise.all([
         fetch(`${API_BASE_URL}/api/analytics/overview?${params}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -314,19 +317,26 @@ const AdminAnalytics: React.FC = () => {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
           }
+        }),
+        fetch(`${API_BASE_URL}/api/analytics/page-analytics?${params}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
         })
       ]);
 
       // API yanıtlarını kontrol et
-      if (!overviewResponse.ok || !trafficSourcesResponse.ok || !countriesResponse.ok || !pageViewsResponse.ok) {
+      if (!overviewResponse.ok || !trafficSourcesResponse.ok || !countriesResponse.ok || !pageViewsResponse.ok || !pageAnalyticsResponse.ok) {
         throw new Error(`GA4 API hatası: ${overviewResponse.status}`);
       }
 
-      const [overviewData, trafficSourcesData, countriesData, pageViewsData] = await Promise.all([
+      const [overviewData, trafficSourcesData, countriesData, pageViewsData, pageAnalyticsData] = await Promise.all([
         overviewResponse.json(),
         trafficSourcesResponse.json(),
         countriesResponse.json(),
-        pageViewsResponse.json()
+        pageViewsResponse.json(),
+        pageAnalyticsResponse.json()
       ]);
 
       // GA4 verilerini frontend formatına dönüştür
@@ -347,10 +357,13 @@ const AdminAnalytics: React.FC = () => {
           visits: item.sessions || 0,
           flag: getCountryFlag(item.country)
         })),
-        pageViews: pageViewsData.map((item: any) => ({
-          url: item.date || '/',
+        pageViews: pageAnalyticsData.map((item: any) => ({
+          url: item.pagePath || '/',
+          title: item.pageTitle || 'Unknown Page',
           views: item.pageViews || 0,
-          uniqueVisitors: item.uniquePageViews || 0
+          uniqueVisitors: item.uniquePageViews || 0,
+          avgTimeOnPage: item.avgTimeOnPage || 0,
+          bounceRate: item.bounceRate || 0
         }))
       };
 
@@ -927,7 +940,7 @@ const AdminAnalytics: React.FC = () => {
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Sayfa URL
+                      Sayfa
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Toplam Görüntüleme
@@ -936,7 +949,10 @@ const AdminAnalytics: React.FC = () => {
                       Benzersiz Ziyaretçi
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Ort. Görüntüleme/Ziyaretçi
+                      Ort. Süre (sn)
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Çıkış Oranı
                     </th>
                   </tr>
                 </thead>
@@ -944,7 +960,10 @@ const AdminAnalytics: React.FC = () => {
                   {webAnalytics.pageViews.map((page, index) => (
                     <tr key={page.url} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        <code className="bg-gray-100 px-2 py-1 rounded text-xs">{page.url}</code>
+                        <div>
+                          <div className="font-medium">{page.title || 'Unknown Page'}</div>
+                          <code className="bg-gray-100 px-2 py-1 rounded text-xs text-gray-600">{page.url}</code>
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {page.views.toLocaleString()}
@@ -953,7 +972,10 @@ const AdminAnalytics: React.FC = () => {
                         {page.uniqueVisitors.toLocaleString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {(page.views / page.uniqueVisitors).toFixed(1)}
+                        {page.avgTimeOnPage ? Math.round(page.avgTimeOnPage) : '-'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {page.bounceRate ? `%${(page.bounceRate * 100).toFixed(1)}` : '-'}
                       </td>
                     </tr>
                   ))}
