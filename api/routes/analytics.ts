@@ -1,8 +1,13 @@
 import { Router } from 'express';
 import { BetaAnalyticsDataClient } from '@google-analytics/data';
-import { adminAuth } from '../middleware/adminAuth';
+import { adminAuth } from '../middleware/adminAuth.js';
 
 const router = Router();
+
+// Test endpoint to verify routes are working
+router.get('/test', (req, res) => {
+  res.json({ message: 'Analytics routes are working!', timestamp: new Date().toISOString() });
+});
 
 // Google Analytics Data API client
 let analyticsDataClient: BetaAnalyticsDataClient;

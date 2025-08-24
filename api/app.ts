@@ -18,6 +18,9 @@ dotenv.config();
 
 const app: express.Application = express();
 
+// Trust proxy for Cloudflare and other reverse proxies
+app.set('trust proxy', true);
+
 // CORS configuration
 app.use(cors({
   origin: [
