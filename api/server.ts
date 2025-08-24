@@ -33,6 +33,7 @@ import categoriesRoutes from './routes/categories.js';
 import imagesRoutes from './routes/images.js';
 import subscriptionsRoutes from './routes/subscriptions.js';
 import adminRoutes from './routes/admin.js';
+import analyticsRoutes from './routes/analytics.js';
 
 // Import middleware
 import { auth, optionalAuth } from './middleware/auth.js';
@@ -158,6 +159,7 @@ app.use('/api/categories', categoriesRoutes);
 app.use('/api/images', imagesRoutes);
 app.use('/api/subscriptions', subscriptionsRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 // Admin login endpoint
 app.post('/api/admin/login', adminLogin);
