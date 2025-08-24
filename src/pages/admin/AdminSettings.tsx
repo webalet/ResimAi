@@ -11,11 +11,24 @@ const AdminSettings = () => {
   
   // Helper function to get full image URL
   const getFullImageUrl = (imageUrl: string | null | undefined): string => {
-    if (!imageUrl) return '';
-    if (imageUrl.startsWith('http')) return imageUrl;
+    console.log('🔍 getFullImageUrl called with:', { imageUrl, type: typeof imageUrl });
+    
+    if (!imageUrl) {
+      console.log('❌ Image URL is empty/null/undefined');
+      return '';
+    }
+    
+    if (imageUrl.startsWith('http')) {
+      console.log('✅ Image URL already has protocol:', imageUrl);
+      return imageUrl;
+    }
+    
     const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://64.226.75.76';
-    console.log('🖼️ Converting image URL:', imageUrl, 'to full URL:', `${API_BASE_URL}${imageUrl}`);
-    return `${API_BASE_URL}${imageUrl}`;
+    const fullUrl = `${API_BASE_URL}${imageUrl}`;
+    console.log('🖼️ Converting relative URL:', imageUrl, 'to full URL:', fullUrl);
+    console.log('🌐 API_BASE_URL:', API_BASE_URL);
+    
+    return fullUrl;
   };
   
   // State for editable configuration
@@ -98,23 +111,36 @@ const AdminSettings = () => {
 
         
         if (categoriesResult.success && categoriesResult.data) {
-          const formattedCategories = categoriesResult.data.map((cat: any) => ({
-            id: cat.id,
-            name: cat.name,
-            display_name_tr: cat.display_name_tr || cat.name,
-            display_name_en: cat.display_name_en || cat.name,
-            type: cat.type || cat.name,
-            description: cat.description || '',
-            description_en: cat.description_en || cat.description || '',
-            image_url: cat.image_url,
-            before_image_url: cat.before_image_url || null,
-            after_image_url: cat.after_image_url || null,
-            styles: cat.styles || [],
-            styles_en: cat.styles_en || cat.styles || [],
-            is_active: cat.is_active !== undefined ? cat.is_active : true,
-            created_at: cat.created_at || new Date().toISOString(),
-            updated_at: cat.updated_at || new Date().toISOString()
-          }));
+          const formattedCategories = categoriesResult.data.map((cat: any) => {
+            const formatted = {
+              id: cat.id,
+              name: cat.name,
+              display_name_tr: cat.display_name_tr || cat.name,
+              display_name_en: cat.display_name_en || cat.name,
+              type: cat.type || cat.name,
+              description: cat.description || '',
+              description_en: cat.description_en || cat.description || '',
+              image_url: cat.image_url,
+              before_image_url: cat.before_image_url || null,
+              after_image_url: cat.after_image_url || null,
+              styles: cat.styles || [],
+              styles_en: cat.styles_en || cat.styles || [],
+              is_active: cat.is_active !== undefined ? cat.is_active : true,
+              created_at: cat.created_at || new Date().toISOString(),
+              updated_at: cat.updated_at || new Date().toISOString()
+            };
+            
+            console.log(`📋 Category loaded: ${cat.name}`);
+            console.log('- before_image_url:', cat.before_image_url);
+            console.log('- after_image_url:', cat.after_image_url);
+            console.log('- image_url:', cat.image_url);
+            
+            if (!cat.before_image_url && !cat.after_image_url && !cat.image_url) {
+              console.log('⚠️ No images found for category:', cat.name);
+            }
+            
+            return formatted;
+          });
           setCategories(formattedCategories);
         }
       } else {
@@ -871,11 +897,20 @@ const AdminSettings = () => {
         const updateField = imageType === 'before' ? 'before_image_url' : 'after_image_url';
         console.log('📝 Updating field:', updateField, 'with URL:', data.url);
         
-        setCategories(prev => 
-          prev.map((cat, i) => 
+        setCategories(prev => {
+          const updatedCategories = prev.map((cat, i) => 
             i === categoryIndex ? { ...cat, [updateField]: data.url } : cat
-          )
-        );
+          );
+          
+          console.log('📊 Category state updated:');
+          console.log('- Category index:', categoryIndex);
+          console.log('- Update field:', updateField);
+          console.log('- New URL:', data.url);
+          console.log('- Updated category:', updatedCategories[categoryIndex]);
+          console.log('- All categories:', updatedCategories);
+          
+          return updatedCategories;
+        });
         
         const updateData = {
           ...categoryToUpdate,
@@ -893,11 +928,18 @@ const AdminSettings = () => {
         
         if (!updateResponse.ok) {
           const errorText = await updateResponse.text();
-
+          console.log('❌ Category update failed:', errorText);
+        } else {
+          console.log('✅ Category updated in database successfully');
         }
       }
       
       toast.success(`${imageType === 'before' ? 'Öncesi' : 'Sonrası'} resim başarıyla yüklendi!`);
+      
+      // Kategorileri yeniden yükle
+      console.log('🔄 Reloading categories after image upload...');
+      await loadCategoriesAndPrompts();
+      console.log('✅ Categories reloaded successfully');
       
       // Categories sayfasının cache'ini temizle
       if (window.location.pathname.includes('/categories') || window.location.pathname === '/') {
