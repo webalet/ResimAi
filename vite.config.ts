@@ -6,7 +6,7 @@ import path from 'path'
 export default defineConfig({
   plugins: [react()],
   esbuild: {
-    drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : []
+    drop: [] // Geçici olarak tüm console.log'ları koru (debug için)
   },
   resolve: {
     alias: {
