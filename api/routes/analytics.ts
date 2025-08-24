@@ -88,8 +88,8 @@ router.get('/overview', adminAuth, async (req, res) => {
 
     return res.json(data);
   } catch (error) {
-    console.error('Error fetching GA4 overview data:', error);
-    return res.status(500).json({ error: 'Failed to fetch analytics data' });
+    console.error('Error fetching overview data:', error);
+    return res.status(500).json({ error: 'Failed to fetch overview data' });
   }
 });
 
@@ -150,7 +150,7 @@ router.get('/traffic-sources', adminAuth, async (req, res) => {
 
     return res.json(trafficSources);
   } catch (error) {
-    console.error('Error fetching GA4 traffic sources:', error);
+    console.error('Error fetching traffic sources data:', error);
     return res.status(500).json({ error: 'Failed to fetch traffic sources data' });
   }
 });
@@ -206,7 +206,7 @@ router.get('/countries', adminAuth, async (req, res) => {
 
     return res.json(countries);
   } catch (error) {
-    console.error('Error fetching GA4 countries data:', error);
+    console.error('Error fetching countries data:', error);
     return res.status(500).json({ error: 'Failed to fetch countries data' });
   }
 });
@@ -266,7 +266,7 @@ router.get('/page-views', adminAuth, async (req, res) => {
 
     return res.json(pageViewsData);
   } catch (error) {
-    console.error('Error fetching GA4 page views data:', error);
+    console.error('Error fetching page views data:', error);
     return res.status(500).json({ error: 'Failed to fetch page views data' });
   }
 });
