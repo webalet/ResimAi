@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Settings, Key, Database, Webhook, Code, Edit2, Save, X, Plus, Trash2, ChevronDown, ChevronUp, Upload, Image } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Settings, Key, Database, Webhook,  Edit2, Save, X, Plus, Trash2, ChevronDown, ChevronUp, Upload} from 'lucide-react';
 import { toast } from 'sonner';
 import { Category } from '../../../shared/types';
 
@@ -8,6 +8,16 @@ type ValidationErrors = Record<string, string>;
 const AdminSettings = () => {
   // Loading state
   const [loading, setLoading] = useState(true);
+  
+  // Helper function to get full image URL
+  const getFullImageUrl = (imageUrl: string | null | undefined): string => {
+    if (!imageUrl) return '';
+    if (imageUrl.startsWith('http')) return imageUrl;
+    const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://64.226.75.76';
+    console.log('🖼️ Converting image URL:', imageUrl, 'to full URL:', `${API_BASE_URL}${imageUrl}`);
+    return `${API_BASE_URL}${imageUrl}`;
+  };
+  
   // State for editable configuration
   const [systemConfig, setSystemConfig] = useState({
     supabase: {
@@ -846,16 +856,20 @@ const AdminSettings = () => {
       }
 
       const data = await response.json();
+      console.log('✅ Image upload response:', data);
       
       if (!data.success) {
         throw new Error(data.message || 'Resim yükleme başarısız');
       }
+      
+      console.log('🔄 Updating category with new image URL:', data.url, 'for imageType:', imageType);
       
       // Update category in Supabase
       const categoryToUpdate = categories[categoryIndex];
       if (categoryToUpdate && categoryToUpdate.id) {
         // Update category image URL in state based on imageType
         const updateField = imageType === 'before' ? 'before_image_url' : 'after_image_url';
+        console.log('📝 Updating field:', updateField, 'with URL:', data.url);
         
         setCategories(prev => 
           prev.map((cat, i) => 
@@ -1499,10 +1513,11 @@ const AdminSettings = () => {
                           <label className="block text-xs font-medium text-gray-700 mb-1">Öncesi Resmi</label>
                           <div className="relative group">
                             <img 
-                              src={category.before_image_url || category.image_url || ''} 
+                              src={getFullImageUrl(category.before_image_url || category.image_url)} 
                               alt={`${category.name} - Öncesi`}
                               className="w-full h-24 object-cover rounded-lg border border-gray-300"
                               onError={(e) => {
+                                console.log('❌ Image load error for before image:', category.before_image_url || category.image_url);
                                 (e.target as HTMLImageElement).src = '';
                               }}
                             />
@@ -1535,10 +1550,11 @@ const AdminSettings = () => {
                           <label className="block text-xs font-medium text-gray-700 mb-1">Sonrası Resmi</label>
                           <div className="relative group">
                             <img 
-                              src={category.after_image_url || ''} 
+                              src={getFullImageUrl(category.after_image_url)} 
                               alt={`${category.name} - Sonrası`}
                               className="w-full h-24 object-cover rounded-lg border border-gray-300"
                               onError={(e) => {
+                                console.log('❌ Image load error for after image:', category.after_image_url);
                                 (e.target as HTMLImageElement).src = '';
                               }}
                             />
@@ -1573,10 +1589,11 @@ const AdminSettings = () => {
                           <label className="block text-xs font-medium text-gray-700 mb-1">Öncesi Resmi</label>
                           <div className="relative">
                             <img 
-                              src={category.before_image_url || category.image_url || ''} 
+                              src={getFullImageUrl(category.before_image_url || category.image_url)} 
                               alt={`${category.name} - Öncesi`}
                               className="w-full h-24 object-cover rounded-lg border border-gray-300"
                               onError={(e) => {
+                                console.log('❌ Image load error for before image (view mode):', category.before_image_url || category.image_url);
                                 (e.target as HTMLImageElement).src = '';
                               }}
                             />
@@ -1591,10 +1608,11 @@ const AdminSettings = () => {
                           <label className="block text-xs font-medium text-gray-700 mb-1">Sonrası Resmi</label>
                           <div className="relative">
                             <img 
-                              src={category.after_image_url || ''} 
+                              src={getFullImageUrl(category.after_image_url)} 
                               alt={`${category.name} - Sonrası`}
                               className="w-full h-24 object-cover rounded-lg border border-gray-300"
                               onError={(e) => {
+                                console.log('❌ Image load error for after image (view mode):', category.after_image_url);
                                 (e.target as HTMLImageElement).src = '';
                               }}
                             />
