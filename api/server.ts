@@ -101,7 +101,7 @@ const limiter = rateLimit({
     retryAfter: '15 minutes'
   },
   standardHeaders: true,
-  legacyHeaders: false,
+  legacyHeaders: false
 });
 
 // More reasonable rate limiting for auth endpoints
@@ -113,7 +113,7 @@ const authLimiter = rateLimit({
     retryAfter: '15 minutes'
   },
   standardHeaders: true,
-  legacyHeaders: false,
+  legacyHeaders: false
 });
 
 // Upload rate limiting
@@ -125,7 +125,7 @@ const uploadLimiter = rateLimit({
     retryAfter: '1 hour'
   },
   standardHeaders: true,
-  legacyHeaders: false,
+  legacyHeaders: false
 });
 
 // General middleware
