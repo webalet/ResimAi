@@ -11,6 +11,18 @@ const AdminSettings = () => {
   
   // Helper function to get full image URL
   const getFullImageUrl = (imageUrl: string | null | undefined): string => {
+    // Debug log - tek seferlik
+    if (!window.imageUrlDebugLogged) {
+      console.log('🔍 getFullImageUrl Debug:', {
+        imageUrl,
+        type: typeof imageUrl,
+        isEmpty: !imageUrl,
+        hasHttp: imageUrl?.startsWith('http'),
+        API_BASE_URL: import.meta.env.VITE_API_URL || 'https://64.226.75.76'
+      });
+      window.imageUrlDebugLogged = true;
+    }
+    
     if (!imageUrl) return '';
     if (imageUrl.startsWith('http')) return imageUrl;
     
@@ -98,6 +110,21 @@ const AdminSettings = () => {
 
         
         if (categoriesResult.success && categoriesResult.data) {
+          // Debug log - tek seferlik
+          if (!window.categoriesDebugLogged) {
+            console.log('📋 Categories Loaded:', {
+              totalCategories: categoriesResult.data.length,
+              categories: categoriesResult.data.map(cat => ({
+                name: cat.name,
+                before_image_url: cat.before_image_url,
+                after_image_url: cat.after_image_url,
+                image_url: cat.image_url,
+                hasAnyImage: !!(cat.before_image_url || cat.after_image_url || cat.image_url)
+              }))
+            });
+            window.categoriesDebugLogged = true;
+          }
+          
           const formattedCategories = categoriesResult.data.map((cat: any) => {
             const formatted = {
               id: cat.id,
@@ -116,8 +143,6 @@ const AdminSettings = () => {
               created_at: cat.created_at || new Date().toISOString(),
               updated_at: cat.updated_at || new Date().toISOString()
             };
-            
-
             
             return formatted;
           });
@@ -863,6 +888,19 @@ const AdminSettings = () => {
 
       const data = await response.json();
       
+      // Debug log - tek seferlik
+      if (!window.imageUploadDebugLogged) {
+        console.log('✅ Image Upload Success:', {
+          imageType,
+          categoryIndex,
+          categoryName: categories[categoryIndex]?.name,
+          uploadedUrl: data.url,
+          fullUrl: getFullImageUrl(data.url),
+          response: data
+        });
+        window.imageUploadDebugLogged = true;
+      }
+      
       if (!data.success) {
         throw new Error(data.message || 'Resim yükleme başarısız');
       }
@@ -1522,7 +1560,18 @@ const AdminSettings = () => {
                               alt={`${category.name} - Öncesi`}
                               className="w-full h-24 object-cover rounded-lg border border-gray-300"
                               onError={(e) => {
-                                (e.target as HTMLImageElement).src = '';
+                                const img = e.target as HTMLImageElement;
+                                if (!window.imageErrorLogged) {
+                                  console.log('❌ Image Load Error (Before):', {
+                                    originalSrc: img.src,
+                                    categoryName: category.name,
+                                    before_image_url: category.before_image_url,
+                                    image_url: category.image_url,
+                                    error: e
+                                  });
+                                  window.imageErrorLogged = true;
+                                }
+                                img.src = '';
                               }}
                             />
                             {!category.before_image_url && !category.image_url && (
@@ -1558,7 +1607,17 @@ const AdminSettings = () => {
                               alt={`${category.name} - Sonrası`}
                               className="w-full h-24 object-cover rounded-lg border border-gray-300"
                               onError={(e) => {
-                                (e.target as HTMLImageElement).src = '';
+                                const img = e.target as HTMLImageElement;
+                                if (!window.imageErrorAfterLogged) {
+                                  console.log('❌ Image Load Error (After):', {
+                                    originalSrc: img.src,
+                                    categoryName: category.name,
+                                    after_image_url: category.after_image_url,
+                                    error: e
+                                  });
+                                  window.imageErrorAfterLogged = true;
+                                }
+                                img.src = '';
                               }}
                             />
                             {!category.after_image_url && (
@@ -1596,7 +1655,18 @@ const AdminSettings = () => {
                               alt={`${category.name} - Öncesi`}
                               className="w-full h-24 object-cover rounded-lg border border-gray-300"
                               onError={(e) => {
-                                (e.target as HTMLImageElement).src = '';
+                                const img = e.target as HTMLImageElement;
+                                if (!window.imageErrorViewBeforeLogged) {
+                                  console.log('❌ Image Load Error (View Before):', {
+                                    originalSrc: img.src,
+                                    categoryName: category.name,
+                                    before_image_url: category.before_image_url,
+                                    image_url: category.image_url,
+                                    error: e
+                                  });
+                                  window.imageErrorViewBeforeLogged = true;
+                                }
+                                img.src = '';
                               }}
                             />
                             {!category.before_image_url && !category.image_url && (
@@ -1614,7 +1684,17 @@ const AdminSettings = () => {
                               alt={`${category.name} - Sonrası`}
                               className="w-full h-24 object-cover rounded-lg border border-gray-300"
                               onError={(e) => {
-                                (e.target as HTMLImageElement).src = '';
+                                const img = e.target as HTMLImageElement;
+                                if (!window.imageErrorViewAfterLogged) {
+                                  console.log('❌ Image Load Error (View After):', {
+                                    originalSrc: img.src,
+                                    categoryName: category.name,
+                                    after_image_url: category.after_image_url,
+                                    error: e
+                                  });
+                                  window.imageErrorViewAfterLogged = true;
+                                }
+                                img.src = '';
                               }}
                             />
                             {!category.after_image_url && (
