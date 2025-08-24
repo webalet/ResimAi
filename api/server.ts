@@ -42,6 +42,9 @@ import { adminLogin } from './middleware/adminAuth.js';
 const app = express();
 const PORT = parseInt(process.env.PORT || '3001', 10);
 
+// Trust proxy for proper IP detection behind reverse proxy/load balancer
+app.set('trust proxy', true);
+
 // Security middleware
 app.use(helmet({
   crossOriginEmbedderPolicy: false,
