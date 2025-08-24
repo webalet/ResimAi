@@ -6,45 +6,154 @@ import path from 'path';
 import { supabase } from '../config/supabase.js';
 import { auth } from '../middleware/auth.js';
 import { uploadToSupabase, deleteFromSupabase } from '../utils/storage.js';
+import { 
+  validateFileComprehensive,
+  generateSecureFilename,
+  validateFileMagicNumber,
+  validateFileExtension,
+  validateAndSanitizePath,
+  createSecureUploadDirectory
+} from '../utils/fileSecurityUtils.js';
+import {
+  logFileUploadBlocked,
+  logMaliciousFileDetected,
+  logPathTraversalAttempt,
+  logSecurityScanResult,
+  logSystemError
+} from '../utils/securityLogger.js';
+import { createUploadRateLimit, markUserSuspicious } from '../utils/uploadRateLimit.js';
 
 const router = Router();
 
-// Configure multer for disk storage
+// Create upload rate limiting middleware
+const uploadRateLimit = createUploadRateLimit();
+
+// Configure multer for secure disk storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const uploadPath = path.join(process.cwd(), 'public', 'uploads');
-    // Ensure directory exists
-    if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath, { recursive: true });
+    try {
+      const userId = (req as any).userId;
+      const baseUploadPath = path.join(process.cwd(), 'public', 'uploads');
+      
+      console.log('🔍 [SECURITY] Creating secure upload directory:', {
+        userId,
+        baseUploadPath
+      });
+      
+      // Create secure user-specific directory
+      const secureDirectory = createSecureUploadDirectory(userId, baseUploadPath);
+      
+      if (!secureDirectory.success) {
+        console.error('❌ [SECURITY] Failed to create secure directory:', secureDirectory.error);
+        cb(new Error(`Güvenli dizin oluşturulamadı: ${secureDirectory.error}`), '');
+        return;
+      }
+      
+      // Validate the directory path
+      const pathValidation = validateAndSanitizePath(secureDirectory.directoryPath!, baseUploadPath);
+      if (!pathValidation.isValid) {
+        console.error('❌ [SECURITY] Directory path validation failed:', pathValidation.error);
+        cb(new Error(`Güvenlik: ${pathValidation.error}`), '');
+        return;
+      }
+      
+      console.log('✅ [SECURITY] Secure directory created:', secureDirectory.directoryPath);
+      cb(null, secureDirectory.directoryPath!);
+    } catch (error) {
+      console.error('❌ [SECURITY] Directory creation error:', error);
+      cb(new Error('Güvenli dizin oluşturma hatası'), '');
     }
-    cb(null, uploadPath);
   },
   filename: (req, file, cb) => {
-    const userId = (req as any).userId;
-    const timestamp = Date.now();
-    const ext = path.extname(file.originalname);
-    const filename = `${userId}-${timestamp}${ext}`;
-    cb(null, filename);
+    try {
+      const userId = (req as any).userId;
+      
+      console.log('🔍 [SECURITY] Generating secure filename:', {
+        userId,
+        originalFilename: file.originalname
+      });
+      
+      // Generate secure filename with comprehensive security checks
+      const secureFilename = generateSecureFilename(file.originalname, userId);
+      
+      console.log('✅ [SECURITY] Secure filename generated:', {
+        original: file.originalname,
+        secure: secureFilename
+      });
+      
+      cb(null, secureFilename);
+    } catch (error) {
+      console.error('❌ [SECURITY] Filename generation error:', error);
+      cb(new Error(`Güvenli dosya adı oluşturulamadı: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`), '');
+    }
   }
 });
 
 const upload = multer({
   storage: storage,
   limits: {
-    fileSize: 50 * 1024 * 1024, // 50MB limit
+    fileSize: 200 * 1024 * 1024, // 200MB limit (will be validated more strictly later)
+    files: 1, // Only one file at a time
+    fieldSize: 1024 * 1024, // 1MB field size limit
+    fieldNameSize: 100, // Limit field name size
+    headerPairs: 20 // Limit number of header pairs
   },
-  fileFilter: (req, file, cb) => {
-    // Check file type
-    if (file.mimetype.startsWith('image/')) {
+  fileFilter: async (req, file, cb) => {
+    try {
+      console.log('🔍 [SECURITY] Initial file filter check:', {
+        originalname: file.originalname,
+        mimetype: file.mimetype,
+        size: file.size
+      });
+      
+      // Basic extension validation
+       const extValidation = validateFileExtension(file.originalname);
+       if (!extValidation.isValid) {
+         console.log('❌ [SECURITY] Extension validation failed:', extValidation.error);
+         
+         // Log security event
+         logFileUploadBlocked({
+           userId: (req as any).userId,
+           filename: file.originalname,
+           reason: `Extension validation failed: ${extValidation.error}`,
+           userAgent: req.headers['user-agent'],
+           ipAddress: req.ip || req.connection.remoteAddress
+         });
+         
+         cb(new Error(`Güvenlik: ${extValidation.error}`));
+         return;
+       }
+       
+       // Basic MIME type check (will be validated more thoroughly later)
+       if (!file.mimetype.startsWith('image/')) {
+         console.log('❌ [SECURITY] MIME type validation failed:', file.mimetype);
+         
+         // Log security event
+         logFileUploadBlocked({
+           userId: (req as any).userId,
+           filename: file.originalname,
+           reason: `Invalid MIME type: ${file.mimetype}`,
+           userAgent: req.headers['user-agent'],
+           ipAddress: req.ip || req.connection.remoteAddress
+         });
+         
+         cb(new Error('Güvenlik: Sadece görsel dosyaları yüklenebilir'));
+         return;
+       }
+      
+      console.log('✅ [SECURITY] Initial validation passed');
       cb(null, true);
-    } else {
-      cb(new Error('Sadece görsel dosyaları yüklenebilir'));
+    } catch (error) {
+      console.error('❌ [SECURITY] File filter error:', error);
+      cb(new Error('Güvenlik doğrulama hatası'));
     }
   }
 });
 
 // Simple file upload endpoint (just upload file and return URL)
-router.post('/upload', auth, upload.single('image'), async (req: Request, res: Response): Promise<void> => {
+router.post('/upload', auth, uploadRateLimit, upload.single('image'), async (req: Request, res: Response): Promise<void> => {
+  let tempFilePath: string | null = null;
+  
   try {
     const userId = (req as any).userId;
     const file = req.file;
@@ -57,6 +166,8 @@ router.post('/upload', auth, upload.single('image'), async (req: Request, res: R
       return;
     }
 
+    tempFilePath = file.path;
+
     console.log('📤 [UPLOAD] File upload request:', {
       userId,
       filename: file.originalname,
@@ -65,16 +176,106 @@ router.post('/upload', auth, upload.single('image'), async (req: Request, res: R
       localPath: file.path
     });
 
-    // File is now saved to disk, also upload to Supabase Storage
-    // Read the file from disk and upload to Supabase
-    const fileBuffer = fs.readFileSync(file.path);
-    const imagePath = `uploads/${userId}/${Date.now()}-${file.originalname}`;
-    const imageUrl = await uploadToSupabase(fileBuffer, imagePath, file.mimetype);
+    // 🔒 COMPREHENSIVE SECURITY VALIDATION
+    console.log('🔍 [SECURITY] Starting comprehensive file validation...');
+    const securityValidation = await validateFileComprehensive(file.path, file.originalname, userId);
     
-    // Create local URL for the file
-    const localImageUrl = `/uploads/${file.filename}`;
+    if (!securityValidation.isValid) {
+      console.log('❌ [SECURITY] File validation failed:', securityValidation.errors);
+      
+      // Log comprehensive security scan result
+      logSecurityScanResult({
+        userId,
+        filename: file.originalname,
+        filePath: file.path,
+        fileSize: file.size,
+        mimeType: file.mimetype,
+        threats: securityValidation.errors,
+        warnings: securityValidation.warnings
+      });
+      
+      // Check for specific threat types and log accordingly
+      const hasPathTraversal = securityValidation.errors.some(error => 
+        error.toLowerCase().includes('path') || error.toLowerCase().includes('traversal')
+      );
+      
+      if (hasPathTraversal) {
+        logPathTraversalAttempt({
+          userId,
+          filename: file.originalname,
+          attemptedPath: file.path,
+          userAgent: req.headers['user-agent'],
+          ipAddress: req.ip || req.connection.remoteAddress
+        });
+      }
+      
+      const hasMaliciousContent = securityValidation.errors.some(error => 
+        error.toLowerCase().includes('malicious') || 
+        error.toLowerCase().includes('virus') ||
+        error.toLowerCase().includes('threat')
+      );
+      
+      if (hasMaliciousContent) {
+         logMaliciousFileDetected({
+           userId,
+           filename: file.originalname,
+           filePath: file.path,
+           threats: securityValidation.errors,
+           userAgent: req.headers['user-agent'],
+           ipAddress: req.ip || req.connection.remoteAddress
+         });
+         
+         // Mark user as suspicious for stricter rate limiting
+         const identifier = req.ip || req.connection.remoteAddress || 'unknown';
+         markUserSuspicious(identifier, 2 * 60 * 60 * 1000); // 2 hours
+         if (userId) {
+           markUserSuspicious(userId, 2 * 60 * 60 * 1000); // 2 hours
+         }
+       }
+      
+      // Clean up temporary file
+      if (fs.existsSync(file.path)) {
+        fs.unlinkSync(file.path);
+      }
+      
+      res.status(400).json({
+        success: false,
+        error: 'Güvenlik doğrulaması başarısız',
+        details: securityValidation.errors,
+        warnings: securityValidation.warnings
+      });
+      return;
+    }
+    
+    if (securityValidation.warnings && securityValidation.warnings.length > 0) {
+      console.log('⚠️ [SECURITY] Validation warnings:', securityValidation.warnings);
+    }
+    
+    console.log('✅ [SECURITY] File validation passed:', {
+      detectedMimeType: securityValidation.detectedMimeType,
+      secureFilename: securityValidation.secureFilename
+    });
+
+    // File is now saved to disk and validated, upload to Supabase Storage
+    const fileBuffer = fs.readFileSync(file.path);
+    
+    // Use secure filename for Supabase path
+    const secureFilename = securityValidation.secureFilename || generateSecureFilename(file.originalname, userId);
+    const imagePath = `uploads/${userId}/${secureFilename}`;
+    
+    // Use detected MIME type from security validation
+    const validatedMimeType = securityValidation.detectedMimeType || file.mimetype;
+    const imageUrl = await uploadToSupabase(fileBuffer, imagePath, validatedMimeType);
+    
+    // Create local URL for the file (using secure filename)
+    const localImageUrl = `/uploads/${secureFilename}`;
 
     if (!imageUrl) {
+      // Clean up temporary file
+      if (fs.existsSync(file.path)) {
+        fs.unlinkSync(file.path);
+      }
+      
       res.status(500).json({
         success: false,
         error: 'Görsel yüklenirken hata oluştu'
@@ -82,21 +283,59 @@ router.post('/upload', auth, upload.single('image'), async (req: Request, res: R
       return;
     }
 
+    // Clean up temporary file after successful upload
+    if (fs.existsSync(file.path)) {
+      fs.unlinkSync(file.path);
+      tempFilePath = null;
+    }
+
     console.log('✅ [UPLOAD] File uploaded successfully:', {
       userId,
+      originalFilename: file.originalname,
+      secureFilename,
+      detectedMimeType: validatedMimeType,
       supabaseUrl: imageUrl.substring(0, 50) + '...',
       localUrl: localImageUrl
     });
 
-    // Return both URLs
+    // Return both URLs with security info
     res.status(200).json({
       success: true,
       url: imageUrl, // Supabase URL for n8n workflow
       localUrl: localImageUrl, // Local URL for serving
-      message: 'Görsel başarıyla yüklendi'
+      secureFilename,
+      detectedMimeType: validatedMimeType,
+      message: 'Görsel başarıyla yüklendi ve güvenlik doğrulaması tamamlandı',
+      warnings: securityValidation.warnings
     });
   } catch (error) {
     console.error('❌ [UPLOAD] Upload error:', error);
+    
+    // Log system error
+    logSystemError({
+      error: error instanceof Error ? error : new Error('Unknown upload error'),
+      context: 'FILE_UPLOAD',
+      userId: (req as any).userId,
+      filename: req.file?.originalname
+    });
+    
+    // Clean up temporary file on error
+    if (tempFilePath && fs.existsSync(tempFilePath)) {
+      try {
+        fs.unlinkSync(tempFilePath);
+      } catch (cleanupError) {
+        console.error('❌ [CLEANUP] Failed to clean up temp file:', cleanupError);
+        
+        // Log cleanup error
+        logSystemError({
+          error: cleanupError instanceof Error ? cleanupError : new Error('Cleanup failed'),
+          context: 'FILE_CLEANUP',
+          userId: (req as any).userId,
+          filename: req.file?.originalname
+        });
+      }
+    }
+    
     res.status(500).json({
       success: false,
       error: 'Sunucu hatası'
@@ -108,7 +347,7 @@ router.post('/upload', auth, upload.single('image'), async (req: Request, res: R
 // End of processUploadRequest function
 
 // Upload and process image (original endpoint renamed)
-router.post('/upload-and-process', auth, async (req: Request, res: Response): Promise<void> => {
+router.post('/upload-and-process', auth, uploadRateLimit, async (req: Request, res: Response): Promise<void> => {
   // Handle both multipart/form-data and JSON requests
   const isMultipart = req.headers['content-type']?.includes('multipart/form-data');
   
@@ -133,6 +372,8 @@ router.post('/upload-and-process', auth, async (req: Request, res: Response): Pr
 
 // Extracted processing logic
 async function processUploadRequest(req: Request, res: Response): Promise<void> {
+  let tempFilePath: string | null = null;
+  
   console.log('🔥 [UPLOAD-AND-PROCESS] ENDPOINT HIT - Request received:', {
     method: req.method,
     url: req.url,
@@ -194,6 +435,9 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
     }
     
     const file = req.file;
+    if (file) {
+      tempFilePath = file.path;
+    }
 
     console.log('🚀 [UPLOAD-AND-PROCESS] Request received:', {
       userId,
@@ -268,16 +512,61 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
     let originalImagePath: string | null = null;
 
     if (file) {
+      // 🔒 COMPREHENSIVE SECURITY VALIDATION FOR FILE UPLOAD
+      console.log('🔍 [SECURITY] Starting comprehensive file validation for processing...');
+      const securityValidation = await validateFileComprehensive(file.path, file.originalname, userId);
+      
+      if (!securityValidation.isValid) {
+        console.log('❌ [SECURITY] File validation failed:', securityValidation.errors);
+        
+        // Clean up temporary file
+        if (fs.existsSync(file.path)) {
+          fs.unlinkSync(file.path);
+        }
+        
+        res.status(400).json({
+          success: false,
+          message: 'Güvenlik doğrulaması başarısız',
+          details: securityValidation.errors,
+          warnings: securityValidation.warnings
+        });
+        return;
+      }
+      
+      if (securityValidation.warnings && securityValidation.warnings.length > 0) {
+        console.log('⚠️ [SECURITY] Validation warnings:', securityValidation.warnings);
+      }
+      
+      console.log('✅ [SECURITY] File validation passed for processing:', {
+        detectedMimeType: securityValidation.detectedMimeType,
+        secureFilename: securityValidation.secureFilename
+      });
+      
       // Handle file upload - read from disk since we're using disk storage
       const fileBuffer = fs.readFileSync(file.path);
-      originalImagePath = `originals/${userId}/${Date.now()}-${file.originalname}`;
-      originalImageUrl = await uploadToSupabase(fileBuffer, originalImagePath, file.mimetype);
       
-      console.log('📁 [UPLOAD-AND-PROCESS] File processed:', {
+      // Use secure filename for Supabase path
+      const secureFilename = securityValidation.secureFilename || generateSecureFilename(file.originalname, userId);
+      originalImagePath = `originals/${userId}/${secureFilename}`;
+      
+      // Use detected MIME type from security validation
+      const validatedMimeType = securityValidation.detectedMimeType || file.mimetype;
+      originalImageUrl = await uploadToSupabase(fileBuffer, originalImagePath, validatedMimeType);
+      
+      console.log('📁 [UPLOAD-AND-PROCESS] File processed with security validation:', {
+        originalFilename: file.originalname,
+        secureFilename,
+        detectedMimeType: validatedMimeType,
         localPath: file.path,
         supabasePath: originalImagePath,
         supabaseUrl: originalImageUrl?.substring(0, 50) + '...'
       });
+      
+      // Clean up temporary file after successful upload
+      if (fs.existsSync(file.path)) {
+        fs.unlinkSync(file.path);
+        tempFilePath = null;
+      }
     } else if (imageUrl) {
       // Handle URL upload - download and upload to Supabase
       console.log('📥 [UPLOAD-AND-PROCESS] Downloading image from URL:', imageUrl);
@@ -392,6 +681,16 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
       } : 'No file',
       timestamp: new Date().toISOString()
     });
+    
+    // Clean up temporary file on error
+    if (tempFilePath && fs.existsSync(tempFilePath)) {
+      try {
+        fs.unlinkSync(tempFilePath);
+        console.log('🧹 [CLEANUP] Temporary file cleaned up after error:', tempFilePath);
+      } catch (cleanupError) {
+        console.error('❌ [CLEANUP] Failed to clean up temp file:', cleanupError);
+      }
+    }
     
     res.status(500).json({
       success: false,
