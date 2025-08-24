@@ -47,7 +47,7 @@ npm run dev:prod
 
 Proje artık hem local hem production ortamında çalışacak şekilde yapılandırılmıştır:
 
-- **Local Development**: `http://localhost:3001` (API) ve `http://64.226.75.76` (Frontend)
+- **Local Development**: `http://localhost:3001` (API) ve `https://64.226.75.76` (Frontend)
 - **Production**: Sunucu IP'si veya domain kullanır
 
 ### Frontend ve Backend'i Ayrı Ayrı Çalıştırma
@@ -103,7 +103,7 @@ n8n HTTP Request node'unuzda:
 ### 4. Test Etme
 
 Webhook test sayfasını kullanarak callback endpoint'inizi test edebilirsiniz:
-`http://64.226.75.76/webhook-test`
+`https://64.226.75.76/webhook-test`
 
 ## Environment Variables
 
@@ -119,7 +119,7 @@ Proje aşağıdaki environment dosyalarını kullanır:
 # API Configuration
 NODE_ENV=development|production
 API_BASE_URL=http://localhost:3001
-FRONTEND_URL=http://64.226.75.76
+FRONTEND_URL=https://64.226.75.76
 
 # Supabase Configuration
 VITE_SUPABASE_URL=your_supabase_url

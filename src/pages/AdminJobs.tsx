@@ -36,7 +36,7 @@ const AdminJobs: React.FC = () => {
         throw new Error('Admin token bulunamadı');
       }
 
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76';
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://64.226.75.76';
       const queryParams = new URLSearchParams({
         page: currentPage.toString(),
         limit: '20',

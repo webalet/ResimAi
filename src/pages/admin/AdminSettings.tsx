@@ -72,7 +72,7 @@ const AdminSettings = () => {
         return;
       }
       
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76';
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://64.226.75.76';
       
       // Load categories directly from Supabase
 
@@ -178,7 +178,7 @@ const AdminSettings = () => {
         return;
       }
       
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76';
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://64.226.75.76';
       const response = await fetch(`${API_BASE_URL}/api/admin/admin-settings`, {
         method: 'GET',
         headers: {
@@ -207,7 +207,7 @@ const AdminSettings = () => {
           supabase: data.data.supabase || {},
           n8n: data.data.n8n || {},
           jwt: data.data.jwt || {},
-          server: data.data.server || { port: '80', url: 'http://64.226.75.76' }
+          server: data.data.server || { port: '80', url: 'https://64.226.75.76' }
         };
         setSystemConfig(systemConfig);
         
@@ -492,7 +492,7 @@ const AdminSettings = () => {
       }
       
       // Get current settings first
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76';
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://64.226.75.76';
       const currentResponse = await fetch(`${API_BASE_URL}/api/admin/admin-settings`, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -582,7 +582,7 @@ const AdminSettings = () => {
         return;
       }
       
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76';
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://64.226.75.76';
       
       // 1. Save to admin-settings.json first
       // Get current settings first
@@ -737,7 +737,7 @@ const AdminSettings = () => {
         return;
       }
       
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76';
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://64.226.75.76';
       const response = await fetch(`${API_BASE_URL}/api/admin/settings/prompts`, {
         method: 'PUT',
         headers: {
@@ -827,7 +827,7 @@ const AdminSettings = () => {
       formData.append('type', 'category');
       formData.append('imageType', imageType);
 
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76';
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://64.226.75.76';
       const response = await fetch(`${API_BASE_URL}/api/admin/upload-image`, {
         method: 'POST',
         headers: {
@@ -936,7 +936,7 @@ const AdminSettings = () => {
     try {
       setSaving(true);
       const token = localStorage.getItem('adminToken');
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76';
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://64.226.75.76';
 
       if (!token) {
         showMessage('error', 'Admin token bulunamadı. Lütfen tekrar giriş yapın.');

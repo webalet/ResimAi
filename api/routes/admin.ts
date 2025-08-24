@@ -539,7 +539,7 @@ router.get('/settings', adminAuth, async (req: Request, res: Response) => {
         },
         server: {
           port: savedSettings.server?.port || '80',
-          url: savedSettings.server?.url || 'http://64.226.75.76:80'
+          url: savedSettings.server?.url || 'https://64.226.75.76:80'
         }
       },
       categories: savedSettings.categories || [

@@ -67,10 +67,10 @@ const getAllowedOrigins = () => {
     // Production origins
     if (process.env.FRONTEND_URL) baseOrigins.push(process.env.FRONTEND_URL);
     if (process.env.API_BASE_URL) baseOrigins.push(process.env.API_BASE_URL);
-    baseOrigins.push('http://64.226.75.76', 'https://64.226.75.76');
+    baseOrigins.push('https://64.226.75.76', 'https://64.226.75.76');
   } else {
     // Development origins
-    baseOrigins.push('http://64.226.75.76', 'https://64.226.75.76');
+    baseOrigins.push('https://64.226.75.76', 'https://64.226.75.76');
     if (process.env.FRONTEND_URL) baseOrigins.push(process.env.FRONTEND_URL);
     if (process.env.API_BASE_URL) baseOrigins.push(process.env.API_BASE_URL);
   }
@@ -235,10 +235,10 @@ process.on('unhandledRejection', (reason, promise) => {
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📝 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🔗 Health check: http://64.226.75.76:${PORT}/health`);
+  console.log(`🔗 Health check: https://64.226.75.76:${PORT}/health`);
   
   if (process.env.NODE_ENV === 'development') {
-    console.log(`🌐 API Base URL: http://64.226.75.76:${PORT}/api`);
+    console.log(`🌐 API Base URL: https://64.226.75.76:${PORT}/api`);
   }
 });
 

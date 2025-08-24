@@ -24,7 +24,7 @@ const AdminLogin: React.FC = () => {
     setLoading(true);
 
     try {
-      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://64.226.75.76';
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://64.226.75.76';
       const response = await fetch(`${API_BASE_URL}/api/admin/login`, {
         method: 'POST',
         headers: {
