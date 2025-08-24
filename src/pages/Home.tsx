@@ -109,7 +109,7 @@ const Home: React.FC = () => {
       id: 4,
       name: 'Sarah Johnson',
       role: 'Wedding Photographer',
-      content: 'Stylica.ai has revolutionized my workflow. The AI enhancement quality is incredible, and my clients are amazed by the results. It saves me hours of editing time.',
+      content: 'Stylica.org has revolutionized my workflow. The AI enhancement quality is incredible, and my clients are amazed by the results. It saves me hours of editing time.',
       rating: 5,
       company: 'SJ Photography'
     },

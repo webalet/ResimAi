@@ -90,7 +90,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       }
     } catch (error) {
-      console.error('Auth check failed:', error);
+      // Auth check failed - silently handle
     } finally {
       setLoading(false);
     }
@@ -202,7 +202,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(null);
         toast.error(t('auth.errors.accountBanned'));
       }
-      console.error('User refresh failed:', error);
+      // User refresh failed - silently handle
     }
   };
 

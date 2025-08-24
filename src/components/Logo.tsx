@@ -33,7 +33,7 @@ const Logo: React.FC<LogoProps> = ({
       <div className="relative group">
         <img 
           src="/images/logo.png" 
-          alt="Stylica.ai Logo" 
+          alt="Stylica.org Logo" 
           className={`${sizeClasses[size]} object-contain transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-lg`}
         />
         {/* Hover glow effect */}
@@ -41,7 +41,7 @@ const Logo: React.FC<LogoProps> = ({
       </div>
       {showText && (
         <span className={`ml-2 ${textSizeClasses[size]} font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent transition-all duration-300 hover:from-purple-700 hover:to-blue-700`}>
-          Stylica.ai
+          Stylica.org
         </span>
       )}
     </div>

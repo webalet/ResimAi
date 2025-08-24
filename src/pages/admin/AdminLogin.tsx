@@ -42,7 +42,7 @@ const AdminLogin: React.FC = () => {
       if (data.success) {
         localStorage.setItem('adminToken', data.data.token);
         toast.success('Admin girişi başarılı');
-        navigate('/admin/dashboard');
+        navigate('/admin/');
       } else {
         toast.error(data.message || 'Giriş başarısız');
       }
@@ -90,7 +90,7 @@ const AdminLogin: React.FC = () => {
                   value={formData.email}
                   onChange={handleChange}
                   className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="admin@resim.ai"
+                  placeholder="E-posta adresinizi girin"
                 />
               </div>
             </div>
@@ -146,20 +146,7 @@ const AdminLogin: React.FC = () => {
             </div>
           </form>
 
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Varsayılan Admin Bilgileri</span>
-              </div>
-            </div>
-            <div className="mt-3 text-center text-xs text-gray-500">
-              <p>E-posta: admin@resim.ai</p>
-              <p>Şifre: admin123</p>
-            </div>
-          </div>
+
         </div>
       </div>
     </div>
