@@ -516,17 +516,35 @@ async function processUploadRequest(req: Request, res: Response): Promise<void> 
       const securityValidation = await validateFileComprehensive(file.path, file.originalname, userId);
       
       if (!securityValidation.isValid) {
-        console.log('❌ [SECURITY] File validation failed:', securityValidation.errors);
+        console.log('❌ [SECURITY] File validation failed:', {
+          userId,
+          filename: file.originalname,
+          fileSize: file.size,
+          errors: securityValidation.errors,
+          warnings: securityValidation.warnings,
+          timestamp: new Date().toISOString()
+        });
         
         // Clean up temporary file
         if (fs.existsSync(file.path)) {
           fs.unlinkSync(file.path);
+          console.log('🗑️ [CLEANUP] Temporary file removed:', file.path);
+        }
+        
+        // More user-friendly error message
+        let userMessage = 'Dosya güvenlik kontrolünden geçemedi';
+        if (securityValidation.errors.some(err => err.includes('uzantı'))) {
+          userMessage = 'Desteklenmeyen dosya formatı. Lütfen JPG, PNG, GIF, WebP veya BMP dosyası yükleyin.';
+        } else if (securityValidation.errors.some(err => err.includes('boyut'))) {
+          userMessage = 'Dosya çok büyük. Maksimum 50MB boyutunda dosya yükleyebilirsiniz.';
+        } else if (securityValidation.errors.some(err => err.includes('format'))) {
+          userMessage = 'Dosya formatı geçersiz. Lütfen geçerli bir görsel dosyası yükleyin.';
         }
         
         res.status(400).json({
           success: false,
-          message: 'Güvenlik doğrulaması başarısız',
-          details: securityValidation.errors,
+          message: userMessage,
+          technicalDetails: securityValidation.errors,
           warnings: securityValidation.warnings
         });
         return;

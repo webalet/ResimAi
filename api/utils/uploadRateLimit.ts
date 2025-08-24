@@ -435,17 +435,34 @@ export function createUploadRateLimit() {
 
       // Set rate limit headers
       res.set({
-        'X-RateLimit-Limit': '50',
+        'X-RateLimit-Limit': RATE_LIMIT_CONFIG.general.maxUploads.toString(),
         'X-RateLimit-Remaining': '0',
         'X-RateLimit-Reset': new Date(Date.now() + (result.retryAfter || 900) * 1000).toISOString(),
         'Retry-After': (result.retryAfter || 900).toString()
       });
 
+      // More user-friendly error messages
+      let userMessage = 'Çok fazla yükleme isteği. Lütfen daha sonra tekrar deneyin.';
+      let technicalReason = result.reason || 'Rate limit exceeded';
+      
+      if (technicalReason.includes('Burst limit')) {
+        userMessage = 'Çok hızlı yükleme yapıyorsunuz. 1 dakika bekleyip tekrar deneyin.';
+      } else if (technicalReason.includes('Large file limit')) {
+        userMessage = 'Büyük dosya limiti aşıldı. 30 dakika bekleyip tekrar deneyin.';
+      } else if (technicalReason.includes('Suspicious activity')) {
+        userMessage = 'Güvenlik nedeniyle yükleme kısıtlandı. 5 dakika bekleyip tekrar deneyin.';
+      } else if (technicalReason.includes('uploads per')) {
+        const minutes = Math.ceil((result.retryAfter || 900) / 60);
+        userMessage = `Yükleme limiti aşıldı. ${minutes} dakika bekleyip tekrar deneyin.`;
+      }
+
       res.status(429).json({
         success: false,
         error: 'Rate limit exceeded',
-        message: result.reason,
-        retryAfter: result.retryAfter
+        message: userMessage,
+        technicalReason,
+        retryAfter: result.retryAfter,
+        retryAfterMinutes: Math.ceil((result.retryAfter || 900) / 60)
       });
       return;
     }

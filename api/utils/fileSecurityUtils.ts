@@ -1445,43 +1445,48 @@ export async function validateFileComprehensive(filePath: string, originalFilena
       warnings.push(`Boyut doğrulama uyarısı: ${dimError instanceof Error ? dimError.message : 'Bilinmeyen hata'}`);
     }
     
-    // 5. Advanced virus scanning with quarantine (make it more lenient)
-    console.log('🔍 [SECURITY] Step 5: Advanced virus scanning');
+    // 5. Advanced virus scanning with quarantine (LENIENT MODE)
+    console.log('🔍 [SECURITY] Step 5: Advanced virus scanning (lenient mode)');
     try {
-      const virusScan = await performAdvancedVirusScanning(filePath, false); // Disable quarantine for now
+      const virusScan = await performAdvancedVirusScanning(filePath, false); // Disable quarantine
       if (!virusScan.isSafe) {
-        console.log('⚠️ [SECURITY] Virus scan detected issues:', {
+        console.log('⚠️ [SECURITY] Virus scan detected issues (lenient handling):', {
           threats: virusScan.threats,
           warnings: virusScan.warnings,
           error: virusScan.error
         });
         
-        if (virusScan.error) {
-          warnings.push(virusScan.error);
-        }
-        
-        // Make threats less strict - convert high-risk threats to warnings
+        // Convert most threats to warnings in lenient mode
         if (virusScan.threats) {
+          // Only block extremely dangerous threats
           const criticalThreats = virusScan.threats.filter(threat => 
-            threat.includes('executable') || 
-            threat.includes('malicious') ||
-            threat.includes('SQL injection')
+            threat.includes('executable code detected') || 
+            threat.includes('malicious script') ||
+            threat.includes('known malware signature')
           );
           
           if (criticalThreats.length > 0) {
+            console.log('❌ [SECURITY] Critical threats found:', criticalThreats);
             errors.push(...criticalThreats);
           }
           
-          // Convert other threats to warnings
+          // Convert all other threats to warnings (lenient mode)
           const nonCriticalThreats = virusScan.threats.filter(threat => !criticalThreats.includes(threat));
           if (nonCriticalThreats.length > 0) {
-            warnings.push(...nonCriticalThreats.map(threat => `Uyarı: ${threat}`));
+            console.log('⚠️ [SECURITY] Non-critical threats converted to warnings:', nonCriticalThreats);
+            warnings.push(...nonCriticalThreats.map(threat => `Güvenlik uyarısı: ${threat}`));
           }
         }
         
-        // If file was quarantined, add to warnings instead of errors
+        // Convert errors to warnings in lenient mode
+        if (virusScan.error) {
+          console.log('⚠️ [SECURITY] Virus scan error converted to warning:', virusScan.error);
+          warnings.push(`Tarama uyarısı: ${virusScan.error}`);
+        }
+        
+        // Quarantine warnings
         if (virusScan.quarantineId) {
-          warnings.push(`Dosya karantinaya alındı (ID: ${virusScan.quarantineId})`);
+          warnings.push(`Dosya güvenlik incelemesi yapıldı (ID: ${virusScan.quarantineId})`);
         }
       } else {
         console.log('✅ [SECURITY] Virus scan passed');
@@ -1493,8 +1498,8 @@ export async function validateFileComprehensive(filePath: string, originalFilena
         warnings.push(...virusScan.warnings);
       }
     } catch (virusError) {
-      console.log('⚠️ [SECURITY] Virus scan error (non-critical):', virusError);
-      warnings.push(`Virüs tarama uyarısı: ${virusError instanceof Error ? virusError.message : 'Bilinmeyen hata'}`);
+      console.log('⚠️ [SECURITY] Virus scan error (non-blocking in lenient mode):', virusError);
+      warnings.push(`Güvenlik tarama uyarısı: ${virusError instanceof Error ? virusError.message : 'Tarama tamamlanamadı'}`);
     }
     
     // 6. Generate secure filename

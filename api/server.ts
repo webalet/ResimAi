@@ -42,8 +42,27 @@ import { adminLogin } from './middleware/adminAuth.js';
 const app = express();
 const PORT = parseInt(process.env.PORT || '3001', 10);
 
-// Trust proxy for proper IP detection behind reverse proxy/load balancer
-app.set('trust proxy', true);
+// Trust proxy for rate limiting - güvenli konfigürasyon
+// Sadece belirli proxy'lere güven (Cloudflare, nginx gibi)
+app.set('trust proxy', (ip: string) => {
+  // Cloudflare IP aralıkları ve yerel proxy'ler
+  const trustedProxies = [
+    '127.0.0.1',
+    '::1',
+    '10.0.0.0/8',
+    '172.16.0.0/12',
+    '192.168.0.0/16'
+  ];
+  
+  // IP kontrolü
+  return trustedProxies.some(proxy => {
+    if (proxy.includes('/')) {
+      // CIDR notation kontrolü
+      return ip.startsWith(proxy.split('/')[0]);
+    }
+    return ip === proxy;
+  });
+});
 
 // Security middleware
 app.use(helmet({
