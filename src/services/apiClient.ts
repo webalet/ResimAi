@@ -10,11 +10,11 @@ const getApiBaseUrl = () => {
   
   // Development mode kontrolü
   if (import.meta.env.DEV) {
-    return 'https://64.226.75.76';
+    return 'https://stylica.org';
   }
   
   // Production default
-  return 'https://64.226.75.76';
+  return 'https://stylica.org';
 };
 
 const API_BASE_URL = getApiBaseUrl();
